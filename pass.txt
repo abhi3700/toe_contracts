@@ -1,0 +1,22 @@
+Jungle Testnet
+==============
+Account-1:
+cabeosoneind
+public key: EOS6YPwsgttRcusUVWaseLLZetrqpwGZQeb2cGAabEMsojwm7jQ6b
+private key: 5KCgBo1jhds4qxsT6pfhjnaKnRieiJU9d62NdutxYXcVLA7ttTt
+-----------------------------------------------
+Account-2:
+cabeos1token
+public key: EOS7FGZNQeJtS8yZv6xQFLco47gjge89sjSaD9zt7NjdRGLiYbTbR
+private key: 5KjQhkerQxqzTaS6MKzChVA8ARLsKQrRjmzFnbLv8BbCbARxhZ3
+-----------------------------------------------
+Account-3:
+cabeos11ride
+public key: EOS8WyyVr2tPtku58t4dcVQyuntBUXUimWiQhWpPJ5UCk93ZXepRY
+private key: 5JtyGq8qdA2eucKPZsas7YMr9Fokg3cyazbhE1W5TDSRcREho6i
+-----------------------------------------------
+Account-4:
+cabeos1stake
+public key: EOS868LQgM1sz6WzWNZnus9i2iJ3uuthG3yd8ABaF6tbDGd7An74n
+private key: 5KLESzDteVAm2uqqH1oLxwuSLtUtCcApb9CTLHSXEtahCH5tcno 
+-----------------------------------------------
