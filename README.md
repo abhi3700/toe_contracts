@@ -67,3 +67,22 @@ The main contracts for CabEOS are as follows:
 		+ commission-free rides
 
 ## Table
+* Ride
+* Stake
+
+## Algorithms
+* __Incentive earning algorithm__
+
+* __Surge reduction model__
+
+* __Ride allocation algorithm__
+	- <u>pick-up time:</u> It depends on these 2 factors:
+		+ driver's location
+		+ congestion level
+
+	- <u>Time swap:</u> When ride is requested, if 2 cabs are found to have this (img below) type of situation, where D1 is relatively far than D2 from C1 & viceversa for C2, then D2, D1 is assigned to C1, C2 respectively.
+
+<p align="center">
+  <img src="./images/time_swap.jpg" alt="Time swap" width="" height="">
+</p>
+	
