@@ -43,3 +43,27 @@ The main contracts for CabEOS are as follows:
 		+ start time (with last updated time)
 		+ end time (estimated time)
 		+ status: running
+* `rating_driver`
+	- rating of a driver (of all rides till date)
+* `rating_commuter`
+	- rating of a commuter (of all rides till date)
+
+## Object
+* Token
+	- inflation
+	- burn
+* Ride
+	- fare (fiat/crypto). crypto benefits:
+		+ driver:
+			- commission-free rides
+			- weekly/monthly incentives (monitoring behavior)
+		+ commuter:
+			- surge-free rides
+			- weekly/monthly incentives (monitoring behavior)
+* Stake
+	- Here, users will have to stake their token to get
+		+ monthly/annually interest
+		+ more no. of surge-free rides 
+		+ commission-free rides
+
+## Table
