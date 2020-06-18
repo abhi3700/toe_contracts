@@ -1,22 +1,45 @@
+Wallet (locally)
+================
+name: cabeos
+password: "PW5KE5hRLHL4zHwFdokgiEn588GtJGuis4yvVZKsLPZxjXwSDRBJt"
+
 Jungle Testnet
 ==============
 Account-1:
 cabeosoneind
-public key: EOS6YPwsgttRcusUVWaseLLZetrqpwGZQeb2cGAabEMsojwm7jQ6b
 private key: 5KCgBo1jhds4qxsT6pfhjnaKnRieiJU9d62NdutxYXcVLA7ttTt
+public key: EOS6YPwsgttRcusUVWaseLLZetrqpwGZQeb2cGAabEMsojwm7jQ6b
 -----------------------------------------------
 Account-2:
 cabeos1token
-public key: EOS7FGZNQeJtS8yZv6xQFLco47gjge89sjSaD9zt7NjdRGLiYbTbR
 private key: 5KjQhkerQxqzTaS6MKzChVA8ARLsKQrRjmzFnbLv8BbCbARxhZ3
+public key: EOS7FGZNQeJtS8yZv6xQFLco47gjge89sjSaD9zt7NjdRGLiYbTbR
 -----------------------------------------------
 Account-3:
 cabeos11ride
-public key: EOS8WyyVr2tPtku58t4dcVQyuntBUXUimWiQhWpPJ5UCk93ZXepRY
 private key: 5JtyGq8qdA2eucKPZsas7YMr9Fokg3cyazbhE1W5TDSRcREho6i
+public key: EOS8WyyVr2tPtku58t4dcVQyuntBUXUimWiQhWpPJ5UCk93ZXepRY
 -----------------------------------------------
 Account-4:
 cabeos1stake
-public key: EOS868LQgM1sz6WzWNZnus9i2iJ3uuthG3yd8ABaF6tbDGd7An74n
 private key: 5KLESzDteVAm2uqqH1oLxwuSLtUtCcApb9CTLHSXEtahCH5tcno 
+public key: EOS868LQgM1sz6WzWNZnus9i2iJ3uuthG3yd8ABaF6tbDGd7An74n
 -----------------------------------------------
+
+Test accounts
+============
+cabeos1test1
+Private key: 5Ke2ZxYgybcjkb5oYaNndjNYirDr2CisD8FS22SJgwrZ4z56r9A
+Public key: EOS5oJtUFMFCHavpzpV2GmRR5Mrg4ChZ2nBrBZ6GATVbzQUKtskqu
+-----------------------------------------------
+cabeos1user1
+Private key: 5JWe3zbNL1JJocbUZ67ta6iwXV7mKs7w5chPENfJzVgfVRiU9nm
+Public key: EOS7L5cABCRbkk9XSPY9qiTzUV5jMoPWWmehe29fW23qK5j3M6Se9
+-----------------------------------------------
+cabeos1user2
+Private key: 5KVbZsEzhhXL5BsVqPjvrWaSYZiEjL7ENfbhuDUhfaQHfmh6Uyc
+Public key: EOS5oU8s1CX9fRBsqM1PHiuf1L4s1H8BdTxP2Vx1WP5bhoUbWXByu
+-----------------------------------------------
+cabeos1user3
+Private key: 5Kjxq6Q7HRqKL1aatFgdK4DVGe5ABSm43xFabsDQWJ2dhJKnf8U
+Public key: EOS4yCYGzJAo5sTGPtL8mGS2TgfLagykrodBWGaDApNRY8KWfHJ75
