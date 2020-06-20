@@ -8,14 +8,49 @@ The main contracts for CabEOS are as follows:
 * Ride
 * Stake
 
+## Contracts
+* Token
+	- Actions
+		+ [ ] create
+		+ [ ] issue
+		+ [ ] transfer
+		+ [ ] retire
+		+ [ ] open
+		+ [ ] close
+		+ [ ] inflate
+
+* Ride
+	- Actions
+		+ [ ] create
+		+ [ ] modify
+		+ [ ] cancel
+		+ [ ] start
+		+ [ ] finish
+		+ [ ] rate 			// for both driver/commuter
+		+ [ ] delete 		// delete the ride entry, even if the rating is not done or will be done later. Bcoz, the RAM can't be consumed due to this delay.
+	- Table-1					// showing the `enroute` & `on-trip` rides
+
+* Stake
+	- Actions
+		+ [ ] buy		// ride
+		+ [ ] sell	// ride
+		+ [ ] setmardri		// market rate for driver
+		+ [ ] setmarcom 	// market rate for commuter
+	- Table-1			// stores the driver/commuter with their respective tokens staked & corresponding issued rides
+	- Table-2			// market rate for driver/commuter
+
+* Govern
+	- Actions
+		+ [ ] createpoll 		// choices
+		+ [ ] modify		// choices
+		+ [ ] vote
+	- Table-1 				// for conducting the poll
+	- Table-2 				// showing the appointed leaders in the communities
+
+> #### NOTES
+>    - Here, contract to contract communication would happen like `Ride::finish()` >> `Token::transfer()`;
+
 ## Utility
-* `gen_otp` 
-	- generate OTP
-	- For unique OTP, link the rand no. corresponding to the hash generated from (
-		+ `eos_ac_driver`, 
-		+ `eos_ac_commuter`, 
-		+ `date`, 
-		+ `timestamp`)
 * `ride_fare_est`
 	- estimated ride fare
 	- auto calculate
@@ -49,6 +84,24 @@ The main contracts for CabEOS are as follows:
 	- rating of a driver (of all rides till date)
 * `rating_commuter`
 	- rating of a commuter (of all rides till date)
+
+<!-- 
+* `gen_otp` 
+	- generate OTP
+	- For unique OTP, link the rand no. corresponding to the hash generated from (
+		+ `eos_ac_driver`, 
+		+ `eos_ac_commuter`, 
+		+ `timestamp`)
+* `check_otp`
+
+NOTE: Here, if this is implemented, then it has to be 
+1. hashed & stored into the RAM table 				// 3649 -> "545435abf884....4548d3b"
+2. encrypted & sent to the commuter				// "brfbdfjebd....fvfdv"
+3. decrypted by commuter to say it to the driver		// 3649
+4. the decrypted OTP will be checked with the hash (one stored 
+		in the RAM table in step 1.)    // 3649 -> "545435abf884....4548d3b" == "545435abf884....4548d3b"
+ 
+ -->
 
 ## Object
 * Token
@@ -131,6 +184,8 @@ rides --> no. of available rides (commission-free/surge-free) to the driver/comm
 
 
 ## Algorithms
+<!-- * __OTP generation algorithm__ -->
+
 * __Incentive earning algorithm__
 
 * __Surge reduction model__
