@@ -42,14 +42,6 @@ Public key: EOS7ZjU9HtBkvvSQySLfcjmgcwzZ4H9W1zr1aJw8Y9yzMqQaaPNQN
 #######################################################################
 User Test accounts
 ============
-cabeos1test1	- used("hello")
-Private key: 5Ke2ZxYgybcjkb5oYaNndjNYirDr2CisD8FS22SJgwrZ4z56r9A
-Public key: EOS5oJtUFMFCHavpzpV2GmRR5Mrg4ChZ2nBrBZ6GATVbzQUKtskqu
------------------------------------------------
-cabeos1test2	- used("addressbook")
-Private key: 5Kbjja11e4H3svm68Ur2W3172rj2WEDk4VHEDs133RGrRR5JcA3
-Public key: EOS6RfC8G85q8ZYeota1g8Fb4YpJ2vBxaKBoByzLZEG1qQQCPwvp6
------------------------------------------------
 cabeos1user1
 Private key: 5JWe3zbNL1JJocbUZ67ta6iwXV7mKs7w5chPENfJzVgfVRiU9nm
 Public key: EOS7L5cABCRbkk9XSPY9qiTzUV5jMoPWWmehe29fW23qK5j3M6Se9
@@ -70,6 +62,14 @@ Public key: EOS6myXcveRhUsvoYLARRc3JYRhT3wfofUMjHwVBgroGMeu2ghB41
 
 Contract test accounts
 ======================
+cabeos1test1	- used("hello")
+Private key: 5Ke2ZxYgybcjkb5oYaNndjNYirDr2CisD8FS22SJgwrZ4z56r9A
+Public key: EOS5oJtUFMFCHavpzpV2GmRR5Mrg4ChZ2nBrBZ6GATVbzQUKtskqu
+-----------------------------------------------
+cabeos1test2	- used("addressbook")
+Private key: 5Kbjja11e4H3svm68Ur2W3172rj2WEDk4VHEDs133RGrRR5JcA3
+Public key: EOS6RfC8G85q8ZYeota1g8Fb4YpJ2vBxaKBoByzLZEG1qQQCPwvp6
+-----------------------------------------------
 bhubtabtes11
 Private key: 5Je7XmfK8jKNFU8FLSYZBwyap4oEEW76BoousaAnjfd3iTWb89p
 Public key: EOS5UfynbSATtTDtjirc7j8os6kVcNGboEW7gukTTgg3PNDpZ5LHx
