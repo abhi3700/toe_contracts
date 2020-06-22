@@ -2,9 +2,12 @@ Wallet (locally)
 ================
 name: cabeos
 password: "PW5KE5hRLHL4zHwFdokgiEn588GtJGuis4yvVZKsLPZxjXwSDRBJt"
-
+command: `cleos wallet unlock -n cabeos --password PW5KE5hRLHL4zHwFdokgiEn588GtJGuis4yvVZKsLPZxjXwSDRBJt`
+########################################################################
 Jungle Testnet
 ==============
+CabEOS Contracts, System accounts
+--------------------------
 Account-1:
 cabeosoneind
 private key: 5KCgBo1jhds4qxsT6pfhjnaKnRieiJU9d62NdutxYXcVLA7ttTt
@@ -26,13 +29,24 @@ private key: 5KLESzDteVAm2uqqH1oLxwuSLtUtCcApb9CTLHSXEtahCH5tcno
 public key: EOS868LQgM1sz6WzWNZnus9i2iJ3uuthG3yd8ABaF6tbDGd7An74n
 -----------------------------------------------
 
-Test accounts
+CabEOS users
 ============
-cabeos1test1
+cabeos11dri1
+Private key: 5JcDAiGCnn5eZaPrr5QR3PQQKKy229tZqY4WacBMbQkJw5Z9Yu2
+Public key: EOS7UA5QGfUeCJMEBacD3yPg9TXyTu5FwNen4jHcxgPZdphBR8zQW
+-----------------------------------------------
+cabeos11com1
+Private key: 5Hpe9BiyFbWJ3ZyN3Npye6pZ1GuyDg1KAapf7yfBh4ReXrKDv6M
+Public key: EOS7ZjU9HtBkvvSQySLfcjmgcwzZ4H9W1zr1aJw8Y9yzMqQaaPNQN
+
+#######################################################################
+User Test accounts
+============
+cabeos1test1	- used("hello")
 Private key: 5Ke2ZxYgybcjkb5oYaNndjNYirDr2CisD8FS22SJgwrZ4z56r9A
 Public key: EOS5oJtUFMFCHavpzpV2GmRR5Mrg4ChZ2nBrBZ6GATVbzQUKtskqu
 -----------------------------------------------
-cabeos1test2
+cabeos1test2	- used("addressbook")
 Private key: 5Kbjja11e4H3svm68Ur2W3172rj2WEDk4VHEDs133RGrRR5JcA3
 Public key: EOS6RfC8G85q8ZYeota1g8Fb4YpJ2vBxaKBoByzLZEG1qQQCPwvp6
 -----------------------------------------------
@@ -47,3 +61,19 @@ Public key: EOS5oU8s1CX9fRBsqM1PHiuf1L4s1H8BdTxP2Vx1WP5bhoUbWXByu
 cabeos1user3
 Private key: 5Kjxq6Q7HRqKL1aatFgdK4DVGe5ABSm43xFabsDQWJ2dhJKnf8U
 Public key: EOS4yCYGzJAo5sTGPtL8mGS2TgfLagykrodBWGaDApNRY8KWfHJ75
+-----------------------------------------------
+cabeos1user4
+Private key: 5J31vZbs12MfdDws8LaxTXmSTiwQ5hbiZMtudjMGv26T4ctQfjB
+Public key: EOS6myXcveRhUsvoYLARRc3JYRhT3wfofUMjHwVBgroGMeu2ghB41
+#######################################################################
+
+
+Contract test accounts
+======================
+bhubtabtes11
+Private key: 5Je7XmfK8jKNFU8FLSYZBwyap4oEEW76BoousaAnjfd3iTWb89p
+Public key: EOS5UfynbSATtTDtjirc7j8os6kVcNGboEW7gukTTgg3PNDpZ5LHx
+-----------------------------------------------
+bhubtabtes12
+Private key: 5K9ibWQYHuKcANNNDY597UT3CpzEtZ7d6QmW7yfZe8sGBaQhVSW
+Public key: EOS64uyiFuUiuodogbCfjcPMTKSyYMMhibAfYGL5rvozgegXP1VQu
