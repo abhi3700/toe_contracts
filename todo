@@ -1,5 +1,1 @@
-- create the following accounts
-  - cabeos1user4
-- create ride contract
-  - create + modify = creatify
-  - During a ride, RAM payer will be the driver & commuter, but not the contract.
+- test external database interaction with EOSIO SC
