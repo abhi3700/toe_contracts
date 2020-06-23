@@ -21,7 +21,15 @@ The main contracts for CabEOS are as follows:
 
 * Ride
 	- Actions
-		+ [ ] create
+		+ [ ] create 			// creating the table by the contract ac
+		+ [ ] bookify			// represents book/modify
+			- ride_status
+			- commuter_ac
+			- lat_src
+			- lon_src
+			- lat_des
+			- lon_des
+			- book_time
 		+ [ ] modify
 		+ [ ] cancel
 		+ [ ] start
@@ -29,6 +37,9 @@ The main contracts for CabEOS are as follows:
 		+ [ ] rate 			// for both driver/commuter
 		+ [ ] delete 		// delete the ride entry, even if the rating is not done or will be done later. Bcoz, the RAM can't be consumed due to this delay.
 	- Table-1					// showing the `enroute` & `on-trip` rides
+	- Workflow (Explained):
+		- Here, the ride table will be created only by the contract account using `create` action.
+		- And then destroyed using `erase` action.
 
 * Stake
 	- Actions
@@ -131,25 +142,25 @@ NOTE: Here, if this is implemented, then it has to be
 	- The row is deleted otherwise, i.e. `offline` & `open`
 	- The table looks like this:
 
-|ride_no|driver_ac|ride_status|commuter_ac|lat_src|lon_src|lat_des|lon_des|start_timestamp|finish_timestamp|fare_est|fare_act|pick_up_time|waiting_time|tip|driver_rating|driver_comment|commuter_rating|commuter_comment|
-|-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|1|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|2|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|3|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|driver_ac|ride_status|commuter_ac|lat_src|lon_src|lat_des|lon_des|book_timestamp|start_timestamp|finish_timestamp|fare_est|fare_act|pick_up_time|waiting_time|tip|driver_rating|driver_comment|commuter_rating|commuter_comment|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ```
 where,
 
-ride_no --> serial number as per the rides created
-ride_status --> ongoing/cancelled/finished based on the ride ongoing.
 driver_ac --> driver EOS account name
+ride_status --> enroute/on-trip based on the ride.
 commuter_ac --> commuter EOS account name
 lat_src --> source location's latitude
 lon_src --> source location's longitude
 lat_des --> destination location's latitude
 lon_des --> destination location's longitude
+book_timestamp --> timestamp at which the booking is done.
 start_timestamp --> timestamp at which ride starts
-finish_timestamp --> timestamp at which ride finishes
+finish_timestamp --> timestamp at which ride is finished or cancelled.
 fare_est --> estimate fare before the ride starts
 fare_act --> actual fare after the ride finishes
 pick_up_time --> time taken by the driver from current loc (at allotment time) to pick-up/source location.
@@ -208,4 +219,9 @@ rides --> no. of available rides (commission-free/surge-free) to the driver/comm
 		+ No. of trips happening in the platform.
 		+ Gas price
 
-	
+
+## Data Analysis (For customized experience)
+* Show users the travel related Ads based on their trips.
+	- if the trip is of `out-of-station` type, then show them 
+		+ the best hotels for stay, partner with hotels or such platforms. Here, earn a percentage share.
+		+ the best restaurants to eat, partner with them or such platforms. Here, earn a percentage share.

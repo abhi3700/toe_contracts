@@ -1,0 +1,30 @@
+{
+	"rides": [
+		{
+			"driver_ac": "cabeos11dri1",
+			"ride_status": {
+				"txn_ids": ["0sdvdv35jcjsncb", "3vfb6567bn6777"],
+				"values": ["enroute", "cancelled"],			//  or ["enroute", "ontrip", "finished" ]
+			},
+			"commuter_ac": "cabeos11com1",
+			"src_loc": {
+				"txn_ids": [],				// multiple `txn_id` is noted if the ride src_loc is modified
+				"lat_src": [],
+				"lon_src": [],
+			},
+			"des_loc": {
+				"txn_ids": [],				// multiple `txn_id` is noted if the ride des_loc is modified
+				"lat_des": [],
+				"lon_des": [],
+			},
+			"book_timestamp": "",
+			"start_timestamp": "",
+			"finish_timestamp": "",
+			"fare_est": "",
+			"fare_act": "",
+			"pick_up_time": "",
+			
+
+		},
+	] 
+}
