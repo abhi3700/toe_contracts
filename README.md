@@ -225,3 +225,18 @@ rides --> no. of available rides (commission-free/surge-free) to the driver/comm
 	- if the trip is of `out-of-station` type, then show them 
 		+ the best hotels for stay, partner with hotels or such platforms. Here, earn a percentage share.
 		+ the best restaurants to eat, partner with them or such platforms. Here, earn a percentage share.
+
+
+## Trials
+* <u>Case-1:</u>
+	- __Driver:__ Here, the driver's location is present in contract table with their ride_status as `open`, & they are trying to update the real-time location in Contract table.
+	- __Commuter:__ The commuter when books the ride, gets the driver from the contract table based on nearby location & pick-up time.
+	- __Constraints:__
+		+ driver can finish it's account resources (RAM, CPU, NET) by constantly updating the real-time loc.
+		+ If the commuter account's enough resources (CPU, NET) is getting used, then for assigning the ride, we will use another action to do. In this case, the contract's resources (CPU, NET) will be used. 
+* <u>Case-2:</u>
+	- __Driver:__ Here, the driver's location is present in external-db with their ride_status as `open`, & they are trying to update the real-time location in external-db.
+	- __Commuter:__ The commuter when books the ride, gets the driver from the external-db based on nearby location & pick-up time.
+	- __Constraints:__
+		+ Here, the driver's account resources are intact, as it is communicating constantly with external-db, but not contract table. Also, the external-db has to be communicated with, inside the contract itself.
+		+ If the commuter account's enough resources (CPU, NET) is getting used, then for assigning the ride, we will use another action to do. In this case, the contract's resources (CPU, NET) will be used. 
