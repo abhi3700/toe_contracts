@@ -198,6 +198,10 @@ rides --> no. of available rides (commission-free/surge-free) to the driver/comm
 <!-- * __OTP generation algorithm__ -->
 
 * __Incentive earning algorithm__
+	- ride:
+		+ commuter/driver needs to rate the ride asap. based on the timestamp difference (from ride finish_timestamp), the incentive would decrease.
+	- governance:
+		+ participating in governance via voting/election
 
 * __Surge reduction model__
 
