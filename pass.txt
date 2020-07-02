@@ -70,6 +70,10 @@ cabeos1test2	- used("addressbook")
 Private key: 5Kbjja11e4H3svm68Ur2W3172rj2WEDk4VHEDs133RGrRR5JcA3
 Public key: EOS6RfC8G85q8ZYeota1g8Fb4YpJ2vBxaKBoByzLZEG1qQQCPwvp6
 -----------------------------------------------
+bhub1counter
+Private key: 5KPo7hkGqRDcAyM7crqzbBtCmAK8EcptGx4nhQitZr5M1otnqwq
+Public key: EOS5VdBiKywi7KQ4qjXoAiy2ugjYTZe3t3J7CX3u6LG1Bb3M4ugtv
+-----------------------------------------------
 bhubtabtes11
 Private key: 5Je7XmfK8jKNFU8FLSYZBwyap4oEEW76BoousaAnjfd3iTWb89p
 Public key: EOS5UfynbSATtTDtjirc7j8os6kVcNGboEW7gukTTgg3PNDpZ5LHx
