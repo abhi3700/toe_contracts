@@ -74,6 +74,10 @@ bhub1counter 	- used("abcounter")
 Private key: 5KPo7hkGqRDcAyM7crqzbBtCmAK8EcptGx4nhQitZr5M1otnqwq
 Public key: EOS5VdBiKywi7KQ4qjXoAiy2ugjYTZe3t3J7CX3u6LG1Bb3M4ugtv
 -----------------------------------------------
+bhub1111hodl	- used("hodl")
+Private key: 5JQGnfTwNtEKoGMDnc4w7ACFeHiY4Hu27EvKsBVfbKC6YzKPeXv
+Public key: EOS5Ziff5uPpNYy5zJgLXozP97YpceNa9tSS4a2pg5LSBn8LjYwG1
+-----------------------------------------------
 bhubtabtes11
 Private key: 5Je7XmfK8jKNFU8FLSYZBwyap4oEEW76BoousaAnjfd3iTWb89p
 Public key: EOS5UfynbSATtTDtjirc7j8os6kVcNGboEW7gukTTgg3PNDpZ5LHx
