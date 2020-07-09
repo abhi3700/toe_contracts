@@ -1,7 +1,22 @@
 # Ride contract
-## RAM table
+## Brief
+* It is to store the `rating` into the `toe.auth` contract's table.
+
+## About 
+* account - `toe11111auth`
+* actions
+	- `addrating`
+* table - `auth`
+
+## Table
 * the table is stored in the contract acount.
-* For each row, `ram_payer` would be users (driver/commuter) for their piece of data.
+* For each row, `ram_payer` would be users (driver/commuter) for their piece of data. TODO: 
+	- if the ride is costing too much for their use, then additional amount of CPU, NET will be added to their account during account creation.
+* Table:
+	- `ride`
+		+ `taxi`
+		+ `bike`
+
 Ride table
 ----------------
 

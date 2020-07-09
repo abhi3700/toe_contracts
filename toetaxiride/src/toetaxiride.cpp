@@ -1,4 +1,23 @@
-void cabeosride::sendfare(
+void toetaxiride::create(
+	const name& commuter_ac,
+	double src_lat, 
+	double src_lon, 
+	double des_lat, 
+	double des_lon,
+	string vehicle_type 
+	) {
+	// require authority of commuter_ac
+	// whether 
+	require_auth(commuter_ac);	
+
+	// check whether the commuter_ac is a verified commuter
+
+
+}
+
+
+
+void toetaxiride::sendfare(
 	name commuter_ac, 
 	name contract_ac, 
 	asset quantity, 
@@ -41,7 +60,7 @@ void cabeosride::sendfare(
 	}
 
 	// instantiate the `ride` table
-	ride_index ride_table(get_self(), get_self().value);
+	ride_index ride_table(get_self(), "taxi");
 	auto ride_it = ride_table.find(commuter_ac.value);
 
 	// update(add/modify) the `pay_mode` & `pay_status`

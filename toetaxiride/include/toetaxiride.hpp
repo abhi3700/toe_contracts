@@ -12,7 +12,7 @@ using eosio::permission_level;
 
 using std::string;
 
-class [[eosio::contract]] cabeosride : public contract
+class [[eosio::contract]] toetaxiride : public contract
 {
 
 private:
@@ -21,7 +21,7 @@ private:
 public:
 	using contract::contract;
 
-	cabeosride(name receiver, name code, datastream<const char*> ds) : 
+	toetaxiride(name receiver, name code, datastream<const char*> ds) : 
 				contract(receiver, code, ds), 
 				ride_token_symbol("TOE", 4) {}
 	
@@ -157,7 +157,7 @@ public:
 
 
 private:
-	struct [[eosio::table]] ride
+	struct [[eosio::table]] ridetaxi
 	{
 		name commuter_ac;
 		name ride_status;		// enroute, ontrip, finished
@@ -182,9 +182,9 @@ private:
 		auto get_secondary_2() const { return ride_status.value; }
 	};
 
-	using ride_index = multi_index<"rides"_n, ride, 
-									indexed_by<"bydriver"_n, const_mem_fun<ride, uint64_t, &ride::get_secondary_1>>
-									indexed_by<"byridestatus"_n, const_mem_fun<ride, uint64_t, &ride::get_secondary_2>>
+	using ridetaxi_index = multi_index<"rides"_n, ridetaxi, 
+									indexed_by<"bydriver"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_1>>
+									indexed_by<"byridestatus"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_2>>
 									>;
 
 
