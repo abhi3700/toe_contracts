@@ -35,14 +35,12 @@ public:
 	 * @param src_lat 
 	 * @param src_lon
 	 */
-	ACTION create(
-		const name& commuter_ac,
-		double src_lat, 
-		double src_lon, 
-		double des_lat, 
-		double des_lon,
-		string vehicle_type 
-		);
+	ACTION creatify( const name& commuter_ac,
+						double src_lat, 
+						double src_lon, 
+						double des_lat, 
+						double des_lon,
+						string vehicle_type );
 
 
 	/**
@@ -51,9 +49,7 @@ public:
 	 * 
 	 * @param commuter_ac - commmuter account
 	 */
-	ACTION cancelbycom(
-		const name& commuter_ac
-		);
+	ACTION cancelbycom( const name& commuter_ac );
 
 	/**
 	 * @brief - cancel ride
@@ -61,9 +57,7 @@ public:
 	 * 
 	 * @param driver_ac - commmuter account
 	 */
-	ACTION cancelbydri(
-		const name& driver_ac
-		);
+	ACTION cancelbydri( const name& driver_ac );
 
 	/**
 	 * @brief - change source location
@@ -96,10 +90,6 @@ public:
 	// 	double des_lat, 
 	// 	double des_lon 
 	// 	);
-
-	ACTION alert() {
-
-	}
 
 	/**
 	 * @brief start ride
@@ -147,12 +137,14 @@ public:
 
 
 	
-	ACTION sendmsg(
-
+	ACTION sendalert(
+		const name& user,
+		const string& message
 		)
 
 
 private:
+// ========TABLES========================================================================================================
 	TABLE ridetaxi
 	{
 		name commuter_ac;
@@ -194,4 +186,9 @@ private:
 	};
 
 	using faretaxi_index = multi_index<"faretaxi"_n, faretaxi>;
+
+// ========Functions========================================================================================================
+	// Adding inline action for `sendmsg` action in the same contract	
+	void send_alert(const name& user, const string& message);
+
 };
