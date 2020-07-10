@@ -12,7 +12,7 @@ using eosio::permission_level;
 
 using std::string;
 
-class [[eosio::contract]] toetaxiride : public contract
+CONTRACT toetaxiride : public contract
 {
 
 private:
@@ -35,8 +35,7 @@ public:
 	 * @param src_lat 
 	 * @param src_lon
 	 */
-	[[eosio::action]]
-	void create(
+	ACTION create(
 		const name& commuter_ac,
 		double src_lat, 
 		double src_lon, 
@@ -52,8 +51,7 @@ public:
 	 * 
 	 * @param commuter_ac - commmuter account
 	 */
-	[[eosio::action]]
-	void cancelbycom(
+	ACTION cancelbycom(
 		const name& commuter_ac
 		);
 
@@ -63,8 +61,7 @@ public:
 	 * 
 	 * @param driver_ac - commmuter account
 	 */
-	[[eosio::action]]
-	void cancelbydri(
+	ACTION cancelbydri(
 		const name& driver_ac
 		);
 
@@ -78,12 +75,11 @@ public:
 	 * @param src_lat 
 	 * @param src_lon
 	 */
-	[[eosio::action]]
-	void changesrc(
-		const name& commuter_ac,
-		double src_lat, 
-		double src_lon 
-		);
+	// ACTION changesrc(
+	// 	const name& commuter_ac,
+	// 	double src_lat, 
+	// 	double src_lon 
+	// 	);
 
 	/**
 	 * @brief change destination location
@@ -95,15 +91,13 @@ public:
 	 * @param des_lat - destination latitude
 	 * @param des_lon - destination longitude
 	 */
-	[[eosio::action]]
-	void changedes(
-		const name& commuter_ac,
-		double des_lat, 
-		double des_lon 
-		);
+	// ACTION changedes(
+	// 	const name& commuter_ac,
+	// 	double des_lat, 
+	// 	double des_lon 
+	// 	);
 
-	[[eosio::action]]
-	void alert() {
+	ACTION alert() {
 
 	}
 
@@ -116,8 +110,7 @@ public:
 	 * @param driver_ac - driver account
 	 * @param commuter_ac - commuter account
 	 */
-	[[eosio::action]]
-	void start(
+	ACTION start(
 		const name& driver_ac,
 		const name& commuter_ac
 		);
@@ -130,8 +123,7 @@ public:
 	 * 
 	 * @param driver_ac - driver account
 	 */
-	[[eosio::action]]
-	void finish(
+	ACTION finish(
 		const name& driver_ac,
 		);
 
@@ -147,17 +139,21 @@ public:
 	 */
 	[[eosio::on_notify("toe1111token::transfer")]]
 	void sendfare(
-		name commuter_ac, 
-		name contract_ac, 
-		asset quantity, 
-		string memo
+		const name& commuter_ac, 
+		const name& contract_ac, 
+		const asset& quantity, 
+		const string& memo
 		);
 
 
+	
+	ACTION sendmsg(
+
+		)
 
 
 private:
-	struct [[eosio::table]] ridetaxi
+	TABLE ridetaxi
 	{
 		name commuter_ac;
 		name ride_status;		// enroute, ontrip, finished
@@ -189,12 +185,13 @@ private:
 
 
 // -----------------------------------------------------------------------------------------------------------------------
-	struct [[eosio::table]] fareamount
+	// `faretaxi` table is for keeping the record of fare_est amount transferred by a commuter before the ride starts.
+	TABLE faretaxi
 	{
 		asset balance;
 
 		auto primary_key() const { return balance.amount; }
 	};
 
-	using fareamount_index = multi_index<"fare"_n, fareamount>;
+	using faretaxi_index = multi_index<"faretaxi"_n, faretaxi>;
 };
