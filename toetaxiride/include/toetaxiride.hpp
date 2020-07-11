@@ -9,6 +9,9 @@ using eosio::indexed_by;
 using eosio::asset;
 using eosio::check;
 using eosio::permission_level;
+using eosio::datastream;
+using eosio::current_time_point;
+using eosio::action;
 
 using std::string;
 
@@ -29,19 +32,42 @@ public:
 	 * @brief - change source location
 	 * @details 
 	 * 		- search by commuter_ac,
-	 * 		- change source's latitude & longitude
+	 * 		- create only once
+	 * 		- for modification use `changedes` action
 	 * 
-	 * @param commuter_ac
-	 * @param src_lat 
-	 * @param src_lon
+	 * @param commuter_ac - commuter eosio account name
+	 * @param src_lat - source latitude
+	 * @param src_lon - source longitude
+	 * @param des_lat - destination latitude
+	 * @param des_lon - destination longitude
+	 * @param vehicle_type - it has to be among the defined list
+	 * @param seat_count - to be defined for Pool ride [Optional]. Otherwise, it's value is 2 for other rides
+	 * @param pay_mode - either crypto/fiatdigi/fiatcash
+	 * @param fare_est - estimated fare to be calculated from calling API before calling the action
+	 * @param finish_timestamp_est - estimated finish timestamp to be calculated from calling API before calling the action
 	 */
-	ACTION creatify( const name& commuter_ac,
-						double src_lat, 
-						double src_lon, 
-						double des_lat, 
-						double des_lon,
-						string vehicle_type );
+	ACTION create( const name& commuter_ac,
+								double src_lat, 
+								double src_lon, 
+								double des_lat, 
+								double des_lon,
+								string vehicle_type,
+								uint32_t seat_count = 2,		// define only for Pool rides. passed as default [Optional] parameter
+								string pay_mode,
+								double fare_est,
+								uint32_t finish_timestamp_est);
 
+
+
+	/**
+	 * @brief - ride assigned
+	 * @details - ride assigned automatically using Ride sharing algorithm
+	 * 
+	 * @param driver_ac - driver eosio account name
+	 * @param commuter_ac - commuter eosio account name
+	 */
+	ACTION assign( const name& driver_ac, 
+					const name& commuter_ac );
 
 	/**
 	 * @brief - cancel ride
@@ -84,12 +110,13 @@ public:
 	 * @param commuter_ac - commuter account
 	 * @param des_lat - destination latitude
 	 * @param des_lon - destination longitude
+	 * @param fare_est - estimated fare
 	 */
-	// ACTION changedes(
-	// 	const name& commuter_ac,
-	// 	double des_lat, 
-	// 	double des_lon 
-	// 	);
+	ACTION changedes( const name& commuter_ac,
+						double des_lat, 
+						double des_lon,
+						double fare_est,
+						string pay_mode );
 
 	/**
 	 * @brief start ride
@@ -100,10 +127,8 @@ public:
 	 * @param driver_ac - driver account
 	 * @param commuter_ac - commuter account
 	 */
-	ACTION start(
-		const name& driver_ac,
-		const name& commuter_ac
-		);
+	ACTION start( const name& driver_ac/*,
+					const name& commuter_ac*/);
 
 	/**
 	 * @brief - finish ride
@@ -113,9 +138,7 @@ public:
 	 * 
 	 * @param driver_ac - driver account
 	 */
-	ACTION finish(
-		const name& driver_ac,
-		);
+	ACTION finish( const name& driver_ac );
 
 
 	/**
@@ -136,11 +159,23 @@ public:
 		);
 
 
-	
-	ACTION sendalert(
-		const name& user,
-		const string& message
-		)
+	/**
+	 * @brief - send alert
+	 * @details - send alert after any action is successfully done
+	 * 
+	 * @param user - driver/commuter
+	 * @param message - note depending on the action
+	 */
+	ACTION sendalert( const name& user,
+						const string& message);
+
+	/**
+	 * @brief - An external methods to erase ride
+	 * @details - erase after the ride is finished & payment is done. 
+	 * 
+	 * @param commuter_ac erasing by searching commuter_ac
+	 */
+	ACTION erase( const name& commuter_ac);
 
 
 private:
@@ -148,18 +183,21 @@ private:
 	TABLE ridetaxi
 	{
 		name commuter_ac;
-		name ride_status;		// enroute, ontrip, finished
+		name ride_status;			// enroute/ontrip/complete
 		name driver_ac;
 		double src_lat; 
 		double src_lon; 
 		double des_lat; 
 		double des_lon;
-		string pay_mode;			// crypto or fiat (includes cash)
+		string vehicle_type;		// list of taxis
+		uint32_t seat_count;		// set for pool, else default is 2
+		string pay_mode;			// crypto or fiatdigi or fiatcash
 		string pay_status;			// preride or unpaid or postride
-		string assign_timestamp;	// at which ride is assigned
-		string pickup_point_timestamp;	// at which driver reached source location to pick-up
-		string start_timestamp;		// at which the ride is started
-		string finish_timestamp		// at which the ride is finished
+		uint32_t assign_timestamp;	// at which ride is assigned
+		uint32_t pickup_point_timestamp;	// at which driver reached source location to pick-up
+		uint32_t start_timestamp;		// at which the ride is started
+		uint32_t finish_timestamp_act;		// at which the ride is finished
+		uint32_t finish_timestamp_est;		// at which the ride is estimated to finish
 		double fare_est;			// estimated fare
 		double fare_act;			// actual fare
 
@@ -190,5 +228,13 @@ private:
 // ========Functions========================================================================================================
 	// Adding inline action for `sendmsg` action in the same contract	
 	void send_alert(const name& user, const string& message);
+
+
+	// get the current timestamp
+	inline uint32_t now() const {
+		return current_time_point().sec_since_epoch();
+	}
+
+
 
 };
