@@ -52,7 +52,7 @@ public:
 								double des_lat, 
 								double des_lon,
 								string vehicle_type,
-								uint32_t seat_count = 2,		// define only for Pool rides. passed as default [Optional] parameter
+								uint32_t seat_count,		// define only for Pool rides. passed as default [Optional] parameter
 								string pay_mode,
 								double fare_est,
 								uint32_t finish_timestamp_est);
