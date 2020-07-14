@@ -12,6 +12,7 @@ using eosio::permission_level;
 using eosio::datastream;
 using eosio::current_time_point;
 using eosio::action;
+using eosio::same_payer;
 
 using std::string;
 
@@ -119,6 +120,14 @@ public:
 						string pay_mode );
 
 	/**
+	 * @brief - action to timestamp pickup point
+	 * @details - action to timestamp pickup point
+	 * 
+	 * @param driver_ac - driver account
+	 */
+	ACTION reachsrc( const name& driver_ac )
+
+	/**
 	 * @brief start ride
 	 * @details
 	 * 		- search table by `commuter_ac` 
@@ -140,24 +149,38 @@ public:
 	 */
 	ACTION finish( const name& driver_ac );
 
+	/**
+	 * @brief - Add actual fare
+	 * @details - Add actual fare after the ride is completed
+	 * 
+	 * @param driver_ac - driver account
+	 */
+	ACTION addfareact(const name& driver_ac, 
+						double fare_act);
 
 	/**
 	 * @brief - send fare to the contract
-	 * @details - send the `fare_est` to the contract before ride for automatic deduction.
-	 * 
+	 * @details 
+	 * 		- send the `fare_est` to the contract before ride for automatic deduction.
+	 * 		- this table `faretaxi` acts as a wallet for commuter
 	 * @param commuter_ac - commuter account
 	 * @param contract_ac - contract account
 	 * @param quantity - the fare_est amount
 	 * @param memo - remarks
 	 */
 	[[eosio::on_notify("toe1111token::transfer")]]
-	void sendfare(
-		const name& commuter_ac, 
-		const name& contract_ac, 
-		const asset& quantity, 
-		const string& memo
-		);
+	void sendfare( const name& commuter_ac, 
+					const name& contract_ac, 
+					const asset& quantity, 
+					const string& memo );
 
+	/**
+	 * @brief - a driver receives fare
+	 * @details - a driver receives fare after ride is completed, only when the pay_mode chosen as `crypto`
+	 * 
+	 * @param driver_ac - driver account
+	 */
+	ACTION recvfare( const name& driver_ac );
 
 	/**
 	 * @brief - send alert
@@ -175,7 +198,7 @@ public:
 	 * 
 	 * @param commuter_ac erasing by searching commuter_ac
 	 */
-	ACTION erase( const name& commuter_ac);
+	ACTION eraseride( const name& commuter_ac);
 
 
 private:
@@ -183,7 +206,7 @@ private:
 	TABLE ridetaxi
 	{
 		name commuter_ac;
-		name ride_status;			// enroute/ontrip/complete
+		name ride_status;			// enroute/waiting/ontrip/complete
 		name driver_ac;
 		double src_lat; 
 		double src_lon; 
@@ -192,9 +215,9 @@ private:
 		string vehicle_type;		// list of taxis
 		uint32_t seat_count;		// set for pool, else default is 2
 		string pay_mode;			// crypto or fiatdigi or fiatcash
-		string pay_status;			// preride or unpaid or postride
+		string pay_status;			// due or paid
 		uint32_t assign_timestamp;	// at which ride is assigned
-		uint32_t pickup_point_timestamp;	// at which driver reached source location to pick-up
+		uint32_t reachsrc_timestamp;	// at which driver reached source location to pick-up
 		uint32_t start_timestamp;		// at which the ride is started
 		uint32_t finish_timestamp_act;		// at which the ride is finished
 		uint32_t finish_timestamp_est;		// at which the ride is estimated to finish

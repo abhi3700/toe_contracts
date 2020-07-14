@@ -180,18 +180,44 @@ ACTION toetaxiride::changedes( const name& commuter_ac,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+ACTION toetaxiride::reachsrc( const name& driver_ac ) {
+	require_auth(driver_ac);
+
+	// instantiate the `ride` table
+	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
+	auto ride_it = driver_idx.find(driver_ac.value);
+
+	// ensure that there is a ride by a commuter.
+	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + name{driver_ac}.to_string());
+
+	// modify
+	driver_idx.modify(ride_it, driver_ac, [&](auto& row) {
+		row.ride_status = "waiting"_n;
+		row.reachsrc_timestamp = now();
+
+	});
+
+	// On successful execution, an alert is sent
+	send_alert(ride_it->commuter_ac, 
+		"Hello, " name{ride_it->commuter_ac}.to_string() + ", your driver: " + name{driver_ac}.to_string() + " has reached the pick-up point.");
+
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 ACTION toetaxiride::start( const name& driver_ac/*, const name& commuter_ac*/ ) {
 	require_auth( driver_ac ); 
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
-	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>;
+	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
 	auto ride_it = driver_idx.find(driver_ac.value);
 
 	// ensure that there is a ride by a commuter.
-	check( ride_it != ridetaxi_table.end(), "Sorry! no ride is assigned to " + name{driver_ac}.to_string());
+	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + name{driver_ac}.to_string());
 
-	ridetaxi_table.modify(it, driver_ac, [&](auto& row) {
+	// modify
+	driver_idx.modify(ride_it, driver_ac, [&](auto& row) {
 		row.ride_status = "ontrip"_n;
 		row.start_timestamp = now();
 
@@ -207,13 +233,14 @@ ACTION toetaxiride::finish( const name& driver_ac ) {
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
-	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>;
+	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
 	auto ride_it = driver_idx.find(driver_ac.value);
 
 	// ensure ride assigned to driver exist 
 	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + name{driver_ac}.to_string());
 
-	ridetaxi_table.modify(it, driver_ac, [&](auto& row) {
+	// modify
+	driver_idx.modify(ride_it, driver_ac, [&](auto& row) {
 		row.ride_status = "complete"_n;
 		row.finish_timestamp_act = now();
 
@@ -221,6 +248,29 @@ ACTION toetaxiride::finish( const name& driver_ac ) {
 
 	// On successful execution, an alert is sent
 	send_alert(driver_ac, name{driver_ac}.to_string() + " finishes the ride.");
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+ACTION addfareact( const name& driver_ac,
+					double fare_act) {
+	require_auth(driver_ac);
+
+	// instantiate the `ride` table
+	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
+	auto ride_it = driver_idx.find(driver_ac.value);
+
+	// ensure that there is a ride by a commuter.
+	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + name{driver_ac}.to_string());
+
+	// modify
+	driver_idx.modify(ride_it, driver_ac, [&] (auto& row) {
+		row.fare_act = fare_act;
+	});
+
+	// On successful execution, an alert is sent
+	send_alert(driver_ac, name{driver_ac}.to_string() + " adds the actual fare");
+	send_alert(ride_it->commuter_ac, "Now " + name{ride_it->commuter_ac}.to_string() + " has to pay " + std::to_string(fare_act) + " (INR).");
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -265,16 +315,16 @@ void toetaxiride::sendfare(
 	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
-	// update(add/modify) the `pay_mode` & `pay_status`
+	// update(add/modify) the & `pay_status`
 	if(ride_it == ridetaxi_table.end()) {
 		ridetaxi_table.emplace(commuter_ac, [&] (auto& row) {
 			row.pay_mode = "crypto";
-			row.pay_status = "preride";
+			row.pay_status = "due";
 		});
 	} else {
 		ridetaxi_table.modify(ride_it, commuter_ac, [&] (auto& row) {
 			row.pay_mode = "crypto";
-			row.pay_status = "preride";
+			row.pay_status = "due";
 		});
 	}
 
@@ -285,6 +335,64 @@ void toetaxiride::sendfare(
 		+ string(quantity) + " to the contract -> " + name(contract_ac).to_string );
 
 }
+
+
+ACTION toetaxiride::recvfare( const name& driver_ac ) {
+	require_auth( driver_ac );
+
+	// instantiate the `ride` table
+	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
+	auto ride_it = driver_idx.find(driver_ac.value);
+
+	// ensure ride assigned to driver exist 
+	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + name{driver_ac}.to_string());
+
+	// check if the ride by driver is finished
+	check( ride_it->ride_status == "complete"_n, "Sorry! The ride is not completed yet.");
+
+/*	check if there is any balance & it is greater than the 'fare_act'
+	corresponding to the ride
+*/	// instantiate the `fareamount` table
+	faretaxi_index faretaxi_table(get_self(), commuter_ac.value);
+	auto fare_it = faretaxi_table.find(ride_token_symbol.raw());
+
+	// check if balance is >= fare_act
+	check(fare_it->balance >= ride_it->fare_act, "Sorry, the commuter doesn't have sufficient balance in the ride wallet.");
+
+	// TODO: convert the market price of fare (calculated in fiat) into 'TOE'.
+	// Assume 1 TOE = 5 USD = 375 INR
+	auto fareamount_in_toe = (ride_it->fare_act)/375.00;		// convert 'INR' to 'TOE'
+	asset fare_toe(fareamount_in_toe, "TOE");		// create a asset variable for converted fare (in TOE)
+
+	// send the fare to the driver using inline action
+	action(
+		permission_level{get_self(), "active"_n},
+		"eosio.token"_n,
+		"transfer"_n,
+		std::tuple(get_self(), driver_ac, fare_toe, "fare sent to " + name{driver_ac}.to_string())
+		).send();
+
+	// change the pay_status to `paid`
+	driver_idx.modify( ride_it, driver_ac, [&](auto& row){
+		row.pay_status = "paid";
+	});
+
+	// erase the `fareamount` record only if the balance amount is zero
+	asset zero_toe(0.0000, "TOE");			// create a variable with zero TOE
+	if( fare_it->balance == zero_toe ) {
+		faretaxi_table.erase(fare_it);
+
+		// On successful execution, an alert is sent
+		send_alert(driver_ac, name{driver_ac}.to_string() + " receives the actual fare");
+	} else {
+		send_alert(ride_it->commuter_ac, 
+					"Now " + name{ride_it->commuter_ac}.to_string() + " has a balance of " + (fare_it->balance).to_string());
+	}
+
+
+}
+
 
 // --------------------------------------------------------------------------------------------------------------------
 ACTION toetaxiride::sendalert(
@@ -306,7 +414,7 @@ void toetaxiride::send_alert(const name& user, const string& message) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-ACTION toetaxiride::erase( const name& commuter_ac ) {
+ACTION toetaxiride::eraseride( const name& commuter_ac ) {
 	require_auth( get_self() );
 
 	// instantiate the `ride` table
