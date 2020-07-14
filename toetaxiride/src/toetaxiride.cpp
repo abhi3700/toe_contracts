@@ -1,3 +1,6 @@
+#include "../include/toetaxiride.hpp"
+#include <string>
+
 ACTION toetaxiride::create(
 	const name& commuter_ac,
 	double src_lat, 
@@ -33,7 +36,7 @@ ACTION toetaxiride::create(
 		|| (vehicle_type == "TOEBlack")
 		|| (vehicle_type == "TOESelect")
 		// || (vehicle_type == "TOEExpressPool")
-		, "Sorry! The vehicle type is not available with us.")
+		, "Sorry! The vehicle type is not available with us.");
 
 
 	// check the `pay_mode` as crypto/fiatdigi/fiatcash
@@ -41,7 +44,7 @@ ACTION toetaxiride::create(
 		(pay_mode == "crypto")
 		|| (pay_mode == "fiatdigi")
 		|| (pay_mode == "fiatcash")
-		, "Sorry! The payment mode is not compatible.")
+		, "Sorry! The payment mode is not compatible.");
 
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
 	if(pay_mode == "crypto") {
@@ -57,7 +60,7 @@ ACTION toetaxiride::create(
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
 	// ensure the ride is created for first time i.e. the ride by commuter doesn't exist.
-	check( ride_it == ridetaxi_table.end(), "A ride is already created by " + name{commuter_ac} + ". Please use \'changedes\' ACTION to change dest. location");
+	check( ride_it == ridetaxi_table.end(), "A ride is already created by " + name{commuter_ac}.to_string() + ". Please use \'changedes\' ACTION to change dest. location");
 
 	// add/update the ride details for commuter
 	ridetaxi_table.emplace(commuter_ac, [&]( auto& row ) {
@@ -74,7 +77,7 @@ ACTION toetaxiride::create(
 	});
 
 	// On successful execution, an alert is sent
-	send_alert(commuter_ac, name{commuter_acr}.to_string() + " requested a ride.");
+	send_alert(commuter_ac, name{commuter_ac}.to_string() + " requested a ride.");
 
 }
 

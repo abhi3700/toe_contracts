@@ -1,10 +1,14 @@
 #include <eosio/eosio.hpp>
 #include <eosio/asset.hpp>
+// #include <eosio/print.hpp>
+#include <eosio/system.hpp>
+
 
 using eosio::contract;
 using eosio::print;
 using eosio::name;
 using eosio::multi_index;
+using eosio::const_mem_fun;
 using eosio::indexed_by;
 using eosio::asset;
 using eosio::check;
@@ -13,6 +17,7 @@ using eosio::datastream;
 using eosio::current_time_point;
 using eosio::action;
 using eosio::same_payer;
+using eosio::symbol;
 
 using std::string;
 
