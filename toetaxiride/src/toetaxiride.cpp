@@ -224,7 +224,7 @@ ACTION toetaxiride::finish( const name& driver_ac ) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-ACTION toetaxiride::sendfare(
+void toetaxiride::sendfare(
 	name commuter_ac, 
 	name contract_ac, 
 	asset quantity, 
@@ -243,18 +243,8 @@ ACTION toetaxiride::sendfare(
 		@TODO
 		- create the `toetoken` contract
 	*/ 
-	// if symbol doesn't match then, return the money back. So, fire an inline action to external contract for transfer back to commuter_ac
 	// Check for token symbol to be 'TOE'
-	// check( quantity.symbol == ride_token_symbol, "The token transferred is different");
-	if(quantity.symbol != ride_token_symbol) {
-		action(
-			permission_level{get_self(), "active"_n},
-			"toe1111token"_n,
-			"transfer",
-			std::make_tuple(get_self(), commuter_ac, quantity, "Return money as the symbol is different.")
-			).send();
-		return;
-	}
+	check( quantity.symbol == ride_token_symbol, "The token transferred is different");
 
 	// instantiate the `fareamount` table
 	faretaxi_index faretaxi_table(get_self(), commuter_ac.value);
