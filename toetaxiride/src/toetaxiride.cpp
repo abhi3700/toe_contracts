@@ -1,15 +1,14 @@
 #include "../include/toetaxiride.hpp"
-#include <string>
 
-ACTION toetaxiride::create(
+void toetaxiride::create(
 	const name& commuter_ac,
 	double src_lat, 
 	double src_lon, 
 	double des_lat, 
 	double des_lon,
-	string vehicle_type,
+	const string& vehicle_type,
 	uint32_t seat_count = 2,		// define only for Pool rides. passed as default [Optional] parameter
-	string pay_mode,
+	const string& pay_mode,
 	double fare_est,
 	uint32_t finish_timestamp_est) {
 	// require authority of commuter_ac
@@ -52,7 +51,10 @@ ACTION toetaxiride::create(
 		auto fare_it = faretaxi_table.find(ride_token_symbol.raw());
 
 		// ensure that the min. ride wallet's balance has `fare_est` value
-		check(fare_it->balance >= fare_est, "Sorry! Low balance in the ride wallet.")
+		if ((fare_it->balance).amount < fare_est) {
+			print("Sorry! Low balance in the ride wallet.");
+			return;
+		}
 	}
 
 	// instantiate the `ride` table
@@ -60,7 +62,7 @@ ACTION toetaxiride::create(
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
 	// ensure the ride is created for first time i.e. the ride by commuter doesn't exist.
-	check( ride_it == ridetaxi_table.end(), "A ride is already created by " + name{commuter_ac}.to_string() + ". Please use \'changedes\' ACTION to change dest. location");
+	check( ride_it == ridetaxi_table.end(), "A ride is already created by " + name{commuter_ac}.to_string() + ". Please use \'changedes\' void to change dest. location");
 
 	// add/update the ride details for commuter
 	ridetaxi_table.emplace(commuter_ac, [&]( auto& row ) {
@@ -82,7 +84,7 @@ ACTION toetaxiride::create(
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-ACTION assign( const name& driver_ac, 
+void toetaxiride::assign( const name& driver_ac, 
 				const name& commuter_ac ) {
 	require_auth(driver_ac);
 
@@ -109,7 +111,7 @@ ACTION assign( const name& driver_ac,
 
 
 // --------------------------------------------------------------------------------------------------------------------
-ACTION toetaxiride::cancelbycom( const name& commuter_ac ) {
+void toetaxiride::cancelbycom( const name& commuter_ac ) {
 	require_auth(commuter_ac);
 
 	// instantiate the `ride` table
@@ -125,7 +127,7 @@ ACTION toetaxiride::cancelbycom( const name& commuter_ac ) {
 
 
 // --------------------------------------------------------------------------------------------------------------------
-ACTION toetaxiride::cancelbydri( const name& driver_ac ) {
+void toetaxiride::cancelbydri( const name& driver_ac ) {
 	require_auth(driver_ac);
 
 	// instantiate the `ride` table
@@ -140,10 +142,11 @@ ACTION toetaxiride::cancelbydri( const name& driver_ac ) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-ACTION toetaxiride::changedes( const name& commuter_ac,
+void toetaxiride::changedes( const name& commuter_ac,
 					double des_lat, 
 					double des_lon,
-					double fare_est ) {
+					double fare_est,
+					const string& pay_mode ) {
 	require_auth(commuter_ac);
 
 	// @TODO: check whether the `commuter_ac` is a verified commuter by reading the `auth` table
@@ -153,7 +156,7 @@ ACTION toetaxiride::changedes( const name& commuter_ac,
 		(pay_mode == "crypto")
 		|| (pay_mode == "fiatdigi")
 		|| (pay_mode == "fiatcash")
-		, "Sorry! The payment mode is not compatible.")
+		, "Sorry! The payment mode is not compatible.");
 
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
 	if(pay_mode == "crypto") {
@@ -161,7 +164,10 @@ ACTION toetaxiride::changedes( const name& commuter_ac,
 		auto fare_it = faretaxi_table.find(ride_token_symbol.raw());
 
 		// ensure that the min. ride wallet's balance has `fare_est` value
-		check(fare_it->balance >= fare_est, "Sorry! Low balance in the ride wallet.")
+		if ((fare_it->balance).amount < fare_est) {
+			print("Sorry! Low balance in the ride wallet.");
+			return;
+		}
 	}
 
 	// instantiate the `ride` table
@@ -178,12 +184,12 @@ ACTION toetaxiride::changedes( const name& commuter_ac,
 	});
 
 	// On successful execution, an alert is sent
-	send_alert(driver_ac, name{driver_ac}.to_string() + " changes the destination location.");
+	send_alert(commuter_ac, name{commuter_ac}.to_string() + " changes the destination location.");
 
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-ACTION toetaxiride::reachsrc( const name& driver_ac ) {
+void toetaxiride::reachsrc( const name& driver_ac ) {
 	require_auth(driver_ac);
 
 	// instantiate the `ride` table
@@ -203,12 +209,12 @@ ACTION toetaxiride::reachsrc( const name& driver_ac ) {
 
 	// On successful execution, an alert is sent
 	send_alert(ride_it->commuter_ac, 
-		"Hello, " name{ride_it->commuter_ac}.to_string() + ", your driver: " + name{driver_ac}.to_string() + " has reached the pick-up point.");
+		"Hello, " + name{ride_it->commuter_ac}.to_string() + ", your driver: " + name{driver_ac}.to_string() + " has reached the pick-up point.");
 
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-ACTION toetaxiride::start( const name& driver_ac/*, const name& commuter_ac*/ ) {
+void toetaxiride::start( const name& driver_ac/*, const name& commuter_ac*/ ) {
 	require_auth( driver_ac ); 
 
 	// instantiate the `ride` table
@@ -231,7 +237,7 @@ ACTION toetaxiride::start( const name& driver_ac/*, const name& commuter_ac*/ ) 
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-ACTION toetaxiride::finish( const name& driver_ac ) {
+void toetaxiride::finish( const name& driver_ac ) {
 	require_auth(driver_ac);
 
 	// instantiate the `ride` table
@@ -254,7 +260,7 @@ ACTION toetaxiride::finish( const name& driver_ac ) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-ACTION addfareact( const name& driver_ac,
+void toetaxiride::addfareact( const name& driver_ac,
 					double fare_act) {
 	require_auth(driver_ac);
 
@@ -278,15 +284,15 @@ ACTION addfareact( const name& driver_ac,
 
 // --------------------------------------------------------------------------------------------------------------------
 void toetaxiride::sendfare(
-	name commuter_ac, 
-	name contract_ac, 
-	asset quantity, 
-	string memo
+	const name& commuter_ac, 
+	const name& contract_ac, 
+	const asset& quantity, 
+	const string& memo
 	) {
 
 	// check for conditions if either or both of these are true for `from` & `to`
 	if(contract_ac != get_self() ||  commuter_ac == get_self()) {		// atleast one of the condition is true
-		print("Either money is not sent to the contract")
+		print("Either money is not sent to the contract or contract itself is the commuter.");
 		return;
 	}
 
@@ -321,13 +327,14 @@ void toetaxiride::sendfare(
 	// update(add/modify) the & `pay_status`
 	if(ride_it == ridetaxi_table.end()) {
 		ridetaxi_table.emplace(commuter_ac, [&] (auto& row) {
+			row.commuter_ac = commuter_ac;
 			row.pay_mode = "crypto";
-			row.pay_status = "due";
+			row.pay_status = "paidbycom";
 		});
 	} else {
 		ridetaxi_table.modify(ride_it, commuter_ac, [&] (auto& row) {
 			row.pay_mode = "crypto";
-			row.pay_status = "due";
+			row.pay_status = "paidbycom";
 		});
 	}
 
@@ -335,12 +342,12 @@ void toetaxiride::sendfare(
 	send_alert(
 		commuter_ac, 
 		name{commuter_ac}.to_string() + " transfers an amount of " 
-		+ string(quantity) + " to the contract -> " + name(contract_ac).to_string );
+		+ quantity.to_string() + " to the contract -> " + name(contract_ac).to_string() );
 
 }
 
 
-ACTION toetaxiride::recvfare( const name& driver_ac ) {
+void toetaxiride::recvfare( const name& driver_ac ) {
 	require_auth( driver_ac );
 
 	// instantiate the `ride` table
@@ -357,11 +364,14 @@ ACTION toetaxiride::recvfare( const name& driver_ac ) {
 /*	check if there is any balance & it is greater than the 'fare_act'
 	corresponding to the ride
 */	// instantiate the `fareamount` table
-	faretaxi_index faretaxi_table(get_self(), commuter_ac.value);
+	faretaxi_index faretaxi_table(get_self(), (ride_it->commuter_ac).value);
 	auto fare_it = faretaxi_table.find(ride_token_symbol.raw());
 
 	// check if balance is >= fare_act
-	check(fare_it->balance >= ride_it->fare_act, "Sorry, the commuter doesn't have sufficient balance in the ride wallet.");
+	if((fare_it->balance).amount < ride_it->fare_act) {
+		print("Sorry, the commuter doesn't have sufficient balance in the ride wallet.");
+		return;
+	}
 
 	// TODO: convert the market price of fare (calculated in fiat) into 'TOE'.
 	// Assume 1 TOE = 5 USD = 375 INR
@@ -371,14 +381,14 @@ ACTION toetaxiride::recvfare( const name& driver_ac ) {
 	// send the fare to the driver using inline action
 	action(
 		permission_level{get_self(), "active"_n},
-		"eosio.token"_n,
+		"toe1111token"_n,
 		"transfer"_n,
 		std::tuple(get_self(), driver_ac, fare_toe, "fare sent to " + name{driver_ac}.to_string())
 		).send();
 
 	// change the pay_status to `paid`
 	driver_idx.modify( ride_it, driver_ac, [&](auto& row){
-		row.pay_status = "paid";
+		row.pay_status = "paidbydri";
 	});
 
 	// erase the `fareamount` record only if the balance amount is zero
@@ -398,13 +408,13 @@ ACTION toetaxiride::recvfare( const name& driver_ac ) {
 
 
 // --------------------------------------------------------------------------------------------------------------------
-ACTION toetaxiride::sendalert(
+void toetaxiride::sendalert(
 	const name& user,
 	const string& message
 	) {
 	require_auth(get_self());
 
-	require_receipient(user);
+	require_recipient(user);
 }
 
 void toetaxiride::send_alert(const name& user, const string& message) {
@@ -417,7 +427,7 @@ void toetaxiride::send_alert(const name& user, const string& message) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-ACTION toetaxiride::eraseride( const name& commuter_ac ) {
+void toetaxiride::eraseride( const name& commuter_ac ) {
 	require_auth( get_self() );
 
 	// instantiate the `ride` table

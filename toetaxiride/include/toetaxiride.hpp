@@ -2,6 +2,8 @@
 #include <eosio/asset.hpp>
 // #include <eosio/print.hpp>
 #include <eosio/system.hpp>
+#include <string>
+
 
 
 using eosio::contract;
@@ -18,6 +20,7 @@ using eosio::current_time_point;
 using eosio::action;
 using eosio::same_payer;
 using eosio::symbol;
+using eosio::require_recipient;
 
 using std::string;
 
@@ -57,9 +60,9 @@ public:
 								double src_lon, 
 								double des_lat, 
 								double des_lon,
-								string vehicle_type,
+								const string& vehicle_type,
 								uint32_t seat_count,		// define only for Pool rides. passed as default [Optional] parameter
-								string pay_mode,
+								const string& pay_mode,
 								double fare_est,
 								uint32_t finish_timestamp_est);
 
@@ -122,7 +125,7 @@ public:
 						double des_lat, 
 						double des_lon,
 						double fare_est,
-						string pay_mode );
+						const string& pay_mode );
 
 	/**
 	 * @brief - action to timestamp pickup point
@@ -130,7 +133,7 @@ public:
 	 * 
 	 * @param driver_ac - driver account
 	 */
-	ACTION reachsrc( const name& driver_ac )
+	ACTION reachsrc( const name& driver_ac );
 
 	/**
 	 * @brief start ride
@@ -220,7 +223,7 @@ private:
 		string vehicle_type;		// list of taxis
 		uint32_t seat_count;		// set for pool, else default is 2
 		string pay_mode;			// crypto or fiatdigi or fiatcash
-		string pay_status;			// due or paid
+		string pay_status;			// paidbycom or paidbydri
 		uint32_t assign_timestamp;	// at which ride is assigned
 		uint32_t reachsrc_timestamp;	// at which driver reached source location to pick-up
 		uint32_t start_timestamp;		// at which the ride is started
@@ -232,12 +235,12 @@ private:
 
 
 		auto primary_key() const { return commuter_ac.value; }
-		auto get_secondary_1() const { return driver_ac.value; }
-		auto get_secondary_2() const { return ride_status.value; }
+		uint64_t get_secondary_1() const { return driver_ac.value; }
+		uint64_t get_secondary_2() const { return ride_status.value; }
 	};
 
 	using ridetaxi_index = multi_index<"rides"_n, ridetaxi, 
-									indexed_by<"bydriver"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_1>>
+									indexed_by<"bydriver"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_1>>,
 									indexed_by<"byridestatus"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_2>>
 									>;
 
