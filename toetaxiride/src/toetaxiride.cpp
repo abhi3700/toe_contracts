@@ -7,10 +7,11 @@ void toetaxiride::create(
 	double des_lat, 
 	double des_lon,
 	const string& vehicle_type,
-	uint32_t seat_count = 2,		// define only for Pool rides. passed as default [Optional] parameter
 	const string& pay_mode,
 	double fare_est,
-	uint32_t finish_timestamp_est) {
+	uint32_t finish_timestamp_est,
+	uint32_t seat_count = 2		// define only for Pool rides. passed as default [Optional] parameter, which should be defined always as last param
+	) {
 	// require authority of commuter_ac
 	// also checks for whether it is an eosio account or not. 
 	require_auth(commuter_ac);	
@@ -375,8 +376,8 @@ void toetaxiride::recvfare( const name& driver_ac ) {
 
 	// TODO: convert the market price of fare (calculated in fiat) into 'TOE'.
 	// Assume 1 TOE = 5 USD = 375 INR
-	auto fareamount_in_toe = (ride_it->fare_act)/375.00;		// convert 'INR' to 'TOE'
-	asset fare_toe(fareamount_in_toe, "TOE");		// create a asset variable for converted fare (in TOE)
+	int64_t fareamount_in_toe = (ride_it->fare_act)/375.00;		// convert 'INR' to 'TOE'
+	auto fare_toe = asset(fareamount_in_toe, symbol("TOE", 4));		// create a asset variable for converted fare (in TOE)
 
 	// send the fare to the driver using inline action
 	action(
@@ -392,8 +393,7 @@ void toetaxiride::recvfare( const name& driver_ac ) {
 	});
 
 	// erase the `fareamount` record only if the balance amount is zero
-	asset zero_toe(0.0000, "TOE");			// create a variable with zero TOE
-	if( fare_it->balance == zero_toe ) {
+	if( (fare_it->balance).amount == 0 ) {		// @TODO: Test for whether asset balance is 0.0000 or 0
 		faretaxi_table.erase(fare_it);
 
 		// On successful execution, an alert is sent
