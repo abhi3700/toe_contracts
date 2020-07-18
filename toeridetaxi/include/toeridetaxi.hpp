@@ -21,6 +21,7 @@ using eosio::action;
 using eosio::same_payer;
 using eosio::symbol;
 using eosio::require_recipient;
+using eosio::action_wrapper;
 
 using std::string;
 
@@ -37,6 +38,17 @@ public:
 				contract(receiver, code, ds), 
 				ride_token_symbol("TOE", 4) {}
 	
+	ACTION modifypay( const name& commuter_ac,
+						const string& pay_mode,
+						const string& pay_status) {
+		// restrict this action's use only to 'ride wallet' contract
+		// require_auth("toe11rwallet"_n);
+
+
+
+
+	}
+
 	/**
 	 * @brief - change source location
 	 * @details 
@@ -176,12 +188,12 @@ public:
 	 * @param quantity - the fare_est amount
 	 * @param memo - remarks
 	 */
-	[[eosio::on_notify("toe1111token::transfer")]]
+/*	[[eosio::on_notify("toe1111token::transfer")]]
 	void sendfare( const name& commuter_ac, 
 					const name& contract_ac, 
 					const asset& quantity, 
 					const string& memo );
-
+*/
 	/**
 	 * @brief - a driver receives fare
 	 * @details - a driver receives fare after ride is completed, only when the pay_mode chosen as `crypto`
@@ -217,6 +229,11 @@ public:
 	 * @param commuter_ac erasing by searching commuter_ac
 	 */
 	ACTION eraseride( const name& commuter_ac);
+
+
+	// Action wrappers
+	using sendalert_action = action_wrapper<"sendalert"_n, &toeridetaxi::sendalert>;
+	using sendreceipt_action = action_wrapper<"sendreceipt"_n, &toeridetaxi::sendreceipt>;
 
 
 private:
@@ -258,20 +275,24 @@ private:
 
 
 // -----------------------------------------------------------------------------------------------------------------------
-	// `faretaxi` table is for keeping the record of fare_est amount transferred by a commuter before the ride starts.
-	TABLE faretaxi
+	struct ridewallet
 	{
 		asset balance;
 
 		auto primary_key() const { return balance.amount; }
 	};
 
-	using faretaxi_index = multi_index<"faretaxi"_n, faretaxi>;
+	using ridewallet_index = multi_index<"ridewallet"_n, ridewallet>;
 
 // ========Functions========================================================================================================
-	// Adding inline action for `sendmsg` action in the same contract	
+	// Adding inline action for `sendalert` action in the same contract	
 	void send_alert(const name& user, const string& message);
 
+	// Adding inline action for `sendreceipt` action in the same contract	
+	void send_receipt(const name& user, const string& message);
+
+	// Adding external action for `addbalance` action in the "toeridewallet" contract
+	// void add_balance()
 
 	// get the current timestamp
 	inline uint32_t now() const {
