@@ -1,12 +1,12 @@
-#include "../include/toetaxiride.hpp"
+#include "../include/toeridetaxi.hpp"
 
-void toetaxiride::create(
+void toeridetaxi::create(
 	const name& commuter_ac,
 	double src_lat, 
 	double src_lon, 
 	double des_lat, 
 	double des_lon,
-	const string& vehicle_type,
+	const name& vehicle_type,
 	const string& pay_mode,
 	double fare_est,
 	uint32_t finish_timestamp_est,
@@ -29,13 +29,13 @@ void toetaxiride::create(
 			- [ ] TOEExpressPool
 	*/
 	check(
-		(vehicle_type == "TOEX")
-		|| (vehicle_type == "TOEXL")
-		// || (vehicle_type == "TOEPool")
-		|| (vehicle_type == "TOESUV")
-		|| (vehicle_type == "TOEBlack")
-		|| (vehicle_type == "TOESelect")
-		// || (vehicle_type == "TOEExpressPool")
+		(vehicle_type == "toex"_n)
+		|| (vehicle_type == "toexl"_n)
+		// || (vehicle_type == "toepool"_n)
+		|| (vehicle_type == "toesuv"_n)
+		|| (vehicle_type == "toeblack"_n)
+		|| (vehicle_type == "toeselect"_n)
+		// || (vehicle_type == "toeexprpool"_n)
 		, "Sorry! The vehicle type is not available with us.");
 
 
@@ -59,7 +59,7 @@ void toetaxiride::create(
 	}
 
 	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	ridetaxi_index ridetaxi_table(get_self(), get_self_receiver().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
 	// ensure the ride is created for first time i.e. the ride by commuter doesn't exist.
@@ -85,14 +85,14 @@ void toetaxiride::create(
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toetaxiride::assign( const name& driver_ac, 
+void toeridetaxi::assign( const name& driver_ac, 
 				const name& commuter_ac ) {
 	require_auth(driver_ac);
 
 	// @TODO: check whether the `driver_ac` is a verified driver by reading the `auth` table
 
 	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	ridetaxi_index ridetaxi_table(get_self(), get_self_receiver().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
 	// Ensure that there is a ride by `commuter_ac`
@@ -112,11 +112,11 @@ void toetaxiride::assign( const name& driver_ac,
 
 
 // --------------------------------------------------------------------------------------------------------------------
-void toetaxiride::cancelbycom( const name& commuter_ac ) {
+void toeridetaxi::cancelbycom( const name& commuter_ac ) {
 	require_auth(commuter_ac);
 
 	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	ridetaxi_index ridetaxi_table(get_self(), get_self_receiver().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
 	check( ride_it != ridetaxi_table.end(), "Ride by the commuter doesn't exist.");	
@@ -128,11 +128,11 @@ void toetaxiride::cancelbycom( const name& commuter_ac ) {
 
 
 // --------------------------------------------------------------------------------------------------------------------
-void toetaxiride::cancelbydri( const name& driver_ac ) {
+void toeridetaxi::cancelbydri( const name& driver_ac ) {
 	require_auth(driver_ac);
 
 	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	ridetaxi_index ridetaxi_table(get_self(), get_self_receiver().value);
 	auto ride_it = ridetaxi_table.find(driver_ac.value);
 
 	check( ride_it != ridetaxi_table.end(), "Ride by the driver doesn't exist.");	
@@ -143,7 +143,7 @@ void toetaxiride::cancelbydri( const name& driver_ac ) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toetaxiride::changedes( const name& commuter_ac,
+void toeridetaxi::changedes( const name& commuter_ac,
 					double des_lat, 
 					double des_lon,
 					double fare_est,
@@ -172,7 +172,7 @@ void toetaxiride::changedes( const name& commuter_ac,
 	}
 
 	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	ridetaxi_index ridetaxi_table(get_self(), get_self_receiver().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
 	// ensure that the ride by the commuter exists
@@ -190,11 +190,11 @@ void toetaxiride::changedes( const name& commuter_ac,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toetaxiride::reachsrc( const name& driver_ac ) {
+void toeridetaxi::reachsrc( const name& driver_ac ) {
 	require_auth(driver_ac);
 
 	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	ridetaxi_index ridetaxi_table(get_self(), get_self_receiver().value);
 	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
 	auto ride_it = driver_idx.find(driver_ac.value);
 
@@ -215,11 +215,11 @@ void toetaxiride::reachsrc( const name& driver_ac ) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toetaxiride::start( const name& driver_ac/*, const name& commuter_ac*/ ) {
+void toeridetaxi::start( const name& driver_ac/*, const name& commuter_ac*/ ) {
 	require_auth( driver_ac ); 
 
 	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	ridetaxi_index ridetaxi_table(get_self(), get_self_receiver().value);
 	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
 	auto ride_it = driver_idx.find(driver_ac.value);
 
@@ -238,11 +238,11 @@ void toetaxiride::start( const name& driver_ac/*, const name& commuter_ac*/ ) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toetaxiride::finish( const name& driver_ac ) {
+void toeridetaxi::finish( const name& driver_ac ) {
 	require_auth(driver_ac);
 
 	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	ridetaxi_index ridetaxi_table(get_self(), get_self_receiver().value);
 	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
 	auto ride_it = driver_idx.find(driver_ac.value);
 
@@ -261,12 +261,12 @@ void toetaxiride::finish( const name& driver_ac ) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toetaxiride::addfareact( const name& driver_ac,
+void toeridetaxi::addfareact( const name& driver_ac,
 					double fare_act) {
 	require_auth(driver_ac);
 
 	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	ridetaxi_index ridetaxi_table(get_self(), get_self_receiver().value);
 	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
 	auto ride_it = driver_idx.find(driver_ac.value);
 
@@ -284,7 +284,7 @@ void toetaxiride::addfareact( const name& driver_ac,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toetaxiride::sendfare(
+void toeridetaxi::sendfare(
 	const name& commuter_ac, 
 	const name& contract_ac, 
 	const asset& quantity, 
@@ -322,7 +322,7 @@ void toetaxiride::sendfare(
 	}
 
 	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	ridetaxi_index ridetaxi_table(get_self(), get_self_receiver().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
 	// update(add/modify) the & `pay_status`
@@ -348,11 +348,11 @@ void toetaxiride::sendfare(
 }
 
 
-void toetaxiride::recvfare( const name& driver_ac ) {
+void toeridetaxi::recvfare( const name& driver_ac ) {
 	require_auth( driver_ac );
 
 	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	ridetaxi_index ridetaxi_table(get_self(), get_self_receiver().value);
 	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
 	auto ride_it = driver_idx.find(driver_ac.value);
 
@@ -408,7 +408,7 @@ void toetaxiride::recvfare( const name& driver_ac ) {
 
 
 // --------------------------------------------------------------------------------------------------------------------
-void toetaxiride::sendalert(
+void toeridetaxi::sendalert(
 	const name& user,
 	const string& message
 	) {
@@ -417,7 +417,7 @@ void toetaxiride::sendalert(
 	require_recipient(user);
 }
 
-void toetaxiride::send_alert(const name& user, const string& message) {
+void toeridetaxi::send_alert(const name& user, const string& message) {
 	action(
 		permission_level(get_self(), "active"_n),
 		get_self(),
@@ -426,12 +426,31 @@ void toetaxiride::send_alert(const name& user, const string& message) {
 		).send();
 }
 
+void toeridetaxi::sendreceipt(
+	const name& user,
+	const string& message
+	) {
+	require_auth(get_self());
+
+	require_recipient(user);
+}
+
+void toeridetaxi::send_receipt(const name& user, const string& message) {
+	action(
+		permission_level(get_self(), "active"_n),
+		get_self(),
+		"sendreceipt"_n,
+		std::make_tuple(user, message)
+		).send();
+}
+
+
 // --------------------------------------------------------------------------------------------------------------------
-void toetaxiride::eraseride( const name& commuter_ac ) {
+void toeridetaxi::eraseride( const name& commuter_ac ) {
 	require_auth( get_self() );
 
 	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), "taxi"_n.value);
+	ridetaxi_index ridetaxi_table(get_self(), get_self_receiver().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
 	// ensure there is a ride by commuter_ac

@@ -1,12 +1,34 @@
 # Ride contract
 ## Brief
-* It is to store the `rating` into the `toe.auth` contract's table.
+* It is a contract which is for 
+	- [x] request ride by commuter
+	- [ ] request pool ride by commuter(s)
+	- [x] assign ride to driver
+	- [x] cancel ride by commuter/driver
+	- [x] alerting commuter about vehicle has reached the pick-up location.
+	- [x] start the ride
+	- [x] finish the ride
+	- [x] sending alert
+	- [x] sending receipt
 
-## About 
-* account - `toe11111auth`
+## About
+* contract name - `toeridetaxi`
+* contract's account name - `toe1111rtaxi`
 * actions
-	- `addrating`
-* table - `auth`
+	- `create`
+	- `assign`
+	- `cancelbycom`
+	- `cancelbydri`
+	- `changedes`
+	- `reachsrc`
+	- `start`
+	- `finish`
+	- `addfareact`
+	- `sendfare`
+	- `recvfare`
+* table
+	- `ridestaxi`
+	- `faretaxi`
 
 ## Table
 * the table is stored in the contract acount.

@@ -24,7 +24,7 @@ using eosio::require_recipient;
 
 using std::string;
 
-CONTRACT toetaxiride : public contract
+CONTRACT toeridetaxi : public contract
 {
 
 private:
@@ -33,7 +33,7 @@ private:
 public:
 	using contract::contract;
 
-	toetaxiride(name receiver, name code, datastream<const char*> ds) : 
+	toeridetaxi(name receiver, name code, datastream<const char*> ds) : 
 				contract(receiver, code, ds), 
 				ride_token_symbol("TOE", 4) {}
 	
@@ -49,7 +49,7 @@ public:
 	 * @param src_lon - source longitude
 	 * @param des_lat - destination latitude
 	 * @param des_lon - destination longitude
-	 * @param vehicle_type - it has to be among the defined list
+	 * @param vehicle_type - it has to be among the defined list of taxi names - toex, toexl, toepool, toesuv, toeblack, toeselect, toeexprpool
 	 * @param seat_count - to be defined for Pool ride [Optional]. Otherwise, it's value is 2 for other rides
 	 * @param pay_mode - either crypto/fiatdigi/fiatcash
 	 * @param fare_est - estimated fare to be calculated from calling API before calling the action
@@ -60,7 +60,7 @@ public:
 					double src_lon, 
 					double des_lat, 
 					double des_lon,
-					const string& vehicle_type,
+					const name& vehicle_type,
 					const string& pay_mode,
 					double fare_est,
 					uint32_t finish_timestamp_est,
@@ -192,12 +192,22 @@ public:
 
 	/**
 	 * @brief - send alert
-	 * @details - send alert after any action is successfully done
+	 * @details - send alert after the action is successfully done. e.g. driver alerting commuter that the vehicle has arrived
 	 * 
 	 * @param user - driver/commuter
 	 * @param message - note depending on the action
 	 */
 	ACTION sendalert( const name& user,
+						const string& message);
+
+	/**
+	 * @brief - send receipt or a copy
+	 * @details - send receipt after any action is successfully done
+	 * 
+	 * @param user - driver/commuter
+	 * @param message - note depending on the action
+	 */
+	ACTION sendreceipt( const name& user,
 						const string& message);
 
 	/**
@@ -220,7 +230,7 @@ private:
 		double src_lon; 
 		double des_lat; 
 		double des_lon;
-		string vehicle_type;		// list of taxis
+		name vehicle_type;		// list of taxis - toex, toexl, toepool, toesuv, toeblack, toeselect, toeexprpool
 		uint32_t seat_count;		// set for pool, else default is 2
 		string pay_mode;			// crypto or fiatdigi or fiatcash
 		string pay_status;			// paidbycom or paidbydri
@@ -237,11 +247,13 @@ private:
 		auto primary_key() const { return commuter_ac.value; }
 		uint64_t get_secondary_1() const { return driver_ac.value; }
 		uint64_t get_secondary_2() const { return ride_status.value; }
+		uint64_t get_secondary_3() const { return vehicle_type.value; }
 	};
 
-	using ridetaxi_index = multi_index<"rides"_n, ridetaxi, 
+	using ridetaxi_index = multi_index<"ridestaxi"_n, ridetaxi, 
 									indexed_by<"bydriver"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_1>>,
-									indexed_by<"byridestatus"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_2>>
+									indexed_by<"byridestatus"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_2>>,
+									indexed_by<"byvehicltype"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_3>>
 									>;
 
 
