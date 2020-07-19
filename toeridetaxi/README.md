@@ -14,7 +14,7 @@
 ## About
 * contract name - `toeridetaxi`
 * contract's account name - `toe1111rtaxi`
-* actions
+* action
 	- `create`
 	- `assign`
 	- `cancelbycom`
@@ -27,8 +27,7 @@
 	- `sendfare`
 	- `recvfare`
 * table
-	- `ridestaxi`
-	- `faretaxi`
+	- `ridetaxi`
 
 ## Table
 * the table is stored in the contract acount.
@@ -39,8 +38,9 @@
 		+ `taxi`
 		+ `bike`
 
-Ride table
-----------------
+
+
+
 
 Ride actions
 --------------------
@@ -50,3 +50,41 @@ Ride actions
 - [ ] create (to create the table)
 - book or bookify
 - [ ] modify
+
+## Compile
+```console
+cabeos_contracts/toeridetaxi
+$ eosio-cpp src/toeridetaxi.cpp -o toeridetaxi.wasm
+Warning, empty ricardian clause file
+Warning, empty ricardian clause file
+Warning, action <addpay> does not have a ricardian contract
+Warning, action <create> does not have a ricardian contract
+Warning, action <assign> does not have a ricardian contract
+Warning, action <cancelbycom> does not have a ricardian contract
+Warning, action <cancelbydri> does not have a ricardian contract
+Warning, action <changedes> does not have a ricardian contract
+Warning, action <reachsrc> does not have a ricardian contract
+Warning, action <start> does not have a ricardian contract
+Warning, action <finish> does not have a ricardian contract
+Warning, action <addfareact> does not have a ricardian contract
+Warning, action <recvfare> does not have a ricardian contract
+Warning, action <sendalert> does not have a ricardian contract
+Warning, action <sendreceipt> does not have a ricardian contract
+Warning, action <eraseride> does not have a ricardian contract
+Warning, action <addpay> does not have a ricardian contract
+Warning, action <create> does not have a ricardian contract
+Warning, action <assign> does not have a ricardian contract
+Warning, action <cancelbycom> does not have a ricardian contract
+Warning, action <cancelbydri> does not have a ricardian contract
+Warning, action <changedes> does not have a ricardian contract
+Warning, action <reachsrc> does not have a ricardian contract
+Warning, action <start> does not have a ricardian contract
+Warning, action <finish> does not have a ricardian contract
+Warning, action <addfareact> does not have a ricardian contract
+Warning, action <recvfare> does not have a ricardian contract
+Warning, action <sendalert> does not have a ricardian contract
+Warning, action <sendreceipt> does not have a ricardian contract
+Warning, action <eraseride> does not have a ricardian contract
+```
+
+> NOTE: Here, actions is repeating during compilation bcoz it is likely using multiple jobs. So, it prints multiple times.
