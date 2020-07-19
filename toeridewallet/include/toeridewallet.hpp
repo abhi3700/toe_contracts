@@ -1,5 +1,8 @@
 #include <eosio/eosio.hpp>
 #include <eosio/asset.hpp>
+// #include <eosio/print.hpp>
+#include <eosio/system.hpp>
+#include <string>
 
 using eosio::contract;
 using eosio::print;
@@ -16,6 +19,8 @@ using eosio::action;
 using eosio::same_payer;
 using eosio::symbol;
 using eosio::require_recipient;
+
+using std::string;
 
 
 CONTRACT toeridewallet : public contract
@@ -49,12 +54,31 @@ public:
 
 
 	/**
-	 * @brief - withdraw money
-	 * @details - A commuter wants to withdraw money [optional]
+	 * @brief - withdraw some money
+	 * @details - A commuter wants to withdraw the quantity from wallet [optional]
 	 * 
 	 * @param commuter_ac - commuter account
 	 */
-	ACTION withdrawfare( const name& commuter_ac );
+	ACTION withdraw( const name& commuter_ac,
+						const asset& quantity );
+
+	/**
+	 * @brief - withdraw entire money
+	 * @details - A commuter wants to withdraw the entire money from wallet [optional]
+	 * 
+	 * @param commuter_ac - commuter account
+	 */
+	ACTION withdrawfull( const name& commuter_ac );
+
+	/**
+	 * @brief - send receipt or a copy
+	 * @details - send receipt after any action is successfully done
+	 * 
+	 * @param user - driver/commuter
+	 * @param message - note depending on the action
+	 */
+	ACTION sendreceipt( const name& user,
+						const string& message);
 
 private:
 	// `ridewallet` table is for keeping the record of fare_est amount transferred by a commuter before the ride starts.
@@ -66,8 +90,6 @@ private:
 	};
 
 	using ridewallet_index = multi_index<"ridewallet"_n, ridewallet>;
-
-
 
 	// -----------------------------------------------------------------------------------------------------------------------
 	// table defined for reading data
@@ -106,4 +128,12 @@ private:
 									indexed_by<"byvehicltype"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_3>>
 									>;
 
+	// -----------------------------------------------------------------------------------------------------------------------
+	// Adding inline action for `sendreceipt` action in the same contract	
+	void send_receipt(const name& user, const string& message);
+
+	// Adding inline action for `addpay` action in the "toeridewallet" contract
+	void addpay_mode_status(const name& commuter_ac );
 };
+
+
