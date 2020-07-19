@@ -38,23 +38,14 @@ public:
 				contract(receiver, code, ds), 
 				ride_token_symbol("TOE", 4) {}
 	
-	ACTION modifypay( const name& commuter_ac,
-						const string& pay_mode,
-						const string& pay_status) {
-		// restrict this action's use only to 'ride wallet' contract
-		// require_auth("toe11rwallet"_n);
-
-
-
-
-	}
+	ACTION addpay( const name& commuter_ac );
 
 	/**
 	 * @brief - change source location
 	 * @details 
-	 * 		- search by commuter_ac,
-	 * 		- create only once
-	 * 		- for modification use `changedes` action
+	 *      - search by commuter_ac,
+	 *      - create only once
+	 *      - for modification use `changedes` action
 	 * 
 	 * @param commuter_ac - commuter eosio account name
 	 * @param src_lat - source latitude
@@ -76,7 +67,7 @@ public:
 					const string& pay_mode,
 					double fare_est,
 					uint32_t finish_timestamp_est,
-					uint32_t seat_count		// define only for Pool rides. passed as default [Optional] parameter
+					uint32_t seat_count     // define only for Pool rides. passed as default [Optional] parameter
 				);
 
 
@@ -109,24 +100,24 @@ public:
 	/**
 	 * @brief - change source location
 	 * @details 
-	 * 		- search by commuter_ac,
-	 * 		- change source's latitude & longitude
+	 *      - search by commuter_ac,
+	 *      - change source's latitude & longitude
 	 * 
 	 * @param commuter_ac
 	 * @param src_lat 
 	 * @param src_lon
 	 */
 	// ACTION changesrc(
-	// 	const name& commuter_ac,
-	// 	double src_lat, 
-	// 	double src_lon 
-	// 	);
+	//  const name& commuter_ac,
+	//  double src_lat, 
+	//  double src_lon 
+	//  );
 
 	/**
 	 * @brief change destination location
 	 * @details 
-	 * 		- search by commuter_ac,
-	 * 		- change destination's latitude & longitude
+	 *      - search by commuter_ac,
+	 *      - change destination's latitude & longitude
 	 * 
 	 * @param commuter_ac - commuter account
 	 * @param des_lat - destination latitude
@@ -150,8 +141,8 @@ public:
 	/**
 	 * @brief start ride
 	 * @details
-	 * 		- search table by `commuter_ac` 
-	 * 		- change ride_status (enroute --> ontrip)
+	 *      - search table by `commuter_ac` 
+	 *      - change ride_status (enroute --> ontrip)
 	 * 
 	 * @param driver_ac - driver account
 	 * @param commuter_ac - commuter account
@@ -162,8 +153,8 @@ public:
 	/**
 	 * @brief - finish ride
 	 * @details
-	 * 		- search table by `driver_ac` 
-	 * 		- change ride_status (ontrip --> completed)
+	 *      - search table by `driver_ac` 
+	 *      - change ride_status (ontrip --> completed)
 	 * 
 	 * @param driver_ac - driver account
 	 */
@@ -181,14 +172,14 @@ public:
 	/**
 	 * @brief - send fare to the contract
 	 * @details 
-	 * 		- send the `fare_est` to the contract before ride for automatic deduction.
-	 * 		- this table `faretaxi` acts as a wallet for commuter
+	 *      - send the `fare_est` to the contract before ride for automatic deduction.
+	 *      - this table `faretaxi` acts as a wallet for commuter
 	 * @param commuter_ac - commuter account
 	 * @param contract_ac - contract account
 	 * @param quantity - the fare_est amount
 	 * @param memo - remarks
 	 */
-/*	[[eosio::on_notify("toe1111token::transfer")]]
+/*  [[eosio::on_notify("toe1111token::transfer")]]
 	void sendfare( const name& commuter_ac, 
 					const name& contract_ac, 
 					const asset& quantity, 
@@ -234,30 +225,30 @@ public:
 	// Action wrappers
 	using sendalert_action = action_wrapper<"sendalert"_n, &toeridetaxi::sendalert>;
 	using sendreceipt_action = action_wrapper<"sendreceipt"_n, &toeridetaxi::sendreceipt>;
-
+	using addpay_action = action_wrapper<"addpay"_n, &toeridetaxi::addpay>;
 
 private:
 // ========TABLES========================================================================================================
 	TABLE ridetaxi
 	{
 		name commuter_ac;
-		name ride_status;			// enroute/waiting/ontrip/complete
+		name ride_status;           // enroute/waiting/ontrip/complete
 		name driver_ac;
 		double src_lat; 
 		double src_lon; 
 		double des_lat; 
 		double des_lon;
-		name vehicle_type;		// list of taxis - toex, toexl, toepool, toesuv, toeblack, toeselect, toeexprpool
-		uint32_t seat_count;		// set for pool, else default is 2
-		string pay_mode;			// crypto or fiatdigi or fiatcash
-		string pay_status;			// paidbycom or paidbydri
-		uint32_t assign_timestamp;	// at which ride is assigned
-		uint32_t reachsrc_timestamp;	// at which driver reached source location to pick-up
-		uint32_t start_timestamp;		// at which the ride is started
-		uint32_t finish_timestamp_act;		// at which the ride is finished
-		uint32_t finish_timestamp_est;		// at which the ride is estimated to finish
-		double fare_est;			// estimated fare
-		double fare_act;			// actual fare
+		name vehicle_type;      // list of taxis - toex, toexl, toepool, toesuv, toeblack, toeselect, toeexprpool
+		uint32_t seat_count;        // set for pool, else default is 2
+		string pay_mode;            // crypto or fiatdigi or fiatcash
+		string pay_status;          // paidbycom or paidbydri
+		uint32_t assign_timestamp;  // at which ride is assigned
+		uint32_t reachsrc_timestamp;    // at which driver reached source location to pick-up
+		uint32_t start_timestamp;       // at which the ride is started
+		uint32_t finish_timestamp_act;      // at which the ride is finished
+		uint32_t finish_timestamp_est;      // at which the ride is estimated to finish
+		double fare_est;            // estimated fare
+		double fare_act;            // actual fare
 
 
 
@@ -285,14 +276,11 @@ private:
 	using ridewallet_index = multi_index<"ridewallet"_n, ridewallet>;
 
 // ========Functions========================================================================================================
-	// Adding inline action for `sendalert` action in the same contract	
+	// Adding inline action for `sendalert` action in the same contract 
 	void send_alert(const name& user, const string& message);
 
-	// Adding inline action for `sendreceipt` action in the same contract	
+	// Adding inline action for `sendreceipt` action in the same contract   
 	void send_receipt(const name& user, const string& message);
-
-	// Adding external action for `addbalance` action in the "toeridewallet" contract
-	// void add_balance()
 
 	// get the current timestamp
 	inline uint32_t now() const {

@@ -1,0 +1,376 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.1",
+    "types": [],
+    "structs": [
+        {
+            "name": "addfareact",
+            "base": "",
+            "fields": [
+                {
+                    "name": "driver_ac",
+                    "type": "name"
+                },
+                {
+                    "name": "fare_act",
+                    "type": "float64"
+                }
+            ]
+        },
+        {
+            "name": "addpay",
+            "base": "",
+            "fields": [
+                {
+                    "name": "commuter_ac",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "assign",
+            "base": "",
+            "fields": [
+                {
+                    "name": "driver_ac",
+                    "type": "name"
+                },
+                {
+                    "name": "commuter_ac",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "cancelbycom",
+            "base": "",
+            "fields": [
+                {
+                    "name": "commuter_ac",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "cancelbydri",
+            "base": "",
+            "fields": [
+                {
+                    "name": "driver_ac",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "changedes",
+            "base": "",
+            "fields": [
+                {
+                    "name": "commuter_ac",
+                    "type": "name"
+                },
+                {
+                    "name": "des_lat",
+                    "type": "float64"
+                },
+                {
+                    "name": "des_lon",
+                    "type": "float64"
+                },
+                {
+                    "name": "fare_est",
+                    "type": "float64"
+                },
+                {
+                    "name": "pay_mode",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "create",
+            "base": "",
+            "fields": [
+                {
+                    "name": "commuter_ac",
+                    "type": "name"
+                },
+                {
+                    "name": "src_lat",
+                    "type": "float64"
+                },
+                {
+                    "name": "src_lon",
+                    "type": "float64"
+                },
+                {
+                    "name": "des_lat",
+                    "type": "float64"
+                },
+                {
+                    "name": "des_lon",
+                    "type": "float64"
+                },
+                {
+                    "name": "vehicle_type",
+                    "type": "name"
+                },
+                {
+                    "name": "pay_mode",
+                    "type": "string"
+                },
+                {
+                    "name": "fare_est",
+                    "type": "float64"
+                },
+                {
+                    "name": "finish_timestamp_est",
+                    "type": "uint32"
+                },
+                {
+                    "name": "seat_count",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "eraseride",
+            "base": "",
+            "fields": [
+                {
+                    "name": "commuter_ac",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "finish",
+            "base": "",
+            "fields": [
+                {
+                    "name": "driver_ac",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "reachsrc",
+            "base": "",
+            "fields": [
+                {
+                    "name": "driver_ac",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "recvfare",
+            "base": "",
+            "fields": [
+                {
+                    "name": "driver_ac",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "ridetaxi",
+            "base": "",
+            "fields": [
+                {
+                    "name": "commuter_ac",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_status",
+                    "type": "name"
+                },
+                {
+                    "name": "driver_ac",
+                    "type": "name"
+                },
+                {
+                    "name": "src_lat",
+                    "type": "float64"
+                },
+                {
+                    "name": "src_lon",
+                    "type": "float64"
+                },
+                {
+                    "name": "des_lat",
+                    "type": "float64"
+                },
+                {
+                    "name": "des_lon",
+                    "type": "float64"
+                },
+                {
+                    "name": "vehicle_type",
+                    "type": "name"
+                },
+                {
+                    "name": "seat_count",
+                    "type": "uint32"
+                },
+                {
+                    "name": "pay_mode",
+                    "type": "string"
+                },
+                {
+                    "name": "pay_status",
+                    "type": "string"
+                },
+                {
+                    "name": "assign_timestamp",
+                    "type": "uint32"
+                },
+                {
+                    "name": "reachsrc_timestamp",
+                    "type": "uint32"
+                },
+                {
+                    "name": "start_timestamp",
+                    "type": "uint32"
+                },
+                {
+                    "name": "finish_timestamp_act",
+                    "type": "uint32"
+                },
+                {
+                    "name": "finish_timestamp_est",
+                    "type": "uint32"
+                },
+                {
+                    "name": "fare_est",
+                    "type": "float64"
+                },
+                {
+                    "name": "fare_act",
+                    "type": "float64"
+                }
+            ]
+        },
+        {
+            "name": "sendalert",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "message",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "sendreceipt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "message",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "start",
+            "base": "",
+            "fields": [
+                {
+                    "name": "driver_ac",
+                    "type": "name"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "addfareact",
+            "type": "addfareact",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "addpay",
+            "type": "addpay",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "assign",
+            "type": "assign",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "cancelbycom",
+            "type": "cancelbycom",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "cancelbydri",
+            "type": "cancelbydri",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "changedes",
+            "type": "changedes",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "create",
+            "type": "create",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "eraseride",
+            "type": "eraseride",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "finish",
+            "type": "finish",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "reachsrc",
+            "type": "reachsrc",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "recvfare",
+            "type": "recvfare",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "sendalert",
+            "type": "sendalert",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "sendreceipt",
+            "type": "sendreceipt",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "start",
+            "type": "start",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "ridestaxi",
+            "type": "ridetaxi",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": []
+}
