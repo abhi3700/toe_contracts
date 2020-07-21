@@ -13,7 +13,7 @@
                 },
                 {
                     "name": "fare_act",
-                    "type": "float64"
+                    "type": "float32"
                 }
             ]
         },
@@ -79,7 +79,11 @@
                 },
                 {
                     "name": "fare_est",
-                    "type": "float64"
+                    "type": "float32"
+                },
+                {
+                    "name": "fare_crypto",
+                    "type": "asset"
                 },
                 {
                     "name": "pay_mode",
@@ -121,7 +125,11 @@
                 },
                 {
                     "name": "fare_est",
-                    "type": "float64"
+                    "type": "float32"
+                },
+                {
+                    "name": "fare_crypto",
+                    "type": "asset"
                 },
                 {
                     "name": "finish_timestamp_est",
@@ -243,11 +251,15 @@
                 },
                 {
                     "name": "fare_est",
-                    "type": "float64"
+                    "type": "float32"
                 },
                 {
                     "name": "fare_act",
-                    "type": "float64"
+                    "type": "float32"
+                },
+                {
+                    "name": "fare_crypto",
+                    "type": "asset"
                 }
             ]
         },

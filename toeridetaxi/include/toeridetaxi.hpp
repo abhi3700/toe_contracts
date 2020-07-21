@@ -65,7 +65,8 @@ public:
 					double des_lon,
 					const name& vehicle_type,
 					const string& pay_mode,
-					double fare_est,
+					float fare_est,
+					asset fare_crypto,
 					uint32_t finish_timestamp_est,
 					uint32_t seat_count     // define only for Pool rides. passed as default [Optional] parameter
 				);
@@ -127,7 +128,8 @@ public:
 	ACTION changedes( const name& commuter_ac,
 						double des_lat, 
 						double des_lon,
-						double fare_est,
+						float fare_est,
+						asset fare_crypto,
 						const string& pay_mode );
 
 	/**
@@ -167,7 +169,7 @@ public:
 	 * @param driver_ac - driver account
 	 */
 	ACTION addfareact(const name& driver_ac, 
-						double fare_act);
+						float fare_act);
 
 	/**
 	 * @brief - send fare to the contract
@@ -241,15 +243,15 @@ private:
 		name vehicle_type;      // list of taxis - toex, toexl, toepool, toesuv, toeblack, toeselect, toeexprpool
 		uint32_t seat_count;        // set for pool, else default is 2
 		string pay_mode;            // crypto or fiatdigi or fiatcash
-		string pay_status;          // paidbycom or paidbydri
+		string pay_status;          // paidbycom or paidtodri
 		uint32_t assign_timestamp;  // at which ride is assigned
 		uint32_t reachsrc_timestamp;    // at which driver reached source location to pick-up
 		uint32_t start_timestamp;       // at which the ride is started
 		uint32_t finish_timestamp_act;      // at which the ride is finished
 		uint32_t finish_timestamp_est;      // at which the ride is estimated to finish
-		double fare_est;            // estimated fare
-		double fare_act;            // actual fare
-
+		float fare_est;			// estimated fare (in national curr)
+		float fare_act;			// actual fare (in national curr)
+		asset fare_crypto;			// fare (in national curr) converted to fare (in crypto) based on the market rate.
 
 
 		auto primary_key() const { return commuter_ac.value; }
