@@ -91,42 +91,6 @@ private:
 
 	using ridewallet_index = multi_index<"ridewallet"_n, ridewallet>;
 
-	// -----------------------------------------------------------------------------------------------------------------------
-	// table defined for reading data
-	struct ridetaxi
-	{
-		name commuter_ac;
-		name ride_status;			// enroute/waiting/ontrip/complete
-		name driver_ac;
-		double src_lat; 
-		double src_lon; 
-		double des_lat; 
-		double des_lon;
-		name vehicle_type;		// list of taxis - toex, toexl, toepool, toesuv, toeblack, toeselect, toeexprpool
-		uint32_t seat_count;		// set for pool, else default is 2
-		string pay_mode;			// crypto or fiatdigi or fiatcash
-		string pay_status;			// paidbycom or paidbydri
-		uint32_t assign_timestamp;	// at which ride is assigned
-		uint32_t reachsrc_timestamp;	// at which driver reached source location to pick-up
-		uint32_t start_timestamp;		// at which the ride is started
-		uint32_t finish_timestamp_act;		// at which the ride is finished
-		uint32_t finish_timestamp_est;		// at which the ride is estimated to finish
-		double fare_est;			// estimated fare
-		double fare_act;			// actual fare
-
-
-
-		auto primary_key() const { return commuter_ac.value; }
-		uint64_t get_secondary_1() const { return driver_ac.value; }
-		uint64_t get_secondary_2() const { return ride_status.value; }
-		uint64_t get_secondary_3() const { return vehicle_type.value; }
-	};
-
-	using ridetaxi_index = multi_index<"ridestaxi"_n, ridetaxi, 
-									indexed_by<"bydriver"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_1>>,
-									indexed_by<"byridestatus"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_2>>,
-									indexed_by<"byvehicltype"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_3>>
-									>;
 
 	// -----------------------------------------------------------------------------------------------------------------------
 	// Adding inline action for `sendreceipt` action in the same contract	
