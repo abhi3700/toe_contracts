@@ -94,6 +94,7 @@ public:
 	}
 
 private:
+	// ------------------------------------------------------------------
 	TABLE account
 	{
 		asset balance;
@@ -101,6 +102,10 @@ private:
 		uint64_t primary_key() const { return balance.symbol.code().raw(); }
 	};
 
+	using accounts = eosio::multi_index< "accounts"_n, account >;
+
+
+	// ------------------------------------------------------------------
 	TABLE currency_stats
 	{
 		asset supply;
@@ -110,9 +115,9 @@ private:
 		uint64_t primary_key() const { return supply.symbol.code().raw(); }
 	};
 
-	using accounts = eosio::multi_index< "accounts"_n, account >;
 	using stats = eosio::multi_index< "stats"_n, currency_stats>;
 
+	// ------------------------------------------------------------------
 	void sub_balance(const name& owner, const asset& value);
 	void add_balance(const name& owner, const asset& value, const name& ram_payer);
 
