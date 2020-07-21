@@ -4,7 +4,7 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridewallet::addpay_mode_status( const name& commuter_ac ) {
-	toeridetaxi::addpay_action apay("toe1111rtaxi"_n, {get_self(), "active"_n} );
+	toeridetaxi::addpaymost_action apay("toe1111rtaxi"_n, {get_self(), "active"_n} );
 	apay.send(commuter_ac);
 }
 

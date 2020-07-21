@@ -96,7 +96,7 @@ private:
 	// Adding inline action for `sendreceipt` action in the same contract	
 	void send_receipt(const name& user, const string& message);
 
-	// Adding inline action for `addpay` action in the "toeridewallet" contract
+	// Adding inline action for `addpaymost` action in the "toeridewallet" contract
 	void addpay_mode_status(const name& commuter_ac );
 };
 
