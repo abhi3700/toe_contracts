@@ -244,3 +244,34 @@ rides --> no. of available rides (commission-free/surge-free) to the driver/comm
 	- __Constraints:__
 		+ Here, the driver's account resources are intact, as it is communicating constantly with external-db, but not contract table. Also, the external-db has to be communicated with, inside the contract itself.
 		+ If the commuter account's enough resources (CPU, NET) is getting used, then for assigning the ride, we will use another action to do. In this case, the contract's resources (CPU, NET) will be used. 
+
+
+## NOTES (for Technical Whitepaper, Ricardian contracts)
+* This notes is for writing the 
+	- Technical Whitepaper
+	- Ricardian contracts
+
+### Payment mode
+* The payment modes could be:
+	- `crypto`: i.e. DApp's own cryptocurrency.
+	- `fiatdigi`: i.e. National currency in digital mode.
+	- `fiatcash`: i.e. National currency in cash mode.
+
+* In the contract's table, all the fares (`fare_est`, `fare_act`) will be shown in national currency.
+* Outside the contract, market conversion from `fare_est`/`fare_act` to `fare_crypto_est`/`fare_crypto_act` respectively, is done using CryptoMarket API.
+* Inside the contracts' actions, whenever a commuter opts for `crypto` payment mode, then the equivalent amount of DApp's currency (i.e. `TOE`) at that timestamp as per the market rate (calculated outside before committing to the blockchain), is transferred to the Ride wallet (i.e. `ridewallet`) for auto-pay after the ride is completed successfully.
+* Keeping market volatility in view, the `fare_crypto_act` is to be paid as calculated during setting the `fare_act`. Basically, conversion value calculated before setting into the Blockchain record, is considered.
+* Any form of fare conversion is considered (outside) in 3 actions (in Blockchain Smart contracts) only:
+	- `create`: create a ride | `fare_est` ---> `fare_crypto_est`
+	- `changedes`: change destination location during the ride | `fare_est` ---> `fare_crypto_est`
+	- `addfareact`: adding actual fare considering wait time, ride time in view | `fare_act` ---> `fare_crypto_act`
+
+> NOTE: In order to avoid such obstacles, it is ensured that there is little extra balance maintained in the `ridewallet`, especially if the commuter is a frequent one.
+
+
+### Voting
+Following topics are to be considered for voting among the community members (drivers, commuters):
+
+* The value for __fiat ---> crypto__ conversion in fare, is considered the one, which is calculated before setting into the Blockchain record.
+	- Q. Should the fare conversion be done during the dispersal i.e. `recvfare` action (inside)? 
+		+ For this, we can use `eos-api` codebase & market API inside the action.
