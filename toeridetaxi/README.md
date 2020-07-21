@@ -90,24 +90,4 @@ Warning, action <eraseride> does not have a ricardian contract
 > NOTE: Here, actions is repeating during compilation bcoz it is likely using multiple jobs. So, it prints multiple times.
 
 ## TODO
-- [ ] repetitive code snippet into functions like this:
-```cpp
-	// TODO: convert the market price of fare (calculated in fiat) into 'TOE'.
-	// Assume 1 TOE = 5 USD = 375 INR
-	int64_t fareamount_in_toe = (fare_est)/375.00;     // convert 'INR' to 'TOE'
-	auto fare_toe = asset(fareamount_in_toe, symbol("TOE", 4));     // create a asset variable for converted fare (in TOE)
-
-	ridewallet_index ridewallet_table("toe11rwallet"_n, commuter_ac.value);
-	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
-
-	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
-	if(pay_mode == "crypto") {
-		// ensure that the min. ride wallet's balance has `fare_est` value
-		if ((wallet_it->balance) < fare_toe) {
-			// print("Sorry! Low balance in the ride wallet.");
-			send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
-			return;
-		}
-	}
-
-```
+- [ ] addrating action

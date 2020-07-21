@@ -14,11 +14,15 @@
                 {
                     "name": "fare_act",
                     "type": "float32"
+                },
+                {
+                    "name": "fare_crypto_act",
+                    "type": "asset"
                 }
             ]
         },
         {
-            "name": "addpay",
+            "name": "addpaymost",
             "base": "",
             "fields": [
                 {
@@ -82,7 +86,7 @@
                     "type": "float32"
                 },
                 {
-                    "name": "fare_crypto",
+                    "name": "fare_crypto_est",
                     "type": "asset"
                 },
                 {
@@ -128,7 +132,7 @@
                     "type": "float32"
                 },
                 {
-                    "name": "fare_crypto",
+                    "name": "fare_crypto_est",
                     "type": "asset"
                 },
                 {
@@ -258,7 +262,11 @@
                     "type": "float32"
                 },
                 {
-                    "name": "fare_crypto",
+                    "name": "fare_crypto_est",
+                    "type": "asset"
+                },
+                {
+                    "name": "fare_crypto_act",
                     "type": "asset"
                 }
             ]
@@ -309,8 +317,8 @@
             "ricardian_contract": ""
         },
         {
-            "name": "addpay",
-            "type": "addpay",
+            "name": "addpaymost",
+            "type": "addpaymost",
             "ricardian_contract": ""
         },
         {

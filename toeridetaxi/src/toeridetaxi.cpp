@@ -2,7 +2,7 @@
 #include "../../toeridewallet/include/toeridewallet.hpp"
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::addpay( const name& commuter_ac ) {
+void toeridetaxi::addpaymost( const name& commuter_ac ) {
 	// restrict this action's use only to 'ride wallet' contract
 	require_auth("toe11rwallet"_n);
 
@@ -48,7 +48,7 @@ void toeridetaxi::create(
 	const name& vehicle_type,
 	const string& pay_mode,
 	float fare_est,
-	asset fare_crypto,
+	asset fare_crypto_est,
 	uint32_t finish_timestamp_est,
 	uint32_t seat_count = 2     // define only for Pool rides. passed as default [Optional] parameter, which should be defined always as last param
 	) {
@@ -93,7 +93,8 @@ void toeridetaxi::create(
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
 	if(pay_mode == "crypto") {
 		// ensure that the min. ride wallet's balance has `fare_est` value
-		if ((wallet_it->balance) < fare_crypto) {
+		if (
+			(wallet_it->balance) < fare_crypto_est) {
 			// print("Sorry! Low balance in the ride wallet.");					// only for debugging
 			send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
 			return;
@@ -115,7 +116,7 @@ void toeridetaxi::create(
 			row.seat_count = seat_count;
 			row.pay_mode = pay_mode,
 			row.fare_est = fare_est;
-			row.fare_crypto = fare_crypto;
+			row.fare_crypto_est = fare_crypto_est;
 			row.finish_timestamp_est = finish_timestamp_est;
 		});
 	} else {
@@ -130,7 +131,7 @@ void toeridetaxi::create(
 			row.seat_count = seat_count;
 			row.pay_mode = pay_mode,
 			row.fare_est = fare_est;
-			row.fare_crypto = fare_crypto;
+			row.fare_crypto_est = fare_crypto_est;
 			row.finish_timestamp_est = finish_timestamp_est;
 		});
 	}
@@ -161,8 +162,8 @@ void toeridetaxi::assign( const name& driver_ac,
 	});
 
 	// On successful execution, an alert is sent
-	send_alert(driver_ac, name{driver_ac}.to_string() + " is assigned with a ride.");
-	send_alert(commuter_ac, name{commuter_ac}.to_string() + " is assigned with a driver.");
+	send_alert(driver_ac, driver_ac.to_string() + " is assigned with a ride.");
+	send_alert(commuter_ac, commuter_ac.to_string() + " is assigned with a driver.");
 
 }
 
@@ -178,8 +179,8 @@ void toeridetaxi::cancelbycom( const name& commuter_ac ) {
 	ridetaxi_table.erase(ride_it);
 
 	// On successful execution, an alert is sent
-	send_receipt(commuter_ac, name{commuter_ac}.to_string() + " cancels the ride.");
-	send_alert(ride_it->driver_ac, name{commuter_ac}.to_string() + " cancels the ride.");
+	send_receipt(commuter_ac, commuter_ac.to_string() + " cancels the ride.");
+	send_alert(ride_it->driver_ac, commuter_ac.to_string() + " cancels the ride.");
 }
 
 
@@ -207,7 +208,7 @@ void toeridetaxi::changedes( const name& commuter_ac,
 					double des_lat, 
 					double des_lon,
 					float fare_est,
-					asset fare_crypto,
+					asset fare_crypto_est,
 					const string& pay_mode ) {
 	require_auth(commuter_ac);
 
@@ -231,8 +232,8 @@ void toeridetaxi::changedes( const name& commuter_ac,
 
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
 	if(pay_mode == "crypto") {
-		// ensure that the min. ride wallet's balance has `fare_est` value
-		if ((wallet_it->balance) < fare_crypto) {
+		// ensure that the min. ride wallet's balance has `fare_crypto_est` value
+		if ((wallet_it->balance) < fare_crypto_est) {
 			// print("Sorry! Low balance in the ride wallet.");						// only for debugging
 			send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
 			return;
@@ -243,13 +244,15 @@ void toeridetaxi::changedes( const name& commuter_ac,
 		row.des_lat = des_lat;
 		row.des_lon = des_lon;
 		row.fare_est = fare_est;
-		row.fare_crypto = fare_crypto;
+		row.fare_crypto_est = fare_crypto_est;
 		row.pay_mode = pay_mode;
 	});
 
 	// On successful execution, an alert is sent
-	send_receipt(commuter_ac, name{commuter_ac}.to_string() + " changes the destination location to " + std::to_string(des_lat) + ", " + std::to_string(des_lon));
-	send_alert(ride_it->driver_ac, name{commuter_ac}.to_string() + " changes the destination location to " + std::to_string(des_lat) + ", " + std::to_string(des_lon));
+	send_receipt(commuter_ac, commuter_ac.to_string() + " changes the destination location to " + std::to_string(des_lat) + ", " + std::to_string(des_lon)
+									+ " and the fare is updated to " + std::to_string(fare_est) + " (in INR) & " + fare_crypto_est.to_string() + " (in TOE).");
+	send_alert(ride_it->driver_ac, commuter_ac.to_string() + " changes the destination location to " + std::to_string(des_lat) + ", " + std::to_string(des_lon)
+									+ " and the fare is updated to " + std::to_string(fare_est) + " (in INR) & " + fare_crypto_est.to_string() + " (in TOE).");
 
 }
 
@@ -263,7 +266,7 @@ void toeridetaxi::reachsrc( const name& driver_ac ) {
 	auto ride_it = driver_idx.find(driver_ac.value);
 
 	// ensure that there is a ride by a commuter.
-	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + name{driver_ac}.to_string());
+	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + driver_ac.to_string());
 
 	// modify
 	driver_idx.modify(ride_it, driver_ac, [&](auto& row) {
@@ -290,7 +293,7 @@ void toeridetaxi::start( const name& driver_ac/*, const name& commuter_ac*/ ) {
 	auto ride_it = driver_idx.find(driver_ac.value);
 
 	// ensure that there is a ride by a commuter.
-	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + name{driver_ac}.to_string());
+	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + driver_ac.to_string());
 
 	// modify
 	driver_idx.modify(ride_it, driver_ac, [&](auto& row) {
@@ -300,8 +303,8 @@ void toeridetaxi::start( const name& driver_ac/*, const name& commuter_ac*/ ) {
 	});
 
 	// On successful execution, an alert is sent
-	send_receipt(driver_ac, name{driver_ac}.to_string() + " starts the ride.");
-	send_alert(ride_it->commuter_ac, name{driver_ac}.to_string() + " starts the ride.");
+	send_receipt(driver_ac, driver_ac.to_string() + " starts the ride.");
+	send_alert(ride_it->commuter_ac, driver_ac.to_string() + " starts the ride.");
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -314,7 +317,7 @@ void toeridetaxi::finish( const name& driver_ac ) {
 	auto ride_it = driver_idx.find(driver_ac.value);
 
 	// ensure ride assigned to driver exist 
-	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + name{driver_ac}.to_string());
+	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + driver_ac.to_string());
 
 	// modify
 	driver_idx.modify(ride_it, driver_ac, [&](auto& row) {
@@ -324,12 +327,13 @@ void toeridetaxi::finish( const name& driver_ac ) {
 	});
 
 	// On successful execution, an alert is sent
-	send_alert(driver_ac, name{driver_ac}.to_string() + " finishes the ride.");
+	send_alert(driver_ac, driver_ac.to_string() + " finishes the ride.");
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::addfareact( const name& driver_ac,
-					float fare_act) {
+								float fare_act,
+								asset fare_crypto_act) {
 	require_auth(driver_ac);
 
 	// instantiate the `ride` table
@@ -338,16 +342,21 @@ void toeridetaxi::addfareact( const name& driver_ac,
 	auto ride_it = driver_idx.find(driver_ac.value);
 
 	// ensure that there is a ride by a commuter.
-	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + name{driver_ac}.to_string());
+	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + driver_ac.to_string());
 
 	// modify
 	driver_idx.modify(ride_it, driver_ac, [&] (auto& row) {
 		row.fare_act = fare_act;
+		row.fare_crypto_act = fare_crypto_act;
 	});
 
 	// On successful execution, an alert is sent
-	send_receipt(driver_ac, name{driver_ac}.to_string() + " adds the actual fare");
-	send_alert(ride_it->commuter_ac, "Now " + name{ride_it->commuter_ac}.to_string() + " has to pay " + std::to_string(fare_act) + " (INR).");
+	send_receipt(driver_ac, driver_ac.to_string() + " adds the actual fare in INR & TOE");
+	send_alert(ride_it->commuter_ac, 
+				"Now " + (ride_it->commuter_ac).to_string() + " has to pay " + 
+									std::to_string(fare_act) + " (in INR) & " + 
+									fare_crypto_act.to_string() + " (in TOE)."
+									);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -360,19 +369,22 @@ void toeridetaxi::recvfare( const name& driver_ac ) {
 	auto ride_it = driver_idx.find(driver_ac.value);
 
 	// ensure ride assigned to driver exist 
-	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + name{driver_ac}.to_string());
+	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + driver_ac.to_string());
 
 	// check if the ride by driver is finished
 	check( ride_it->ride_status == "complete"_n, "Sorry! The ride is not completed yet.");
 
-/*  check if there is any balance & it is greater than the 'fare_act'
+	// check if the pay_mode is `crypto`
+	check( ride_it->pay_mode == "crypto", "Sorry! the payment mode opted by commuter is not crypto.");
+
+/*  check if there is any balance & it is greater than the 'fare_crypto_act'
 	corresponding to the ride
 */  // instantiate the `ridewallet` table
 	ridewallet_index ridewallet_table("toe11rwallet"_n, (ride_it->commuter_ac).value);
 	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
 
 	// check if balance < fare_act, then return
-	if((wallet_it->balance).amount < ride_it->fare_act) {
+	if( wallet_it->balance < ride_it->fare_crypto_act ) {
 		// print("Sorry, the commuter doesn't have sufficient balance in the ride wallet.");		// only for debugging
 		send_alert(ride_it->commuter_ac, "Sorry, the commuter doesn't have sufficient balance in the ride wallet.");
 		return;
@@ -383,7 +395,7 @@ void toeridetaxi::recvfare( const name& driver_ac ) {
 		permission_level{get_self(), "active"_n},
 		"toe1111token"_n,
 		"transfer"_n,
-		std::tuple(get_self(), driver_ac, ride_it->fare_crypto, "fare sent to " + name{driver_ac}.to_string())
+		std::tuple(get_self(), driver_ac, ride_it->fare_crypto_act, "fare sent to " + driver_ac.to_string())
 		).send();
 
 	// change the pay_status to `paid`
@@ -396,11 +408,11 @@ void toeridetaxi::recvfare( const name& driver_ac ) {
 		ridewallet_table.erase(wallet_it);
 
 		// On successful execution, an alert is sent
-		send_alert(driver_ac, name{driver_ac}.to_string() + " receives the actual fare");
+		send_alert(driver_ac, driver_ac.to_string() + " receives the actual fare");
 	} else {
-		send_alert(driver_ac, name{driver_ac}.to_string() + " receives the actual fare");       // even if non-zero balance, then also the fare might have been transferred.
+		send_alert(driver_ac, driver_ac.to_string() + " receives the actual fare");       // even if non-zero balance, then also the fare might have been transferred.
 		send_alert(ride_it->commuter_ac, 
-					"Now " + name{ride_it->commuter_ac}.to_string() + " has a balance of " + (wallet_it->balance).to_string());
+					"Now " + (ride_it->commuter_ac).to_string() + " has a balance of " + (wallet_it->balance).to_string());
 	}
 
 

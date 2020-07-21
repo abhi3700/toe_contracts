@@ -38,7 +38,14 @@ public:
 				contract(receiver, code, ds), 
 				ride_token_symbol("TOE", 4) {}
 	
-	ACTION addpay( const name& commuter_ac );
+	/**
+	 * @brief - Add pay mode & status
+	 * @details - Add pay mode ("crypto") & status ("paidbycom") into the `ridetaxi` table
+	 * 
+	 * @param commuter_ac - commuter, transfers money to the contract's token balance & update the amount value in `ridewallet` table & 
+	 * 								updates the transferred status into the `ridetaxi` table
+	 */
+	ACTION addpaymost( const name& commuter_ac );
 
 	/**
 	 * @brief - change source location
@@ -55,7 +62,8 @@ public:
 	 * @param vehicle_type - it has to be among the defined list of taxi names - toex, toexl, toepool, toesuv, toeblack, toeselect, toeexprpool
 	 * @param seat_count - to be defined for Pool ride [Optional]. Otherwise, it's value is 2 for other rides
 	 * @param pay_mode - either crypto/fiatdigi/fiatcash
-	 * @param fare_est - estimated fare to be calculated from calling API before calling the action
+	 * @param fare_est - estimated fare (in fiat curr) to be calculated from calling API before calling the action
+	 * @param fare_crypto_est - estimated fare (in crypto curr) to be calculated from calling API before calling the action
 	 * @param finish_timestamp_est - estimated finish timestamp to be calculated from calling API before calling the action
 	 */
 	ACTION create( const name& commuter_ac,
@@ -66,7 +74,7 @@ public:
 					const name& vehicle_type,
 					const string& pay_mode,
 					float fare_est,
-					asset fare_crypto,
+					asset fare_crypto_est,
 					uint32_t finish_timestamp_est,
 					uint32_t seat_count     // define only for Pool rides. passed as default [Optional] parameter
 				);
@@ -123,13 +131,14 @@ public:
 	 * @param commuter_ac - commuter account
 	 * @param des_lat - destination latitude
 	 * @param des_lon - destination longitude
-	 * @param fare_est - estimated fare
+	 * @param fare_est - estimated fare (in fiat curr)
+	 * @param fare_crypto_est - estimated fare (in crypto curr)
 	 */
 	ACTION changedes( const name& commuter_ac,
 						double des_lat, 
 						double des_lon,
 						float fare_est,
-						asset fare_crypto,
+						asset fare_crypto_est,
 						const string& pay_mode );
 
 	/**
@@ -167,9 +176,12 @@ public:
 	 * @details - Add actual fare after the ride is completed
 	 * 
 	 * @param driver_ac - driver account
+	 * @param fare_act - actual fare (in fiat curr)
+	 * @param fare_crypto_act - actual fare (in crypto curr)
 	 */
 	ACTION addfareact(const name& driver_ac, 
-						float fare_act);
+						float fare_act,
+						asset fare_crypto_act);
 
 	/**
 	 * @brief - send fare to the contract
@@ -227,7 +239,7 @@ public:
 	// Action wrappers
 	using sendalert_action = action_wrapper<"sendalert"_n, &toeridetaxi::sendalert>;
 	using sendreceipt_action = action_wrapper<"sendreceipt"_n, &toeridetaxi::sendreceipt>;
-	using addpay_action = action_wrapper<"addpay"_n, &toeridetaxi::addpay>;
+	using addpaymost_action = action_wrapper<"addpaymost"_n, &toeridetaxi::addpaymost>;
 
 private:
 // ========TABLES========================================================================================================
@@ -251,7 +263,8 @@ private:
 		uint32_t finish_timestamp_est;      // at which the ride is estimated to finish
 		float fare_est;			// estimated fare (in national curr)
 		float fare_act;			// actual fare (in national curr)
-		asset fare_crypto;			// fare (in national curr) converted to fare (in crypto) based on the market rate.
+		asset fare_crypto_est;			// estimated fare (in national curr) converted (outside blockchain interaction) to fare (in crypto) based on the market rate.
+		asset fare_crypto_act;			// actual fare (in national curr) converted (outside blockchain interaction) to fare (in crypto) based on the market rate.
 
 
 		auto primary_key() const { return commuter_ac.value; }
