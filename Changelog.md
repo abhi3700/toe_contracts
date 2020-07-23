@@ -3,6 +3,7 @@ TOE Smart Contracts
 v0.0.5 - `22 Jul 2020 01:38`
 ----
 * NOTES added for technical whitepaper in the root __README.md__ file.
+* `toetoken` contract added & successfully compiled
 
 v0.0.4 - `21 Jul 2020 21:52`
 ----
@@ -12,7 +13,7 @@ v0.0.4 - `21 Jul 2020 21:52`
 
 v0.0.3 - `19 Jul 2020 18:25`
 ----
-* `toeridewallet` created to isolate the ride wallet from `toeridetaxi` contract. This is to ensure that wallet is independently in communication with taxi, bus, metro contracts later.
+* `toeridewallet` contract created to isolate the ride wallet from `toeridetaxi` contract. This is to ensure that wallet is independently in communication with taxi, bus, metro contracts later.
 * `toeridetaxi` contract modified to reading data from other table of `toeridewallet` contract
 
 v0.0.2 - `21 Jul 2020 21:52`
