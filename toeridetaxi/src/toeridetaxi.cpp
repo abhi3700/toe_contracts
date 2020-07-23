@@ -420,16 +420,17 @@ void toeridetaxi::recvfare( const name& driver_ac ) {
 
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::sendalert(
-	const name& user,
-	const string& message
-	) {
+void toeridetaxi::sendalert(const name& user,
+							const string& message) {
 	require_auth(get_self());
 
 	require_recipient(user);
 }
 
-void toeridetaxi::send_alert(const name& user, const string& message) {
+void toeridetaxi::send_alert(const name& user, 
+							const string& message) {
+	check(message.size() <= 256, "message has more than 256 bytes");
+	
 	action(
 		permission_level(get_self(), "active"_n),
 		get_self(),
@@ -439,16 +440,17 @@ void toeridetaxi::send_alert(const name& user, const string& message) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::sendreceipt(
-	const name& user,
-	const string& message
-	) {
+void toeridetaxi::sendreceipt(const name& user,
+							const string& message) {
 	require_auth(get_self());
 
 	require_recipient(user);
 }
 
-void toeridetaxi::send_receipt(const name& user, const string& message) {
+void toeridetaxi::send_receipt(const name& user, 
+								const string& message) {
+	check(message.size() <= 256, "message has more than 256 bytes");
+
 	action(
 		permission_level(get_self(), "active"_n),
 		get_self(),
