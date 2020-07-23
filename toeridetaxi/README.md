@@ -1,6 +1,6 @@
 # Ride contract
 ## Brief
-* It is a contract which is for 
+* It is a ride contract which is for 
 	- [x] request ride by commuter
 	- [ ] request pool ride by commuter(s)
 	- [x] assign ride to driver
@@ -91,3 +91,4 @@ Warning, action <eraseride> does not have a ricardian contract
 
 ## TODO
 - [ ] addrating action
+- [ ] add memo in every action

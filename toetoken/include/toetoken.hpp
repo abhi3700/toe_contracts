@@ -8,6 +8,19 @@ namespace eosiosystem {
 	class system_contract;
 }
 
+using eosio::contract;
+using eosio::name;
+using eosio::multi_index;
+using eosio::asset;
+using eosio::check;
+using eosio::same_payer;
+using eosio::symbol;
+using eosio::require_recipient;
+using eosio::action_wrapper;
+using eosio::symbol_code;
+
+using std::string;
+
 
 CONTRACT toetoken : public contract {
 
@@ -30,7 +43,7 @@ public:
 	 *  This action issues to `to` account a `quantity` of tokens.
 	 *
 	 * @param to - the account to issue tokens to, it must be the same as the issuer,
-	 * @param quntity - the amount of tokens to be issued,
+	 * @param quantity - the amount of tokens to be issued,
 	 * @memo - the memo string that accompanies the token issue transaction.
 	 */
 	ACTION issue(const name& to, const asset& quantity, const string& memo);
@@ -82,16 +95,23 @@ public:
 	ACTION close(const name& owner, const symbol& symbol);
 
 	static asset get_supply(const name& token_contract_account, const symbol_code& sym_code) {
-		stats statstable(contract_account, sym_code.raw());
+		stats_index statstable(token_contract_account, sym_code.raw());
 		const auto& st = statstable.get(sym_code.raw());	// get that row which contains the symbol as it is declared as primary_index
 		return st.supply;							// now, return member i.e. 'supply' of struct 'st'
 	}
 
 	static asset get_balance(const name& token_contract_account, const name& owner, const symbol_code& sym_code) {
-		accounts accountstable(token_contract_account, owner.value);
+		accounts_index accountstable(token_contract_account, owner.value);
 		const auto& ac = accountstable.get(sym_code.raw());	// get that row which contains the symbol as it is declared as primary_index
 		return ac.balance;							// now, return member i.e. 'supply' of struct 'ac'
 	}
+
+	using create_action  = action_wrapper<"create"_n, &toetoken::create>;
+	using issuer_action  = action_wrapper<"issue"_n, &toetoken::issue>;
+	using retire_action  = action_wrapper<"retire"_n, &toetoken::retire>;
+	using transfer_action  = action_wrapper<"transfer"_n, &toetoken::transfer>;
+	using open_action  = action_wrapper<"open"_n, &toetoken::open>;
+	using close_action  = action_wrapper<"close"_n, &toetoken::close>;
 
 private:
 	// ------------------------------------------------------------------
@@ -102,7 +122,7 @@ private:
 		uint64_t primary_key() const { return balance.symbol.code().raw(); }
 	};
 
-	using accounts = eosio::multi_index< "accounts"_n, account >;
+	using accounts_index = eosio::multi_index< "accounts"_n, account >;
 
 
 	// ------------------------------------------------------------------
@@ -115,7 +135,7 @@ private:
 		uint64_t primary_key() const { return supply.symbol.code().raw(); }
 	};
 
-	using stats = eosio::multi_index< "stats"_n, currency_stats >;
+	using stats_index = eosio::multi_index< "stats"_n, currency_stats >;
 
 	// ------------------------------------------------------------------
 	void sub_balance(const name& owner, const asset& value);
