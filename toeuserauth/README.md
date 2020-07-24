@@ -7,3 +7,8 @@
 * actions
 	- `addrating`
 * table - `auth`
+
+
+## Compile
+## Deploy
+## Testing

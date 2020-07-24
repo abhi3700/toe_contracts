@@ -4,7 +4,25 @@
     "types": [],
     "structs": [
         {
-            "name": "adduser",
+            "name": "compvbvdator",
+            "base": "",
+            "fields": [
+                {
+                    "name": "validator_user",
+                    "type": "name"
+                },
+                {
+                    "name": "validator_user_status",
+                    "type": "name"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "creatifyuser",
             "base": "",
             "fields": [
                 {
@@ -18,20 +36,6 @@
                 {
                     "name": "profile_hash",
                     "type": "checksum256"
-                }
-            ]
-        },
-        {
-            "name": "addusrstatus",
-            "base": "",
-            "fields": [
-                {
-                    "name": "user",
-                    "type": "name"
-                },
-                {
-                    "name": "user_status",
-                    "type": "name"
                 },
                 {
                     "name": "memo",
@@ -106,12 +110,24 @@
                     "type": "uint32"
                 },
                 {
+                    "name": "update_timestamp",
+                    "type": "uint32"
+                },
+                {
                     "name": "auth_timestamp",
                     "type": "uint32"
                 },
                 {
                     "name": "blist_timestamp",
                     "type": "uint32"
+                },
+                {
+                    "name": "validator_verify",
+                    "type": "name"
+                },
+                {
+                    "name": "validator_blacklist",
+                    "type": "name"
                 },
                 {
                     "name": "rating",
@@ -126,17 +142,39 @@
                     "type": "uint64"
                 }
             ]
+        },
+        {
+            "name": "vbdricom",
+            "base": "",
+            "fields": [
+                {
+                    "name": "validator_user",
+                    "type": "name"
+                },
+                {
+                    "name": "dricom_user",
+                    "type": "name"
+                },
+                {
+                    "name": "dricom_user_status",
+                    "type": "name"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
         }
     ],
     "actions": [
         {
-            "name": "adduser",
-            "type": "adduser",
+            "name": "compvbvdator",
+            "type": "compvbvdator",
             "ricardian_contract": ""
         },
         {
-            "name": "addusrstatus",
-            "type": "addusrstatus",
+            "name": "creatifyuser",
+            "type": "creatifyuser",
             "ricardian_contract": ""
         },
         {
@@ -152,6 +190,11 @@
         {
             "name": "sendreceipt",
             "type": "sendreceipt",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "vbdricom",
+            "type": "vbdricom",
             "ricardian_contract": ""
         }
     ],

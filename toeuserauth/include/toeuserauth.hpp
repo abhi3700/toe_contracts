@@ -23,31 +23,49 @@ CONTRACT toeuserauth : public contract {
 public:
 	using contract::contract;
 	/**
-	 * @brief - add user
-	 * @details - add user to the `users` table
+	 * @brief - add/update user details
+	 * @details - add/update user details to the `users` table
 	 * 
 	 * @param user - driver/commuter name
 	 * @param type - driver/commuter
 	 * @param profile_hash - add sha256 hash of user identity details - ID proof, address, etc.(more strict for drivers)
+	 * @param memo - notes like "add info" "update info"
 	 * 
 	 * @pre ensure that the name is not in `blacklist` table
 	 */
-	ACTION adduser( const name& user,
+	ACTION creatifyuser( const name& user,
 					const name& type,
-					const checksum256& profile_hash);
+					const checksum256& profile_hash,
+					const string& memo);
 
 	/**
-	 * @brief - add/edit user status
-	 * @details - add/edit user status (added/verified/blacklisted) by the TOE CARES
+	 * @brief - verify/blacklist dricom_user
+	 * @details - verify/blacklist dricom_user as verified/blacklisted by the TOE CARES validators
 	 * 
-	 * @param user - driver/commuter account
-	 * @param user_status - added/verified/blacklisted
+	 * @param validator_user - validator account name
+	 * @param dricom_user - driver/commuter account name
+	 * @param dricom_user_status - verified/blacklisted
 	 * @param memo - a note (reason) for the corresponding status, visible 
 	 * 					in the user's action via send_receipt() or send_alert() inline actions
 	 */
-	ACTION addusrstatus( const name& user,
-						 const name& user_status,
-						 const string& memo );
+	ACTION vbdricom( const name& validator_user,
+						const name& dricom_user,
+						const name& dricom_user_status,
+						const string& memo );
+
+
+	/**
+	 * @brief - company verify/blacklist validator_user
+	 * @details - company verify/blacklist validator_user as verified/blacklisted
+	 * 
+	 * @param validator_user - validator account name
+	 * @param validator_user_status - verified/blacklisted
+	 * @param memo - a note (reason) for the corresponding status, visible 
+	 * 					in the user's action via send_receipt() or send_alert() inline actions
+	 */
+	ACTION compvbvdator( const name& validator_user,
+						const name& validator_user_status,
+						const string& memo);
 
 	/**
 	 * @brief - delete user
@@ -84,12 +102,15 @@ private:
 	// ------------------------------------------------------------------------------------------------
 	TABLE user {
 		name user;
-		name type;
+		name type;						// driver/commuter/validator
 		checksum256 profile_hash;
-		name user_status;				// added or verified or blacklisted
-		uint32_t add_timestamp;			// timestamp at which the user data is added
-		uint32_t auth_timestamp;		// timestamp at which the user data is authenticated/validated
+		name user_status;				// added/updated/verified/blacklisted
+		uint32_t add_timestamp;			// timestamp at which the user details is added
+		uint32_t update_timestamp;		// timestamp at which the user details is updated
+		uint32_t auth_timestamp;		// timestamp at which the user details is authenticated/validated
 		uint32_t blist_timestamp;		// timestamp at which the user is blacklisted
+		name validator_verify;			// validator who verifies the user
+		name validator_blacklist;		// validator who blacklist the user
 		float rating;
 		uint64_t ride_total;
 		uint64_t ride_rated;
