@@ -58,7 +58,8 @@ Warning, action <open> does not have a ricardian contract
 Warning, action <close> does not have a ricardian contract
 ```
 ## Deploy
-## Push
+
+## Testing
 * `create`:
 ```console
 $ cleost push action toe1111token create '["bhubindtoeio", "1000000.0000 EOS"]' -p toe1111token@active

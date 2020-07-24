@@ -24,3 +24,7 @@ Warning, action <withdraw> does not have a ricardian contract
 Warning, action <withdrawfull> does not have a ricardian contract
 Warning, action <sendreceipt> does not have a ricardian contract
 ```
+
+## Deploy
+
+## Testing

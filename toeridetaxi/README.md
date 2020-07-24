@@ -89,6 +89,10 @@ Warning, action <eraseride> does not have a ricardian contract
 
 > NOTE: Here, actions is repeating during compilation bcoz it is likely using multiple jobs. So, it prints multiple times.
 
+## Deploy
+
+## Testing
+
 ## TODO
 - [ ] addrating action
-- [ ] add memo in every action
+- [ ] add memo in every action (wherever needed)
