@@ -56,7 +56,12 @@ void toeridetaxi::create(
 	// also checks for whether it is an eosio account or not. 
 	require_auth(commuter_ac);  
 
-	// @TODO: check whether the `commuter_ac` is a verified commuter by reading the `auth` table
+	// check whether the `commuter_ac` is a verified commuter by reading the `auth` table
+	user_index user_table("toe1userauth"_n, commuter_ac.value);
+	auto user_it = user_table.find(commuter_ac.value);
+
+	check( user_it != user_table.end(), "The commuter is not added in the Auth Table.");
+	check( user_it->user_status == "verify"_n, "The commuter is not verified yet.");
 
 	// Ensure that the `vehicle_type` is either of this list:
 	/*
@@ -147,7 +152,12 @@ void toeridetaxi::assign( const name& driver_ac,
 				uint32_t reachsrc_timestamp_est ) {
 	require_auth(driver_ac);
 
-	// @TODO: check whether the `driver_ac` is a verified driver by reading the `auth` table
+	// check whether the `driver_ac` is a verified driver by reading the `auth` table
+	user_index user_table("toe1userauth"_n, driver_ac.value);
+	auto user_it = user_table.find(driver_ac.value);
+
+	check( user_it != user_table.end(), "The driver is not added in the Auth Table.");
+	check( user_it->user_status == "verify"_n, "The driver is not verified yet.");
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);

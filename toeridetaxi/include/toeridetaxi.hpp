@@ -2,6 +2,7 @@
 #include <eosio/asset.hpp>
 // #include <eosio/print.hpp>
 #include <eosio/system.hpp>
+#include <eosio/crypto.hpp>
 #include <string>
 
 
@@ -22,6 +23,7 @@ using eosio::same_payer;
 using eosio::symbol;
 using eosio::require_recipient;
 using eosio::action_wrapper;
+using eosio::checksum256;
 
 using std::string;
 
@@ -293,6 +295,31 @@ private:
 
 	using ridewallet_index = multi_index<"ridewallet"_n, ridewallet>;
 
+// -----------------------------------------------------------------------------------------------------------------------
+	struct user {
+		name user;
+		name type;						// driver/commuter/validator
+		checksum256 profile_hash;
+		name user_status;				// added/updated/verified/blacklisted
+		uint32_t add_timestamp;			// timestamp at which the user details is added
+		uint32_t update_timestamp;		// timestamp at which the user details is updated
+		uint32_t verify_timestamp;		// timestamp at which the user details is verified
+		uint32_t blist_timestamp;		// timestamp at which the user is blacklisted
+		name validator_verify;			// validator who verifies the user
+		name validator_blacklist;		// validator who blacklist the user
+		float rating;
+		uint64_t ride_total;
+		uint64_t ride_rated;
+
+		auto primary_key() const { return user.value; }
+		uint64_t get_secondary_1() const { return type.value; }
+		uint64_t get_secondary_2() const { return user_status.value; }
+	};
+
+	using user_index = multi_index<"users"_n, user,
+						indexed_by<"bytype"_n, const_mem_fun<user, uint64_t, &user::get_secondary_1>>,
+						indexed_by<"bystatus"_n, const_mem_fun<user, uint64_t, &user::get_secondary_2>>
+						>;
 // ========Functions========================================================================================================
 	// Adding inline action for `sendalert` action in the same contract 
 	void send_alert(const name& user, const string& message);
