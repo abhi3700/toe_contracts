@@ -124,7 +124,7 @@ void toeuserauth::compvbvdator( const name& validator_user,
 
 		if(validator_user_status == "verified"_n) {
 			row.validator_verify = get_self();		// contract or company name
-			row.auth_timestamp = now();
+			row.verify_timestamp = now();
 		}
 
 		if(validator_user_status == "blacklisted"_n) { 

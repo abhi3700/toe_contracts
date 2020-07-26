@@ -114,7 +114,7 @@
                     "type": "uint32"
                 },
                 {
-                    "name": "auth_timestamp",
+                    "name": "verify_timestamp",
                     "type": "uint32"
                 },
                 {
