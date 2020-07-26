@@ -107,7 +107,7 @@ private:
 		name user_status;				// added/updated/verified/blacklisted
 		uint32_t add_timestamp;			// timestamp at which the user details is added
 		uint32_t update_timestamp;		// timestamp at which the user details is updated
-		uint32_t auth_timestamp;		// timestamp at which the user details is authenticated/validated
+		uint32_t verify_timestamp;		// timestamp at which the user details is verified
 		uint32_t blist_timestamp;		// timestamp at which the user is blacklisted
 		name validator_verify;			// validator who verifies the user
 		name validator_blacklist;		// validator who blacklist the user

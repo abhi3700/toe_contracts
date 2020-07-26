@@ -78,7 +78,7 @@ void toeuserauth::vbdricom( const name& validator_user,
 
 		if(dricom_user_status == "verified"_n) {
 			row.validator_verify = validator_user;
-			row.auth_timestamp = now();
+			row.verify_timestamp = now();
 		}
 
 		if(dricom_user_status == "blacklisted"_n) { 
