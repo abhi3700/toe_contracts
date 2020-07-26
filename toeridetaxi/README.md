@@ -1,5 +1,5 @@
 # Ride contract
-## Brief
+## About
 * It is a ride contract which is for 
 	- [x] request ride by commuter
 	- [ ] request pool ride by commuter(s)
@@ -11,32 +11,28 @@
 	- [x] sending alert
 	- [x] sending receipt
 
-## About
+## Contract
 * contract name - `toeridetaxi`
 * contract's account name - `toe1111rtaxi`
-* action
-	- `create`
-	- `assign`
-	- `cancelbycom`
-	- `cancelbydri`
-	- `changedes`
-	- `reachsrc`
-	- `start`
-	- `finish`
-	- `addfareact`
-	- `sendfare`
-	- `recvfare`
-* table
-	- `ridetaxi`
+
+## Action
+- `create`
+- `assign`
+- `cancelbycom`
+- `cancelbydri`
+- `changedes`
+- `reachsrc`
+- `start`
+- `finish`
+- `addfareact`
+- `sendfare`
+- `recvfare`
 
 ## Table
-* the table is stored in the contract acount.
-* For each row, `ram_payer` would be users (driver/commuter) for their piece of data. TODO: 
-	- if the ride is costing too much for their use, then additional amount of CPU, NET will be added to their account during account creation.
-* Table:
-	- `ride`
-		+ `taxi`
-		+ `bike`
+* `ridetaxi`
+* Notes:
+	- For each row, `ram_payer` would be users (driver/commuter) for their piece of data. TODO: 
+		+ if the ride is costing too much for their use, then additional amount of CPU, NET will be added to their account during account creation.
 
 
 

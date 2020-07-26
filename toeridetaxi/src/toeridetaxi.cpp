@@ -143,7 +143,8 @@ void toeridetaxi::create(
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::assign( const name& driver_ac, 
-				const name& commuter_ac ) {
+				const name& commuter_ac,
+				uint32_t reachsrc_timestamp_est ) {
 	require_auth(driver_ac);
 
 	// @TODO: check whether the `driver_ac` is a verified driver by reading the `auth` table
@@ -159,6 +160,7 @@ void toeridetaxi::assign( const name& driver_ac,
 		row.driver_ac = driver_ac;
 		row.assign_timestamp = now();
 		row.ride_status = "enroute"_n;
+		row.reachsrc_timestamp_est = reachsrc_timestamp_est;
 	});
 
 	// On successful execution, an alert is sent
@@ -271,7 +273,7 @@ void toeridetaxi::reachsrc( const name& driver_ac ) {
 	// modify
 	driver_idx.modify(ride_it, driver_ac, [&](auto& row) {
 		row.ride_status = "waiting"_n;
-		row.reachsrc_timestamp = now();
+		row.reachsrc_timestamp_act = now();
 
 	});
 

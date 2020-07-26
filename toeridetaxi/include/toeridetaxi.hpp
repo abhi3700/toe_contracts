@@ -86,9 +86,11 @@ public:
 	 * 
 	 * @param driver_ac - driver eosio account name
 	 * @param commuter_ac - commuter eosio account name
+	 * @param reachsrc_timestamp_est - estimated time to reach the pick-up point
 	 */
 	ACTION assign( const name& driver_ac, 
-					const name& commuter_ac );
+					const name& commuter_ac,
+					uint32_t reachsrc_timestamp_est);
 
 	/**
 	 * @brief - cancel ride
@@ -257,7 +259,8 @@ private:
 		string pay_mode;            // crypto or fiatdigi or fiatcash
 		string pay_status;          // paidbycom or paidtodri
 		uint32_t assign_timestamp;  // at which ride is assigned
-		uint32_t reachsrc_timestamp;    // at which driver reached source location to pick-up
+		uint32_t reachsrc_timestamp_est;    // at which driver is estimated to reach source location to pick-up
+		uint32_t reachsrc_timestamp_act;    // at which driver actually reached source location to pick-up
 		uint32_t start_timestamp;       // at which the ride is started
 		uint32_t finish_timestamp_act;      // at which the ride is finished
 		uint32_t finish_timestamp_est;      // at which the ride is estimated to finish

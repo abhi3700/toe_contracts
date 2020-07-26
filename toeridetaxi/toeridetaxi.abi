@@ -42,6 +42,10 @@
                 {
                     "name": "commuter_ac",
                     "type": "name"
+                },
+                {
+                    "name": "reachsrc_timestamp_est",
+                    "type": "uint32"
                 }
             ]
         },
@@ -238,7 +242,11 @@
                     "type": "uint32"
                 },
                 {
-                    "name": "reachsrc_timestamp",
+                    "name": "reachsrc_timestamp_est",
+                    "type": "uint32"
+                },
+                {
+                    "name": "reachsrc_timestamp_act",
                     "type": "uint32"
                 },
                 {
