@@ -270,11 +270,10 @@ rides --> no. of available rides (commission-free/surge-free) to the driver/comm
 
 
 ### Voting
-Following topics are to be considered for voting among the community members (drivers, commuters):
-
-* The value for __fiat ---> crypto__ conversion in fare, is considered the one, which is calculated before setting into the Blockchain record.
-	- Q. Should the fare conversion be done during the dispersal i.e. `recvfare` action (inside)? 
-		+ For this, we can use `eos-api` codebase & market API inside the action.
+* Following topics are to be considered for voting among the community members (drivers, commuters):
+	- The value for __fiat ---> crypto__ conversion in fare, is considered the one, which is calculated before setting into the Blockchain record.
+		+ Q. Should the fare conversion be done during the dispersal i.e. `recvfare` action (inside)? 
+			- For this, we can use `eos-api` codebase & market API inside the action.
 
 * References
 	- [Anonymous Voting on Blockchain by cc32d9](https://github.com/cc32d9/cc32d9_ideas_for_EOSIO/blob/master/Anonymous_Voting_on_Blockchain.md)
@@ -285,3 +284,4 @@ Following topics are to be considered for voting among the community members (dr
 * The ride (commission/surge-free) price is not going to be decided by the market maker, but rather via Bancor Algorithm.
 * During lockdown situations, there will be no buy/sell of rides. This is to prevent price inflation in situation, where actually the platform is not being used. Because, the rides will be added to the ride_quota only if there is a finished ride.
 * The ride asset will be added on every ride completion.
+* There has to be some activity (ride, voting) every 6 months.
