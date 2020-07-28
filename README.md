@@ -4,51 +4,62 @@ The Smart Contracts is entirely written in C++.
 
 The main contracts for CabEOS are as follows:
 
+* Auth
 * Token
 * Ride
-* Stake
+* Wallet
+* RIDEX
+
+## System accounts
+### Contract
+* `toe1userauth`: TOE User Auth
+* `toe1111token`: TOE Token
+* `toe1111rtaxi`: TOE Ride Taxi
+* `toe11rwallet`: TOE Ride Wallet
+* `toe1111ridex`: TOE Ride Exchange (RIDEX)
+
+### Others
+* `bhubtoeindia`: Block.Hub TOE India
+* `toeridexsupp`: TOE RIDEX Supply
+* `toeridexfees`: TOE RIDEX Fees
 
 ## Contracts
 * Token
-	- Actions
-		+ [ ] create
-		+ [ ] issue
-		+ [ ] transfer
-		+ [ ] retire
-		+ [ ] open
-		+ [ ] close
+	- Action
+		+ [x] create
+		+ [x] issue
+		+ [x] transfer
+		+ [x] retire
+		+ [x] open
+		+ [x] close
 		+ [ ] inflate
+	- Table
+		+ `stats`
+		+ `accounts`
 
 * Ride
 	- Actions
-		+ [ ] create 			// creating the table by the contract ac
-		+ [ ] bookify			// represents book/modify
-			- ride_status
-			- commuter_ac
-			- lat_src
-			- lon_src
-			- lat_des
-			- lon_des
-			- book_time
-		+ [ ] modify
-		+ [ ] cancel
-		+ [ ] start
-		+ [ ] finish
-		+ [ ] rate 			// for both driver/commuter
-		+ [ ] delete 		// delete the ride entry, even if the rating is not done or will be done later. Bcoz, the RAM can't be consumed due to this delay.
-	- Table-1					// showing the `enroute` & `on-trip` rides
+		+ [x] addpaymost
+		+ [x] create
+		+ [x] assign
+		+ [x] cancelbycom
+		+ [x] cancelbydri
+		+ [x] changedes
+		+ [x] reachsrc
+		+ [x] start
+		+ [x] finish
+		+ [x] addfareact
+		+ [x] recvfare
+		+ [x] sendalert
+		+ [x] sendreceipt
+		+ [x] eraseride 		// delete the ride entry, even if the rating is not done or will be done later. Bcoz, the RAM can't be consumed due to this delay.
+	- Table	
+		+ ridetaxi
 	- Workflow (Explained):
-		- Here, the ride table will be created only by the contract account using `create` action.
+		- Here, the ride table will be created by
+			+ `addpaymost` (if the pay_mode chosen is crypto) or,
+			+ `create`
 		- And then destroyed using `erase` action.
-
-* Stake
-	- Actions
-		+ [ ] buy		// ride
-		+ [ ] sell	// ride
-		+ [ ] setmardri		// market rate for driver
-		+ [ ] setmarcom 	// market rate for commuter
-	- Table-1			// stores the driver/commuter with their respective tokens staked & corresponding issued rides
-	- Table-2			// market rate for driver/commuter
 
 * Govern
 	- Actions
@@ -60,41 +71,6 @@ The main contracts for CabEOS are as follows:
 
 > #### NOTES
 >    - Here, contract to contract communication would happen like `Ride::finish()` >> `Token::transfer()`;
-
-## Utility
-* `ride_fare_est`
-	- estimated ride fare
-	- auto calculate
-* `ride_fare_act`
-	- actual ride fare
-	- auto calculate
-* `ride_eta`
-	- estimated ride time
-	- auto calculate
-* `ride_ata`
-	- actual ride time
-	- auto calculate
-* `past_rides`
-	- past rides of an user (driver/commuter)
-	- fetched from storage DB.
-	- info which will be shown:
-		+ source loc
-		+ destination loc
-		+ start time (with last updated time)
-		+ end time (with last updated time)
-* `current_ride`
-	- current ride of an user (driver/commuter)
-	- fetched from blockchain RAM.
-	- info which will be shown:
-		+ source loc
-		+ destination loc
-		+ start time (with last updated time)
-		+ end time (estimated time)
-		+ status: running
-* `rating_driver`
-	- rating of a driver (of all rides till date)
-* `rating_commuter`
-	- rating of a commuter (of all rides till date)
 
 <!-- 
 * `gen_otp` 
@@ -279,7 +255,7 @@ rides --> no. of available rides (commission-free/surge-free) to the driver/comm
 	- [Anonymous Voting on Blockchain by cc32d9](https://github.com/cc32d9/cc32d9_ideas_for_EOSIO/blob/master/Anonymous_Voting_on_Blockchain.md)
 
 
-### Ride Trading Algorithm (RTA)
+### Ride Exchange (RIDEX)
 * Here, Bancor Algorithm is going to be used just like used in EOS RAM price calculation.
 * The ride (commission/surge-free) price is not going to be decided by the market maker, but rather via Bancor Algorithm.
 * During lockdown situations, there will be no buy/sell of rides. This is to prevent price inflation in situation, where actually the platform is not being used. Because, the rides will be added to the ride_quota only if there is a finished ride.

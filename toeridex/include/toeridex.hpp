@@ -10,45 +10,24 @@ public:
 	using contract::contract;
 
 	/**
-	 * @brief - init ride assets - ride_quota, rate_perride
-	 * @details - init ride assets - ride_quota, rate_perride. Applicable only once.
+	 * @brief - initialize RIDEX params
+	 * @details - initialize RIDEX params
+	 * 				+ toe_owner
+	 * 				+ toe_qty
+	 * 				+ ride_qty
 	 * 
-	 * @param type - driver/commuter
-	 * @param ride_quota - set initial no. of rides in the ride_quota
-	 * @param rate_perride - set the initial price (in TOE) per ride. 
+	 * @param toe_owner - company owner - "bhubtoeindia"
+	 * @param toe_qty - quantity in TOE
+	 * @param ride_qty - ride quantity
+	 *
 	 */
-	ACTION initrasset( const name& type,
-						uint64_t ride_quota,
-						const asset& rate_perride,
-						const string& memo);
+	ACTION initridex( const name& toe_owner, 
+						const asset& toe_qty,
+						uint64_t ride_qty );
 
 	/**
-	 * @brief - add ride quota
-	 * @details - add ride quota after each ride is finished.
-	 * 
-	 * @param type - driver/commuter
-	 * @param ride_quota - no. of rides getting added in the ride_quota, default value = 1, 
-	 */
-	ACTION addridequota( const name& type,
-							uint64_t ride_quota );
-
-	/**
-	 * @brief - set ride's rate
-	 * @details - set ride's rate for driver/commuter as per 
-	 * 				the fuel rate depending on the ride trading algorithm
-	 * 
-	 * @param type - driver/commuter
-	 * @param rate - price in TOE
-	 * @param memo - note for setting ride rate
-	 */	
-	ACTION setriderate( const name& type,
-						const asset& rate,
-						const string& memo );
-
-
-	/**
-	 * @brief - buy rides from market
-	 * @details - buy rides from market
+	 * @brief - buy rides from RIDEX
+	 * @details - buy rides from RIDEX
 	 * 
 	 * @param buyer - any registered user (driver/commuter/validator)
 	 * @param ride_qty - no. of rides to be bought
@@ -59,8 +38,8 @@ public:
 					const string& memo );
 
 	/**
-	 * @brief - sell rides from market
-	 * @details - sell rides from market
+	 * @brief - sell rides from RIDEX
+	 * @details - sell rides from RIDEX
 	 * 
 	 * @param buyer - any registered user (driver/commuter/validator)
 	 * @param ride_qty - no. of rides to be sold
@@ -102,7 +81,7 @@ private:
 
 	using account_index = multi_index<"accounts"_n, account>;
 	// --------------------------------------------------------------------------------
-	TABLE rasset {
+	TABLE ridex {
 		name type;
 		uint64_t ride_quota;
 		asset rate_perride;
@@ -110,17 +89,17 @@ private:
 		auto primary_key() const { return type.value; }
 	};
 
-	using rasset_index = multi_index<"rasset"_n, rasset>;
+	using ridex_index = multi_index<"ridex"_n, ridex>;
 	// --------------------------------------------------------------------------------
-	TABLE fuelrate {
-		name curr_name;
-		string country;
-		float price;
-		string distance_unit;
+	// TABLE fuelrate {
+	// 	name curr_name;
+	// 	string country;
+	// 	float price;
+	// 	string distance_unit;
 
-		auto primary_key() const { return curr_name.value; }
-	};
+	// 	auto primary_key() const { return curr_name.value; }
+	// };
 
-	using fuelrate_index = multi_index<"fuelrates", fuelrate>;
+	// using fuelrate_index = multi_index<"fuelrates", fuelrate>;
 
 };

@@ -9,8 +9,8 @@
 	- [x] close account with zero balance
 
 ## About
-* contract name - `toeridetaxi`
-* contract's account name - `toe1111rtaxi`
+* contract name - `toetoken`
+* contract's account name - `toe1111token`
 * action
 	- `create`
 	- `issue`
