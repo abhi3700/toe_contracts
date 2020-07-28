@@ -150,14 +150,14 @@ void toeridewallet::withdrawfull( const name& commuter_ac ) {
 
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::sendreceipt(const name& user,
+void toeridewallet::sendreceipt(const name& user,
 							const string& message) {
 	require_auth(get_self());
 
 	require_recipient(user);
 }
 
-void toeridetaxi::send_receipt(const name& user, 
+void toeridewallet::send_receipt(const name& user, 
 								const string& message) {
 	check(message.size() <= 256, "message has more than 256 bytes");
 

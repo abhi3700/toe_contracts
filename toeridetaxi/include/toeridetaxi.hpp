@@ -1,3 +1,4 @@
+#pragma once
 #include <eosio/eosio.hpp>
 #include <eosio/asset.hpp>
 // #include <eosio/print.hpp>
