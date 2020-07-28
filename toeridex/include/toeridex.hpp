@@ -1,28 +1,53 @@
+#pragma once
 #include <eosio/eosio.hpp>
+#include <eosio/asset.hpp>
+#include <eosio/system.hpp>
+#include <iterator>
 
 using eosio::contract;
+using eosio::print;
+using eosio::name;
+using eosio::multi_index;
+using eosio::const_mem_fun;
+using eosio::indexed_by;
+using eosio::asset;
+using eosio::check;
+using eosio::permission_level;
+using eosio::datastream;
+using eosio::action;
+using eosio::same_payer;
+using eosio::symbol;
+using eosio::require_recipient;
+using eosio::action_wrapper;
 
 using std::string;
 
-CONTRACT toeriderex : public contract 
+CONTRACT toeridex : public contract 
 {
+private:
+	const symbol ride_token_symbol;
+
 public:
 	using contract::contract;
+
+	toeridex(name receiver, name code, datastream<const char*> ds) : 
+				contract(receiver, code, ds), 
+				ride_token_symbol("TOE", 4) {}
 
 	/**
 	 * @brief - initialize RIDEX params
 	 * @details - initialize RIDEX params
-	 * 				+ toe_owner
+	 * 				+ toe_issuer
 	 * 				+ toe_qty
 	 * 				+ ride_qty
 	 * 
-	 * @param toe_owner - company owner - "bhubtoeindia"
+	 * @param toe_issuer - company owner - "bhubtoeindia"
 	 * @type - driver/commuter
 	 * @param toe_qty - quantity in TOE
 	 * @param ride_qty - ride quantity
 	 *
 	 */
-	ACTION initridex( const name& toe_owner,
+	ACTION initridex( const name& toe_issuer,
 						const name& type,
 						const asset& toe_qty,
 						uint64_t ride_qty );
@@ -53,7 +78,7 @@ public:
 	ACTION sellride( const name& seller,
 					const name& type,
 					uint64_t ride_qty,
-					const string& memo)
+					const string& memo);
 
 	/**
 	 * @brief - send alert
@@ -74,6 +99,7 @@ public:
 	 */
 	ACTION sendreceipt( const name& user,
 						const string& message);
+
 
 private:
 	// --------------------------------------------------------------------------------
@@ -96,6 +122,11 @@ private:
 	};
 
 	using ridex_index = multi_index<"ridex"_n, ridex>;
-	// --------------------------------------------------------------------------------
+	
+	// ========Functions========================================================================================================
+	// Adding inline action for `sendalert` action in the same contract 
+	void send_alert(const name& user, const string& message);
 
+	// Adding inline action for `sendreceipt` action in the same contract   
+	void send_receipt(const name& user, const string& message);
 };

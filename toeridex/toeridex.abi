@@ -1,0 +1,182 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.1",
+    "types": [],
+    "structs": [
+        {
+            "name": "account",
+            "base": "",
+            "fields": [
+                {
+                    "name": "rides_limit",
+                    "type": "uint64"
+                },
+                {
+                    "name": "rides_available",
+                    "type": "uint64"
+                },
+                {
+                    "name": "rides_used",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "buyride",
+            "base": "",
+            "fields": [
+                {
+                    "name": "buyer",
+                    "type": "name"
+                },
+                {
+                    "name": "type",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_qty",
+                    "type": "uint64"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "initridex",
+            "base": "",
+            "fields": [
+                {
+                    "name": "toe_issuer",
+                    "type": "name"
+                },
+                {
+                    "name": "type",
+                    "type": "name"
+                },
+                {
+                    "name": "toe_qty",
+                    "type": "asset"
+                },
+                {
+                    "name": "ride_qty",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "ridex",
+            "base": "",
+            "fields": [
+                {
+                    "name": "type",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_quota",
+                    "type": "uint64"
+                },
+                {
+                    "name": "toe_balance",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "sellride",
+            "base": "",
+            "fields": [
+                {
+                    "name": "seller",
+                    "type": "name"
+                },
+                {
+                    "name": "type",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_qty",
+                    "type": "uint64"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "sendalert",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "message",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "sendreceipt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "message",
+                    "type": "string"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "buyride",
+            "type": "buyride",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "initridex",
+            "type": "initridex",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "sellride",
+            "type": "sellride",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "sendalert",
+            "type": "sendalert",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "sendreceipt",
+            "type": "sendreceipt",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "accounts",
+            "type": "account",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "ridex",
+            "type": "ridex",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": []
+}
