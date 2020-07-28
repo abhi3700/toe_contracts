@@ -87,6 +87,8 @@ void toeridex::buyride( const name& buyer,
 		row.toe_balance += ride_price;
 	});
 
+	// TODO: add to the raccount table
+
 }
 // --------------------------------------------------------------------------------------------------------------------
 void toeridex::sellride( const name& seller,
@@ -128,6 +130,8 @@ void toeridex::sellride( const name& seller,
 		row.ride_quota += ride_qty;
 		row.toe_balance -= ride_price;
 	});
+
+	// TODO: add to the raccount table
 
 }
 // --------------------------------------------------------------------------------------------------------------------

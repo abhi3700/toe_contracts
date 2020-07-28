@@ -103,15 +103,14 @@ public:
 
 private:
 	// --------------------------------------------------------------------------------
-	TABLE account {
+	TABLE raccount {
 		uint64_t rides_limit;
 		uint64_t rides_available;
-		uint64_t rides_used;
 
 		auto primary_key() const { return rides_limit; }
 	};
 
-	using account_index = multi_index<"accounts"_n, account>;
+	using raccount_index = multi_index<"raccount"_n, raccount>;
 	// --------------------------------------------------------------------------------
 	TABLE ridex {
 		name type;
