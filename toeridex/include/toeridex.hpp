@@ -17,11 +17,13 @@ public:
 	 * 				+ ride_qty
 	 * 
 	 * @param toe_owner - company owner - "bhubtoeindia"
+	 * @type - driver/commuter
 	 * @param toe_qty - quantity in TOE
 	 * @param ride_qty - ride quantity
 	 *
 	 */
-	ACTION initridex( const name& toe_owner, 
+	ACTION initridex( const name& toe_owner,
+						const name& type,
 						const asset& toe_qty,
 						uint64_t ride_qty );
 
@@ -30,10 +32,12 @@ public:
 	 * @details - buy rides from RIDEX
 	 * 
 	 * @param buyer - any registered user (driver/commuter/validator)
+	 * @type - driver/commuter
 	 * @param ride_qty - no. of rides to be bought
 	 * @param memo - note for buying ride
 	 */	
 	ACTION buyride( const name& buyer,
+					const name& type,
 					uint64_t ride_qty,
 					const string& memo );
 
@@ -42,10 +46,12 @@ public:
 	 * @details - sell rides from RIDEX
 	 * 
 	 * @param buyer - any registered user (driver/commuter/validator)
+	 * @type - driver/commuter
 	 * @param ride_qty - no. of rides to be sold
 	 * @param memo - note for selling ride
 	 */	
 	ACTION sellride( const name& seller,
+					const name& type,
 					uint64_t ride_qty,
 					const string& memo)
 
@@ -84,22 +90,12 @@ private:
 	TABLE ridex {
 		name type;
 		uint64_t ride_quota;
-		asset rate_perride;
+		asset toe_balance;
 
 		auto primary_key() const { return type.value; }
 	};
 
 	using ridex_index = multi_index<"ridex"_n, ridex>;
 	// --------------------------------------------------------------------------------
-	// TABLE fuelrate {
-	// 	name curr_name;
-	// 	string country;
-	// 	float price;
-	// 	string distance_unit;
-
-	// 	auto primary_key() const { return curr_name.value; }
-	// };
-
-	// using fuelrate_index = multi_index<"fuelrates", fuelrate>;
 
 };
