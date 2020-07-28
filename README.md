@@ -257,7 +257,14 @@ rides --> no. of available rides (commission-free/surge-free) to the driver/comm
 
 ### Ride Exchange (RIDEX)
 * Here, Bancor Algorithm is going to be used just like used in EOS RAM price calculation.
-* The ride (commission/surge-free) price is not going to be decided by the market maker, but rather via Bancor Algorithm.
+* The ride (commission-free/surge-free) price is not going to be decided by the market maker, but rather via Bancor Algorithm.
 * During lockdown situations, there will be no buy/sell of rides. This is to prevent price inflation in situation, where actually the platform is not being used. Because, the rides will be added to the ride_quota only if there is a finished ride.
-* The ride asset will be added on every ride completion.
-* There has to be some activity (ride, voting) every 6 months.
+* The ride no. will be added on every ride completion.
+* There has to be some activity (ride, voting) every 6 months by the user in order to get the exact market price via sale. Just holding will not help. Otherwise, there will be a reduction (compared to market price) in the final sale price received by the seller. And then, the remaining amount will be transferred to the account - `toeridexfees`.
+* Formula for `buyride`/`sellride` ACTION. When user wants to buy Ride (in no.), then the Ride price is calculated as:
+```
+Ride price (in TOE) = (n * quote.balance) / (n + base.balance)
+
+where,
+n = no. of Rides needed (in no.)
+```
