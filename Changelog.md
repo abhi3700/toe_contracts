@@ -36,7 +36,11 @@ v0.0.2 - `21 Jul 2020 21:52`
 * `toeridetaxi` contract is written & released after successful compilation.
 
 
-v0.0.1 - `17 Jun 2020 20:16`
+v0.0.1 - `17 Jun 2020 20:36`
+----
+* Algorithms added
+
+v0.0.0 - `17 Jun 2020 20:16`
 ----
 * All the contract folders were created:
 	- `cabeos.ride`
