@@ -92,3 +92,4 @@ Warning, action <eraseride> does not have a ricardian contract
 ## TODO
 - [ ] addrating action
 - [ ] add memo in every action (wherever needed)
+- [ ] increase `rides_limit` when a ride is finished & the corresponding pay_mode is `crypto`
