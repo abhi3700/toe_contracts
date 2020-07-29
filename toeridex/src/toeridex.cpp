@@ -9,6 +9,8 @@ void toeridex::initridex( const name& toe_issuer,
 	// require the authority of toe_owner ac - "bhubtoeindia"
 	require_auth(toe_issuer);
 
+	// TODO: check if toe_issuer is the one from the token contract's stats table.
+
 	// check the type is "driver" or "commuter"
 	check( (type == "driver"_n) || (type == "commuter"_n), "invalid type");
 
@@ -54,6 +56,13 @@ void toeridex::buyride( const name& buyer,
 {
 	require_auth( buyer );
 
+	// check the buyer is enlisted in the `toeuserauth` contract table
+	user_index user_table("toe1userauth"_n, buyer.value);
+	auto user_it = user_table.find(buyer.value);
+
+	check(user_it != user_table.end(), "Sorry! The buyer is not registered with us.");
+	check(user_it->user_status == "verified"_n, "Sorry! The buyer is not yet verified.");
+
 	// check the type is "driver" or "commuter"
 	check( (type == "driver"_n) || (type == "commuter"_n), "invalid type");
 
@@ -73,21 +82,51 @@ void toeridex::buyride( const name& buyer,
 	// calc ride_price amount using the Bancor formula
 	ride_price.amount = (ride_qty * (ridex_it->toe_balance.amount))/( ride_qty + (ridex_it->ride_quota) );
 
+	// initialized the ride_price_supp
+	auto ride_price_supp = asset(0.0000, ride_token_symbol);
+	ride_price_supp.amount = 0.995 * (ride_price.amount);
+
+	// initialized the ride_price_fees
+	auto ride_price_fees = asset(0.0000, ride_token_symbol);
+	ride_price_fees.amount = 0.005 * (ride_price.amount);
+
+	// send the ride_price_supp from buyer to toeridexsupp using inline action
+	action(
+		permission_level{buyer, "active"_n},
+		"toe1111token"_n,
+		"transfer"_n,
+		std::make_tuple(buyer, "toeridexsupp"_n, ride_price_supp, "buy " + std::to_string(ride_qty) + " ride(s)")
+		).send();
+
 	// send the toe_qty from buyer to toeridexsupp using inline action
 	action(
 		permission_level{buyer, "active"_n},
 		"toe1111token"_n,
 		"transfer"_n,
-		std::make_tuple(buyer, "toeridexsupp"_n, ride_price, "buy " + std::to_string(ride_qty) + " ride(s)")
+		std::make_tuple(buyer, "toeridexfees"_n, ride_price_fees, "fees for buy " + std::to_string(ride_qty) + " ride(s)")
 		).send();
 
-
+	// update the ride_table with new `ride_quota` & `toe_balance`
 	ridex_table.modify(ridex_it, get_self(), [&](auto& row){
 		row.ride_quota -= ride_qty;
 		row.toe_balance += ride_price;
 	});
 
-	// TODO: add to the raccount table
+	// add ride_qty to the ridexaccount table
+	ridexaccount_index ridexaccount_table(get_self(), buyer.value);
+	auto ridexaccount_it = ridexaccount_table.find(type.value);
+
+	if(ridexaccount_it == ridexaccount_table.end()) {
+		ridexaccount_table.emplace(buyer, [&](auto& row){
+			row.type = type;
+			row.rides_limit = ride_qty;
+		});
+	}
+	else {
+		ridexaccount_table.modify(ridexaccount_it, buyer, [&](auto& row){
+			row.rides_limit += ride_qty;
+		});
+	}
 
 }
 // --------------------------------------------------------------------------------------------------------------------
@@ -98,11 +137,22 @@ void toeridex::sellride( const name& seller,
 {
 	require_auth( seller );
 
+	// check the seller is enlisted in the `toeuserauth` contract table
+	user_index user_table("toe1userauth"_n, seller.value);
+	auto user_it = user_table.find(seller.value);
+
+	check(user_it != user_table.end(), "Sorry! The seller is not registered with us.");
+	check(user_it->user_status == "verified"_n, "Sorry! The seller is not yet verified.");
+
 	// check the type is "driver" or "commuter"
 	check( (type == "driver"_n) || (type == "commuter"_n), "invalid type");
 
-	// check the ride_qty is non-zero
 	check(ride_qty != 0, "Ride quantity can't be zero");
+
+	ridexaccount_index ridexaccount_table(get_self(), seller.value);
+	auto ridexaccount_it = ridexaccount_table.find(type.value);
+	check(ridexaccount_it != ridexaccount_table.end(), "Sorry! There is no ride to sell.");
+	check(ride_qty <= ridexaccount_it->rides_limit, "The ride no. asked, is more than the limit of the seller.");
 
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
@@ -117,21 +167,40 @@ void toeridex::sellride( const name& seller,
 	// calc ride_price amount using the Bancor formula
 	ride_price.amount = (ride_qty * (ridex_it->toe_balance.amount))/( ride_qty + (ridex_it->ride_quota) );
 
-	// send the toe_qty from buyer to toeridexsupp using inline action
+	// initialized the ride_price_supp
+	auto ride_price_supp = asset(0.0000, ride_token_symbol);
+	ride_price_supp.amount = 0.995 * (ride_price.amount);
+
+	// initialized the ride_price_fees
+	auto ride_price_fees = asset(0.0000, ride_token_symbol);
+	ride_price_fees.amount = 0.005 * (ride_price.amount);
+
+	// send the ride_price_supp from toeridexsupp to seller using inline action
 	action(
 		permission_level{"toeridexsupp"_n, "active"_n},
 		"toe1111token"_n,
 		"transfer"_n,
-		std::make_tuple("toeridexsupp"_n, seller, ride_price, "sell " + std::to_string(ride_qty) + " ride(s)")
+		std::make_tuple("toeridexsupp"_n, seller, ride_price_supp, "sell " + std::to_string(ride_qty) + " ride(s)")
 		).send();
 
+	// send the ride_price_fees from toeridexsupp to seller using inline action
+	action(
+		permission_level{"toeridexsupp"_n, "active"_n},
+		"toe1111token"_n,
+		"transfer"_n,
+		std::make_tuple("toeridexsupp"_n, seller, ride_price_fees, "fees for sell " + std::to_string(ride_qty) + " ride(s)")
+		).send();
 
+	// update the ride_table with new `ride_quota` & `toe_balance`
 	ridex_table.modify(ridex_it, get_self(), [&](auto& row){
 		row.ride_quota += ride_qty;
 		row.toe_balance -= ride_price;
 	});
 
-	// TODO: add to the raccount table
+	// deduct ride_qty to the ridexaccount table	
+	ridexaccount_table.modify(ridexaccount_it, seller, [&](auto& row){
+		row.rides_limit -= ride_qty;
+	});
 
 }
 // --------------------------------------------------------------------------------------------------------------------

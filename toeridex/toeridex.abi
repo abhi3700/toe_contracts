@@ -4,24 +4,6 @@
     "types": [],
     "structs": [
         {
-            "name": "account",
-            "base": "",
-            "fields": [
-                {
-                    "name": "rides_limit",
-                    "type": "uint64"
-                },
-                {
-                    "name": "rides_available",
-                    "type": "uint64"
-                },
-                {
-                    "name": "rides_used",
-                    "type": "uint64"
-                }
-            ]
-        },
-        {
             "name": "buyride",
             "base": "",
             "fields": [
@@ -80,6 +62,20 @@
                 {
                     "name": "toe_balance",
                     "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "ridexaccount",
+            "base": "",
+            "fields": [
+                {
+                    "name": "type",
+                    "type": "name"
+                },
+                {
+                    "name": "rides_limit",
+                    "type": "uint64"
                 }
             ]
         },
@@ -163,15 +159,15 @@
     ],
     "tables": [
         {
-            "name": "accounts",
-            "type": "account",
+            "name": "ridex",
+            "type": "ridex",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "ridex",
-            "type": "ridex",
+            "name": "ridexaccount",
+            "type": "ridexaccount",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
