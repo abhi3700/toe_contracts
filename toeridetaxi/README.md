@@ -13,7 +13,7 @@
 
 ## Contract
 * contract name - `toeridetaxi`
-* contract's account name - `toe1111rtaxi`
+* contract's account name - `toe1ridetaxi`
 
 ## Action
 - `create`
