@@ -1,5 +1,20 @@
 TOE Smart Contracts
 ===================
+v0.0.7 - `30 Jul 2020 02:54`
+----
+* added "string length check" in message param of `sendalert`, `sendreceipt` actions for all the contracts.
+* __RIDEX__ implemented using Bancor Algorithm.
+* `toeuserauth` contract added & successfully compiled.
+* `reachsrc_timestamp_est`, `reachsrc_timestamp_act` added in the `ridetaxi` table of `toeridetaxi` contract.
+* added __RIDEX__ related notes (for technical whitepaper) in the repo README file.
+* `toeridetaxi` contract linked to `toeuserauth` contract.
+* `#pragma once` line added in all the contract header files to avoid header file repetition during the compilation process.
+
+v0.0.6 - `23 Jul 2020 10:30`
+----
+* `toeridetaxi` contract README updated with TODO tasks
+* `toetoken` contract added & successfully compiled
+
 v0.0.5 - `22 Jul 2020 01:38`
 ----
 * NOTES added for technical whitepaper in the root __README.md__ file.
