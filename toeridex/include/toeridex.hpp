@@ -27,30 +27,34 @@ using std::string;
 CONTRACT toeridex : public contract 
 {
 private:
+	const name token_issuer;
 	const symbol ride_token_symbol;
+	const float supply_factor;
+	const float fees_factor;
+
 
 public:
 	using contract::contract;
 
 	toeridex(name receiver, name code, datastream<const char*> ds) : 
-				contract(receiver, code, ds), 
-				ride_token_symbol("TOE", 4) {}
+				contract(receiver, code, ds),
+				token_issuer("bhubtoeindia"_n),
+				ride_token_symbol("TOE", 4),
+				supply_factor(0.995),
+				fees_factor(0.005) {}
 
 	/**
 	 * @brief - initialize RIDEX params
 	 * @details - initialize RIDEX params
-	 * 				+ toe_issuer
-	 * 				+ toe_qty
-	 * 				+ ride_qty
+	 * 				+ toe_balance
+	 * 				+ ride_quota
 	 * 
-	 * @param toe_issuer - company owner - "bhubtoeindia"
 	 * @type - driver/commuter
 	 * @param toe_qty - quantity in TOE
 	 * @param ride_qty - ride quantity
 	 *
 	 */
-	ACTION initridex( const name& toe_issuer,
-						const name& type,
+	ACTION initridex( const name& type,
 						const asset& toe_qty,
 						uint64_t ride_qty );
 
@@ -149,6 +153,19 @@ private:
 						indexed_by<"bytype"_n, const_mem_fun<user, uint64_t, &user::get_secondary_1>>,
 						indexed_by<"bystatus"_n, const_mem_fun<user, uint64_t, &user::get_secondary_2>>
 						>;
+	
+	// --------------------------------------------------------------------------------
+	struct currency_stats
+	{
+		asset supply;
+		asset max_supply;
+		name issuer;
+		
+		uint64_t primary_key() const { return supply.symbol.code().raw(); }
+	};
+
+	using stats_index = eosio::multi_index< "stats"_n, currency_stats >;
+
 	// ========Functions========================================================================================================
 	// Adding inline action for `sendalert` action in the same contract 
 	void send_alert(const name& user, const string& message);

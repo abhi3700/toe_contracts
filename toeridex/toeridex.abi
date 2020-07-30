@@ -30,10 +30,6 @@
             "base": "",
             "fields": [
                 {
-                    "name": "toe_issuer",
-                    "type": "name"
-                },
-                {
                     "name": "type",
                     "type": "name"
                 },

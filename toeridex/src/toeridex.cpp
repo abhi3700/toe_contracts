@@ -1,15 +1,19 @@
 #include "../include/toeridex.hpp"
 
 // --------------------------------------------------------------------------------
-void toeridex::initridex( const name& toe_issuer,
-					const name& type,
-					const asset& toe_qty,
-					uint64_t ride_qty ) 
+void toeridex::initridex( const name& type,
+						const asset& toe_qty,
+						uint64_t ride_qty ) 
 {
 	// require the authority of toe_owner ac - "bhubtoeindia"
-	require_auth(toe_issuer);
+	require_auth(token_issuer);
 
-	// TODO: check if toe_issuer is the one from the token contract's stats table.
+	// check if token_issuer is the one from the token contract's stats table.
+	stats_index stats_table("toe1111token"_n, ride_token_symbol.code().raw());
+	auto stats_it = stats_table.find(ride_token_symbol.code().raw());
+
+	check(stats_it != stats_table.end(), "the token symbol doesn't exist");
+	check(stats_it->issuer == token_issuer, "The contract initialized toeken issuer doesn't match with stats table's issuer.");
 
 	// check the type is "driver" or "commuter"
 	check( (type == "driver"_n) || (type == "commuter"_n), "invalid type");
@@ -30,10 +34,10 @@ void toeridex::initridex( const name& toe_issuer,
 
 	// send the toe_qty from issuer to toeridexsupp using inline action
 	action(
-		permission_level{toe_issuer, "active"_n},
+		permission_level{token_issuer, "active"_n},
 		"toe1111token"_n,
 		"transfer"_n,
-		std::make_tuple(toe_issuer, "toeridexsupp"_n, toe_qty, "transfer initial toe_qty")
+		std::make_tuple(token_issuer, "toeridexsupp"_n, toe_qty, "transfer initial toe_qty")
 		).send();
 
 	// modify ridex_table
@@ -44,7 +48,7 @@ void toeridex::initridex( const name& toe_issuer,
 	});
 
 	// On successful execution, a receipt is sent
-	send_receipt( toe_issuer, "initialized RIDEX with " + toe_qty.to_string() + " TOE " + 
+	send_receipt( token_issuer, "initialized RIDEX with " + toe_qty.to_string() + " TOE " + 
 								" & " + std::to_string(ride_qty) + " RIDE");
 
 }
@@ -84,11 +88,11 @@ void toeridex::buyride( const name& buyer,
 
 	// initialized the ride_price_supp
 	auto ride_price_supp = asset(0.0000, ride_token_symbol);
-	ride_price_supp.amount = 0.995 * (ride_price.amount);
+	ride_price_supp.amount = supply_factor * (ride_price.amount);
 
 	// initialized the ride_price_fees
 	auto ride_price_fees = asset(0.0000, ride_token_symbol);
-	ride_price_fees.amount = 0.005 * (ride_price.amount);
+	ride_price_fees.amount = fees_factor * (ride_price.amount);
 
 	// send the ride_price_supp from buyer to toeridexsupp using inline action
 	action(
@@ -169,11 +173,11 @@ void toeridex::sellride( const name& seller,
 
 	// initialized the ride_price_supp
 	auto ride_price_supp = asset(0.0000, ride_token_symbol);
-	ride_price_supp.amount = 0.995 * (ride_price.amount);
+	ride_price_supp.amount = supply_factor * (ride_price.amount);
 
 	// initialized the ride_price_fees
 	auto ride_price_fees = asset(0.0000, ride_token_symbol);
-	ride_price_fees.amount = 0.005 * (ride_price.amount);
+	ride_price_fees.amount = fees_factor * (ride_price.amount);
 
 	// send the ride_price_supp from toeridexsupp to seller using inline action
 	action(
