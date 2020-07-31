@@ -164,7 +164,7 @@ private:
 		uint64_t primary_key() const { return supply.symbol.code().raw(); }
 	};
 
-	using stats_index = eosio::multi_index< "stats"_n, currency_stats >;
+	using stats_index = eosio::multi_index< "stat"_n, currency_stats >;
 
 	// ========Functions========================================================================================================
 	// Adding inline action for `sendalert` action in the same contract 
