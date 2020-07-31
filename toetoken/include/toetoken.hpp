@@ -18,6 +18,7 @@ using eosio::symbol;
 using eosio::require_recipient;
 using eosio::action_wrapper;
 using eosio::symbol_code;
+using eosio::datastream;
 
 using std::string;
 
@@ -26,6 +27,13 @@ CONTRACT toetoken : public contract {
 
 public:
 	using contract::contract;
+
+	const long long supply_initial_amount;
+
+	toetoken(name receiver, name code, datastream<const char*> ds) : 
+				contract(receiver, code, ds),
+				supply_initial_amount(1'000'000'000) {}
+
 	/**
 	* Allows `issuer` account to create a token in supply of `maximum_supply`. If validation is successful a new entry in statstable for token symbol scope gets created.
 	*
@@ -94,6 +102,43 @@ public:
 	*/
 	ACTION close(const name& owner, const symbol& symbol);
 
+	/**
+	 * @brief - set inflation_rate_percent by the issuer.
+	 * @details - set inflation_rate_percent by the issuer. Rate is voted by the community.
+	 * 
+	 * @param issuer - issuer
+	 * @param year - year e.g. 2020
+	 * @param inflate_rate_percent - inflation rate (in percentage) i.e. 1% = 0.01
+	 * 
+	 * @pre check the issuer is the one saved in the table.
+	 * @pre check the year is of 4 digits
+	 * @pre check inflate_rate_percent is non-zero
+	 */
+	ACTION setinflation(const name& issuer, 
+						uint64_t year, 
+						float inflate_rate_percent);
+
+	/**
+	 * @brief - inflate tokens in the circulating supply
+	 * @details - inflate tokens in the circulating supply by the inflate_percentage 
+	 * 
+	 * @param issuer - issuer
+	 * @param year - year to be inflated
+	 */
+	ACTION inflate(const name& issuer,
+					uint64_t year );
+
+
+	/**
+	 * @brief - burn tokens in the circulating supply
+	 * @details - burn tokens in the circulating supply
+	 * 
+	 * @param issuer - issuer
+	 * 
+	 */
+	// ACTION burn(const name& issuer);
+
+
 	static asset get_supply(const name& token_contract_account, const symbol_code& sym_code) {
 		stats_index statstable(token_contract_account, sym_code.raw());
 		const auto& st = statstable.get(sym_code.raw());	// get that row which contains the symbol as it is declared as primary_index
@@ -106,12 +151,21 @@ public:
 		return ac.balance;							// now, return member i.e. 'supply' of struct 'ac'
 	}
 
+	// get year length eg. for '2020' = 4
+	static uint64_t get_year_length(uint64_t i) {
+	    uint64_t l=0;
+	    for(;i;i/=10) l++;
+	    return l==0 ? 1 : l;
+	}
+
+
 	using create_action  = action_wrapper<"create"_n, &toetoken::create>;
 	using issuer_action  = action_wrapper<"issue"_n, &toetoken::issue>;
 	using retire_action  = action_wrapper<"retire"_n, &toetoken::retire>;
 	using transfer_action  = action_wrapper<"transfer"_n, &toetoken::transfer>;
 	using open_action  = action_wrapper<"open"_n, &toetoken::open>;
 	using close_action  = action_wrapper<"close"_n, &toetoken::close>;
+	using inflate_action = action_wrapper<"inflate"_n, &toetoken::inflate>;
 
 private:
 	// ------------------------------------------------------------------
@@ -135,7 +189,18 @@ private:
 		uint64_t primary_key() const { return supply.symbol.code().raw(); }
 	};
 
-	using stats_index = eosio::multi_index< "stats"_n, currency_stats >;
+	using stats_index = eosio::multi_index< "stat"_n, currency_stats >;
+
+	// ------------------------------------------------------------------
+	TABLE rate
+	{
+		uint64_t year;
+		float inflation_rate_percent;
+
+		auto primary_key() const { return year; }
+	};
+
+	using rates_index = eosio::multi_index< "rates"_n, rate >;
 
 	// ------------------------------------------------------------------
 	void sub_balance(const name& owner, const asset& value);

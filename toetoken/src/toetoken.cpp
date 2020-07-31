@@ -173,4 +173,61 @@ void toetoken::close( const name& owner,
 	check(it != acnts.end(), "Balance row already deleted or never existed. Action won't have any effect.");
 	check(it->balance.amount == 0, "Cannot close because the balance is not zero");	
 	acnts.erase(it);
-}				
+}
+
+void toetoken::setinflation(const name& issuer, 
+					uint64_t year, 
+					float inflate_rate_percent)
+{
+	symbol sym {"TOE",4};
+	stats_index stats_table( get_self(), sym.code().raw() );
+	auto stats_it = stats_table.find(sym.code().raw());
+
+	check( stats_it != stats_table.end(), "token with symbol does not exist");
+
+	check( issuer == stats_it->issuer, "tokens can only be issued to issuer account" );
+
+	require_auth( stats_it->issuer );
+
+	check(get_year_length(year) != 4, "this is not an year");
+
+	check(inflate_rate_percent != 0, "inflation rate can't be zero.");
+
+	rates_index rates_table(get_self(), sym.code().raw());
+	auto rates_it = rates_table.find(year);
+
+	check(rates_it == rates_table.end(), "the inflation_rate for the year already exists. So, can't be modified");
+
+	rates_table.emplace(issuer, [&](auto& row) {
+		row.year = year;
+		row.inflation_rate_percent = inflate_rate_percent;
+	});
+
+}
+
+void toetoken::inflate( const name& issuer,
+				uint64_t year )
+{
+	symbol sym {"TOE",4};
+	stats_index stats_table( get_self(), sym.code().raw() );
+	auto stats_it = stats_table.find(sym.code().raw());
+
+	check( stats_it != stats_table.end(), "token with symbol does not exist");
+
+	check( issuer == stats_it->issuer, "tokens can only be issued to issuer account" );
+
+	require_auth( stats_it->issuer );
+
+	rates_index rates_table(get_self(), sym.code().raw());
+	auto rates_it = rates_table.find(year);
+
+	check(rates_it != rates_table.end(), "the inflation_rate for the year is not found. Please set using \'setinflation\' action.");
+
+	auto inflated_amount = (rates_it->inflation_rate_percent) * supply_initial_amount;
+
+	stats_table.modify(stats_it, same_payer, [&](auto& row){
+		row.supply.amount += inflated_amount;
+	});
+}
+
+

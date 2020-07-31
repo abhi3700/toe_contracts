@@ -7,6 +7,9 @@
 	- [x] transfer tokens from one account to another
 	- [x] open account with even zero balance
 	- [x] close account with zero balance
+	- [x] set inflation rate
+	- [x] inflate total_supply, not max_supply.
+	- [ ] burn
 
 ## About
 * contract name - `toetoken`
@@ -18,9 +21,12 @@
 	- `transfer`
 	- `open`
 	- `close`
+	- `setinflation`
+	- `inflate`
 * table
 	- `stats`
 	- `accounts`
+	- `rates`
 
 ## Workflow
 * The account `toe1111token` is where the contract is uploaded to.

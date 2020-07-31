@@ -60,6 +60,20 @@
             ]
         },
         {
+            "name": "inflate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "issuer",
+                    "type": "name"
+                },
+                {
+                    "name": "year",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
             "name": "issue",
             "base": "",
             "fields": [
@@ -96,6 +110,20 @@
             ]
         },
         {
+            "name": "rate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "year",
+                    "type": "uint64"
+                },
+                {
+                    "name": "inflation_rate_percent",
+                    "type": "float32"
+                }
+            ]
+        },
+        {
             "name": "retire",
             "base": "",
             "fields": [
@@ -106,6 +134,24 @@
                 {
                     "name": "memo",
                     "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "setinflation",
+            "base": "",
+            "fields": [
+                {
+                    "name": "issuer",
+                    "type": "name"
+                },
+                {
+                    "name": "year",
+                    "type": "uint64"
+                },
+                {
+                    "name": "inflate_rate_percent",
+                    "type": "float32"
                 }
             ]
         },
@@ -144,6 +190,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "inflate",
+            "type": "inflate",
+            "ricardian_contract": ""
+        },
+        {
             "name": "issue",
             "type": "issue",
             "ricardian_contract": ""
@@ -156,6 +207,11 @@
         {
             "name": "retire",
             "type": "retire",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setinflation",
+            "type": "setinflation",
             "ricardian_contract": ""
         },
         {
@@ -173,7 +229,14 @@
             "key_types": []
         },
         {
-            "name": "stats",
+            "name": "rates",
+            "type": "rate",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "stat",
             "type": "currency_stats",
             "index_type": "i64",
             "key_names": [],
