@@ -56,12 +56,16 @@ Warning, action <retire> does not have a ricardian contract
 Warning, action <transfer> does not have a ricardian contract
 Warning, action <open> does not have a ricardian contract
 Warning, action <close> does not have a ricardian contract
+Warning, action <setinflation> does not have a ricardian contract
+Warning, action <inflate> does not have a ricardian contract
 Warning, action <create> does not have a ricardian contract
 Warning, action <issue> does not have a ricardian contract
 Warning, action <retire> does not have a ricardian contract
 Warning, action <transfer> does not have a ricardian contract
 Warning, action <open> does not have a ricardian contract
 Warning, action <close> does not have a ricardian contract
+Warning, action <setinflation> does not have a ricardian contract
+Warning, action <inflate> does not have a ricardian contract
 ```
 ## Deploy
 
