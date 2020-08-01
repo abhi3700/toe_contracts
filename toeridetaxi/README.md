@@ -92,6 +92,82 @@ Warning, action <eraseride> does not have a ricardian contract
 > NOTE: Here, actions is repeating during compilation bcoz it is likely using multiple jobs. So, it prints multiple times.
 
 ## Deploy
+* check contract account before deploying
+```
+$ cleost get account toe1ridetaxi
+created: 2020-07-29T21:49:56.000
+permissions:
+     owner     1:    1 EOS8Z6nsjP3xGVaBokqKqSHGTQfAdrpH8m4TEQDaoqsmmg4fpUofv
+        active     1:    1 EOS8Z6nsjP3xGVaBokqKqSHGTQfAdrpH8m4TEQDaoqsmmg4fpUofv
+memory:
+     quota:     755.5 KiB    used:      3.49 KiB
+
+net bandwidth:
+     staked:          1.0000 EOS           (total stake delegated from account to self)
+     delegated:       0.0000 EOS           (total staked delegated to account from others)
+     used:               256 bytes
+     available:        62.49 KiB
+     limit:            62.74 KiB
+
+cpu bandwidth:
+     staked:          1.0000 EOS           (total stake delegated from account to self)
+     delegated:       0.0000 EOS           (total staked delegated to account from others)
+     used:             1.054 ms
+     available:        57.98 ms
+     limit:            59.03 ms
+
+EOS balances:
+     liquid:           10.0000 EOS
+     staked:            2.0000 EOS
+     unstaking:         0.0000 EOS
+     total:            12.0000 EOS
+
+producers:     <not voted>
+```
+* deploy contract
+```
+/toe_contracts/toeridetaxi
+$ cleost set contract toe1ridetaxi ./ -p toe1ridetaxi@active
+Reading WASM from /mnt/f/Coding/github_repos/toe_contracts/toeridetaxi/toeridetaxi.wasm...
+Publishing contract...
+executed transaction: 9acd19a54d1bc42c4476d0d15a2f1b0568ef3338b489d014170f6079bedef862  21624 bytes  8781 us
+#         eosio <= eosio::setcode               {"account":"toe1ridetaxi","vmtype":0,"vmversion":0,"code":"0061736d01000000019f022860000060047f7f7f7...
+#         eosio <= eosio::setabi                {"account":"toe1ridetaxi","abi":"0e656f73696f3a3a6162692f312e3100110a6164646661726561637400030964726...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+* check contract account after deploying
+```
+$ cleost get account toe1ridetaxi
+created: 2020-07-29T21:49:56.000
+permissions:
+     owner     1:    1 EOS8Z6nsjP3xGVaBokqKqSHGTQfAdrpH8m4TEQDaoqsmmg4fpUofv
+        active     1:    1 EOS8Z6nsjP3xGVaBokqKqSHGTQfAdrpH8m4TEQDaoqsmmg4fpUofv
+memory:
+     quota:     755.5 KiB    used:     718.9 KiB
+
+net bandwidth:
+     staked:          1.0000 EOS           (total stake delegated from account to self)
+     delegated:       0.0000 EOS           (total staked delegated to account from others)
+     used:             21.37 KiB
+     available:        41.38 KiB
+     limit:            62.74 KiB
+
+cpu bandwidth:
+     staked:          1.0000 EOS           (total stake delegated from account to self)
+     delegated:       0.0000 EOS           (total staked delegated to account from others)
+     used:               6.8 ms
+     available:        52.23 ms
+     limit:            59.03 ms
+
+EOS balances:
+     liquid:           10.0000 EOS
+     staked:            2.0000 EOS
+     unstaking:         0.0000 EOS
+     total:            12.0000 EOS
+
+producers:     <not voted>
+```
 
 ## Testing
 
