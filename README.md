@@ -22,6 +22,7 @@ The main contracts for CabEOS are as follows:
 * `bhubtoeindia`: Block.Hub TOE India
 * `toeridexsupp`: TOE RIDEX Supply
 * `toeridexfees`: TOE RIDEX Fees
+* `toe11rreward`: TOE Ride Reward
 
 ## Contracts
 * Token
