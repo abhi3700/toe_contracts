@@ -68,9 +68,44 @@ Warning, action <setinflation> does not have a ricardian contract
 Warning, action <inflate> does not have a ricardian contract
 ```
 ## Deploy
+* deploy contract
+```console
+/toetoken
+$ cleost set contract toe1111token ./ -p toe1111token@active
+Reading WASM from /mnt/f/Coding/github_repos/toe_contracts/toetoken/toetoken.wasm...
+Publishing contract...
+executed transaction: 30afb374166fc9cd928648f5701ffbe38de6741854566a3b48797231758b1933  8288 bytes  3182 us
+#         eosio <= eosio::setcode               {"account":"toe1111token","vmtype":0,"vmversion":0,"code":"0061736d0100000001ad011d60000060017e00600...
+#         eosio <= eosio::setabi                {"account":"toe1111token","abi":"0e656f73696f3a3a6162692f312e31000b076163636f756e7400010762616c616e6...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
 
 ## Testing
 * `create`:
 ```console
-$ cleost push action toe1111token create '["bhubindtoeio", "1000000.0000 EOS"]' -p toe1111token@active
+$ cleost push action toe1111token create '["bhubtoeindia", "100000000000.0000 TOE"]' -p toe1111token@active
+executed transaction: 4bbdddad0230aee2c6669674f50670b83174117ca08b2e0f72c7ed590c26d18d  120 bytes  658 us
+#  toe1111token <= toe1111token::create         {"issuer":"bhubtoeindia","maximum_supply":"100000000000.0000 TOE"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* get table after `create` tokens operation
+```console
+$ cleost get table toe1111token TOE stat
+{
+  "rows": [{
+      "supply": "0.0000 TOE",
+      "max_supply": "100000000000.0000 TOE",
+      "issuer": "bhubtoeindia"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+* `issue`:
+```console
+$ cleost push action toe1111token issue '["bhubtoeindia", "1000000000.0000 TOE", "issue 1 B TOE tokens"]' -p bhubtoeindia@active
+executed transaction: 7e988d203ee809d8361b92f3f6517b95dd2172ef85b22182e6f3dfe182c7cba8  144 bytes  310 us
+#  toe1111token <= toe1111token::issue          {"to":"bhubtoeindia","quantity":"1000000000.0000 TOE","memo":"issue 1 B TOE tokens"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
