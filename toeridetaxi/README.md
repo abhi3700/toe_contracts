@@ -8,6 +8,8 @@
 	- [x] alerting commuter about vehicle has reached the pick-up location.
 	- [x] start the ride
 	- [x] finish the ride
+	- [x] driver receive payment just after the ride is finished.
+	- [x] driver add/update the status (online/offline)
 	- [x] sending alert
 	- [x] sending receipt
 
@@ -25,8 +27,10 @@
 - `start`
 - `finish`
 - `addfareact`
-- `sendfare`
 - `recvfare`
+- `addristatus`
+- `sendalert`
+- `sendreceipt`
 
 ## Table
 * `ridetaxi`
@@ -53,7 +57,7 @@ cabeos_contracts/toeridetaxi
 $ eosio-cpp src/toeridetaxi.cpp -o toeridetaxi.wasm
 Warning, empty ricardian clause file
 Warning, empty ricardian clause file
-Warning, action <addpay> does not have a ricardian contract
+Warning, action <addpaymost> does not have a ricardian contract
 Warning, action <create> does not have a ricardian contract
 Warning, action <assign> does not have a ricardian contract
 Warning, action <cancelbycom> does not have a ricardian contract
@@ -64,10 +68,11 @@ Warning, action <start> does not have a ricardian contract
 Warning, action <finish> does not have a ricardian contract
 Warning, action <addfareact> does not have a ricardian contract
 Warning, action <recvfare> does not have a ricardian contract
+Warning, action <addristatus> does not have a ricardian contract
 Warning, action <sendalert> does not have a ricardian contract
 Warning, action <sendreceipt> does not have a ricardian contract
 Warning, action <eraseride> does not have a ricardian contract
-Warning, action <addpay> does not have a ricardian contract
+Warning, action <addpaymost> does not have a ricardian contract
 Warning, action <create> does not have a ricardian contract
 Warning, action <assign> does not have a ricardian contract
 Warning, action <cancelbycom> does not have a ricardian contract
@@ -78,6 +83,7 @@ Warning, action <start> does not have a ricardian contract
 Warning, action <finish> does not have a ricardian contract
 Warning, action <addfareact> does not have a ricardian contract
 Warning, action <recvfare> does not have a ricardian contract
+Warning, action <addristatus> does not have a ricardian contract
 Warning, action <sendalert> does not have a ricardian contract
 Warning, action <sendreceipt> does not have a ricardian contract
 Warning, action <eraseride> does not have a ricardian contract
@@ -93,4 +99,3 @@ Warning, action <eraseride> does not have a ricardian contract
 - [ ] addrating action
 - [ ] add memo in every action (wherever needed)
 - [ ] increase `rides_limit` when a ride is finished & the corresponding pay_mode is `crypto`
-- [ ] statusdri table inside toeridetaxi contract for storing the driver. Action- addstatusdri(const name& driver_ac, const name& status)

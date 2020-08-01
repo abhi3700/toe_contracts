@@ -1,5 +1,4 @@
 #include "../include/toeridetaxi.hpp"
-#include "../../toeridewallet/include/toeridewallet.hpp"
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::addpaymost( const name& commuter_ac ) {
@@ -428,6 +427,36 @@ void toeridetaxi::recvfare( const name& driver_ac ) {
 	}
 
 
+}
+
+void toeridetaxi::addristatus( const name& driver_ac,
+								const name& status )
+{
+	require_auth(driver_ac);
+
+	// check driver must be a verified user
+	// check whether the `driver_ac` is a verified driver by reading the `auth` table
+	user_index user_table("toe1userauth"_n, driver_ac.value);
+	auto user_it = user_table.find(driver_ac.value);
+
+	check( user_it != user_table.end(), "The driver is not added in the Auth Table.");
+	check( user_it->user_status == "verify"_n, "The driver is not verified yet.");
+
+	// check the status is either online/offline
+	check( (status == "online"_n) || (status == "offline"_n), "status must be either online/offline.");
+
+	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
+	auto dridestatus_it = dridestatus_table.find(status.value);
+
+	if(dridestatus_it == dridestatus_table.end()) {
+		dridestatus_table.emplace(driver_ac, [&](auto& row){
+			row.status = status;
+		});
+	} else{
+		dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
+			row.status = status;
+		});
+	}
 }
 
 

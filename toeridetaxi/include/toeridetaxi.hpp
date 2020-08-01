@@ -90,6 +90,9 @@ public:
 	 * @param driver_ac - driver eosio account name
 	 * @param commuter_ac - commuter eosio account name
 	 * @param reachsrc_timestamp_est - estimated time to reach the pick-up point
+	 * 
+	 * @pre driver must be a verified user
+	 * @pre driver_status must be online from `dridestatus` table
 	 */
 	ACTION assign( const name& driver_ac, 
 					const name& commuter_ac,
@@ -213,6 +216,17 @@ public:
 	ACTION recvfare( const name& driver_ac );
 
 	/**
+	 * @brief - driver add status - online/offline
+	 * @details - driver add status - online/offline
+	 * 
+	 * @param driver_ac - driver's account
+	 * @param status - online/offline
+	 * 
+	 * @pre driver must be a verified user
+	 */
+	ACTION addristatus( const name& driver_ac, const name& status );
+
+	/**
 	 * @brief - send alert
 	 * @details - send alert after the action is successfully done. e.g. driver alerting commuter that the vehicle has arrived
 	 * 
@@ -285,6 +299,15 @@ private:
 									indexed_by<"byvehicltype"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_3>>
 									>;
 
+// -----------------------------------------------------------------------------------------------------------------------
+	TABLE dridestatus
+	{
+		name status;	// online or offline
+
+		auto primary_key() const { return status.value; };
+	};
+
+	using dridestatus_index = multi_index<"dridestatus"_n, dridestatus>;
 
 // -----------------------------------------------------------------------------------------------------------------------
 	struct ridewallet

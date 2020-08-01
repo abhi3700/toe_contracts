@@ -32,6 +32,20 @@
             ]
         },
         {
+            "name": "addristatus",
+            "base": "",
+            "fields": [
+                {
+                    "name": "driver_ac",
+                    "type": "name"
+                },
+                {
+                    "name": "status",
+                    "type": "name"
+                }
+            ]
+        },
+        {
             "name": "assign",
             "base": "",
             "fields": [
@@ -146,6 +160,16 @@
                 {
                     "name": "seat_count",
                     "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "dridestatus",
+            "base": "",
+            "fields": [
+                {
+                    "name": "status",
+                    "type": "name"
                 }
             ]
         },
@@ -330,6 +354,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "addristatus",
+            "type": "addristatus",
+            "ricardian_contract": ""
+        },
+        {
             "name": "assign",
             "type": "assign",
             "ricardian_contract": ""
@@ -391,6 +420,13 @@
         }
     ],
     "tables": [
+        {
+            "name": "dridestatus",
+            "type": "dridestatus",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
         {
             "name": "ridestaxi",
             "type": "ridetaxi",
