@@ -25,6 +25,16 @@ The main contracts for CabEOS are as follows:
 * `toe11rreward`: TOE Ride Reward
 
 ## Contracts
+* Auth
+	- Action
+		+ [x] creatifyuser
+		+ [x] vbdricom
+		+ [x] compvbvdator
+		+ [x] deluser
+		+ [x] sendalert (inline)
+		+ [x] sendreceipt	(inline)
+	- Table
+		+ `users`
 * Token
 	- Action
 		+ [x] create
@@ -33,7 +43,8 @@ The main contracts for CabEOS are as follows:
 		+ [x] retire
 		+ [x] open
 		+ [x] close
-		+ [ ] inflate
+		+ [x] setinflation
+		+ [x] inflate
 	- Table
 		+ `stats`
 		+ `accounts`
@@ -51,8 +62,8 @@ The main contracts for CabEOS are as follows:
 		+ [x] finish
 		+ [x] addfareact
 		+ [x] recvfare
-		+ [x] sendalert
-		+ [x] sendreceipt
+		+ [x] sendalert (inline)
+		+ [x] sendreceipt (inline)
 		+ [x] eraseride 		// delete the ride entry, even if the rating is not done or will be done later. Bcoz, the RAM can't be consumed due to this delay.
 	- Table	
 		+ ridetaxi
