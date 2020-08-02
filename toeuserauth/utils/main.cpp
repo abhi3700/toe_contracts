@@ -7,9 +7,9 @@ using std::string;
 int main() {
 	hashwrapper *mywrapper = new sha256wrapper();
 
-	string name = "Ramesh Chakravorty";
-	string address = "5 Garfa 8th Lane, Jadavpur, Kolkata - 700045";
-	string country_id = "653278229043"; 
+string name = "Dharmender Singh Dhillon";
+string address = "K-52 \nBlock K, Kirti Nagar \nNew Delhi, Delhi 110015";
+string country_id = "257425328532"; 
 
 	try {
 		std::string hash1 = mywrapper->getHashFromString(name + address + country_id);

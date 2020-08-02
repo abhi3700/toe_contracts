@@ -65,7 +65,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 
 ## Testing
 ### Action - `creatifyuser`
-#### Driver - `toedri111111`
+#### 1. Driver - `toedri111111`
 * `toedri111111` uses `creatifyuser` action to register as a driver
 ```console
 $ cleost push action toe1userauth creatifyuser '["toedri111111", "driver", "e5deda7cafa7b8c861b352e34d6741461ee17a7c2385a0f86763e9ab3298c385", "register by adding info as a driver" ]' -p toedri111111@active
@@ -74,15 +74,6 @@ executed transaction: 60429714ae4dc6cdbb771aabefcc404985a9f1765bb683b7bb527cfae1
 #  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111111","message":"the user details is added."}
 #  toedri111111 <= toe1userauth::sendreceipt    {"user":"toedri111111","message":"the user details is added."}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
-```
-	- calculated __profile_hash__ for driver's info:
-```cpp
-string name = "Ramesh Chakravorty";
-string address = "5 Garfa 8th Lane, Jadavpur, Kolkata - 700045";
-string country_id = "653278229043"; 
-```
-```console
-e5deda7cafa7b8c861b352e34d6741461ee17a7c2385a0f86763e9ab3298c385
 ```
 
 * view the table after `toedri111111` registers as a __driver__
@@ -156,10 +147,148 @@ $ cleost get table toe1userauth toedri111111 users
 		+ For main action `creatifyuser`, only the contract (`toe1userauth`) account is notified.
 		+ For inline action `sendreceipt`, both the contract (`toe1userauth`) & user (`toedri111111`) accounts are notified.
 		+ both the actions are stored in same block no. __104842897__ with same txn_id __60429714ae4dc6cdbb771aabefcc404985a9f1765bb683b7bb527cfae1499cf3__
+		+ for this action, resources used:
+			- RAM: __0.684 KB__ of `toedri111111` (mentioned in `emplace`, `modify` methods of table) 
+			- NET: __176 bytes__ of `toedri111111` (mentioned in `require_auth()`)
+			- CPU: __879 us__ of `toedri111111` (mentioned in `require_auth()`)
+		+ <u>Observation:</u> The __RAM__, __NET__ are constant for different execution of the `creatifyuser` action. But, the __CPU__ is different i.e. range: __326-991 us__
+
+#### 2. Driver - `toedri111112`
+Just like driver - `toedri111111` add & check the info.
+* `toedri111112` uses `creatifyuser` action to register as a driver
+```console
+$ cleost push action toe1userauth creatifyuser '["toedri111112", "driver", "961a7c07040fe3fff086860b04943db2216cb7a4192293e373c7efa8d9d348fb", "register by adding info as a driver" ]' -p toedri111112@active
+executed transaction: a50ef59b153701b8087d9ca7c1160fc636f86c2aa530f4ec59f3065977bdb16d  176 bytes  402 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"toedri111112","type":"driver","profile_hash":"961a7c07040fe3fff086860b04943db2216cb7a419229...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111112","message":"the user details is added."}
+#  toedri111112 <= toe1userauth::sendreceipt    {"user":"toedri111112","message":"the user details is added."}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### 3. Driver - `toedri111113`
+Just like driver - `toedri111111` add & check the info.
+* `toedri111113` uses `creatifyuser` action to register as a driver
+```console
+$ cleost push action toe1userauth creatifyuser '["toedri111113", "driver", "847081360ffb58362154d0b7e328d18d9bfec74809a1035f8eb0a9c0907549b6", "register by adding info as a driver" ]' -p toedri111113@active
+executed transaction: 13b9689eb356464901aa441a1ce15f5be929b110bfb7f82337a060b4f8342ac1  176 bytes  879 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"toedri111113","type":"driver","profile_hash":"847081360ffb58362154d0b7e328d18d9bfec74809a10...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111113","message":"the user details is added."}
+#  toedri111113 <= toe1userauth::sendreceipt    {"user":"toedri111113","message":"the user details is added."}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### 4. Driver - `toedri111114`
+Just like driver - `toedri111111` add & check the info.
+* `toedri111114` uses `creatifyuser` action to register as a driver
+```console
+$ cleost push action toe1userauth creatifyuser '["toedri111114", "driver", "42b5a35892f4103dce2d707e86cca61df5af06d5dc898418c50b8df5166c7e81", "register by adding info as a driver" ]' -p toedri111114@active
+executed transaction: 84a68df68bc7e0b7f9110984d644b10b9492584d41da616626ac28b0d35de94f  176 bytes  882 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"toedri111114","type":"driver","profile_hash":"42b5a35892f4103dce2d707e86cca61df5af06d5dc898...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111114","message":"the user details is added."}
+#  toedri111114 <= toe1userauth::sendreceipt    {"user":"toedri111114","message":"the user details is added."}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### 5. Driver - `toedri111115`
+Just like driver - `toedri111111` add & check the info.
+* `toedri111115` uses `creatifyuser` action to register as a driver
+```console
+$ cleost push action toe1userauth creatifyuser '["toedri111115", "driver", "071a229f32a7bcca404af704f079bde8ea5e4282f577134f83d0f826c3d8c097", "register by adding info as a driver" ]' -p toedri111115@active
+executed transaction: 35624cb57f9a59f5e6b1ba35a4f73b6ac6083278aa0e5cb496ce277c2c7e312c  176 bytes  463 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"toedri111115","type":"driver","profile_hash":"071a229f32a7bcca404af704f079bde8ea5e4282f5771...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111115","message":"the user details is added."}
+#  toedri111115 <= toe1userauth::sendreceipt    {"user":"toedri111115","message":"the user details is added."}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### 6. Driver - `toedri111121`
+Just like driver - `toedri111111` add & check the info.
+* `toedri111121` uses `creatifyuser` action to register as a driver
+```console
+$ cleost push action toe1userauth creatifyuser '["toedri111121", "driver", "41dc4b05b5aebc3b06997240eeb8525686453267f233519dabaa4e49e979011c", "register by adding info as a driver" ]' -p toedri111121@active
+executed transaction: 9c8b3075603bd2f93f64a07148f42e04b750e63b15440e96c1eefd667137d468  176 bytes  384 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"toedri111121","type":"driver","profile_hash":"41dc4b05b5aebc3b06997240eeb8525686453267f2335...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111121","message":"the user details is added."}
+#  toedri111121 <= toe1userauth::sendreceipt    {"user":"toedri111121","message":"the user details is added."}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### 7. Driver - `toedri111122`
+Just like driver - `toedri111111` add & check the info.
+* `toedri111122` uses `creatifyuser` action to register as a driver
+```console
+$ cleost push action toe1userauth creatifyuser '["toedri111122", "driver", "33bb90fbb8e292be5d7b8db0a076020a4b8f035b4bccfb0bd5fd84ba26b2eb4e", "register by adding info as a driver" ]' -p toedri111122@active
+executed transaction: 3339ddd63e9ee521a25257d5bed9c12a76ef6ff24ec06a802b3558a90721a132  176 bytes  326 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"toedri111122","type":"driver","profile_hash":"33bb90fbb8e292be5d7b8db0a076020a4b8f035b4bccf...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111122","message":"the user details is added."}
+#  toedri111122 <= toe1userauth::sendreceipt    {"user":"toedri111122","message":"the user details is added."}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### 8. Driver - `toedri111123`
+Just like driver - `toedri111111` add & check the info.
+* `toedri111123` uses `creatifyuser` action to register as a driver
+```console
+$ cleost push action toe1userauth creatifyuser '["toedri111123", "driver", "f3469407c99952d21fc54a79c7a9b03530216a0f55e2fa2dc3e38e7960975c37", "register by adding info as a driver" ]' -p toedri111123@active
+executed transaction: 0822e630fb18344737f7a07d8038cddc3ad45edb2b5ad3a82973a8487e7b76fd  176 bytes  411 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"toedri111123","type":"driver","profile_hash":"f3469407c99952d21fc54a79c7a9b03530216a0f55e2f...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111123","message":"the user details is added."}
+#  toedri111123 <= toe1userauth::sendreceipt    {"user":"toedri111123","message":"the user details is added."}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### 9. Driver - `toedri111124`
+Just like driver - `toedri111111` add & check the info.
+* `toedri111124` uses `creatifyuser` action to register as a driver
+```console
+$ cleost push action toe1userauth creatifyuser '["toedri111124", "driver", "6aff4d0192db8cc6212004b45994c587b303b6c865f843e703d349ddde58b8e6", "register by adding info as a driver" ]' -p toedri111124@active
+executed transaction: 58d44a0797d7ffa16dd3c93eb6fc7356e9e7a48daed447274692d245abe3d5a2  176 bytes  399 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"toedri111124","type":"driver","profile_hash":"6aff4d0192db8cc6212004b45994c587b303b6c865f84...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111124","message":"the user details is added."}
+#  toedri111124 <= toe1userauth::sendreceipt    {"user":"toedri111124","message":"the user details is added."}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### 10. Driver - `toedri111125`
+Just like driver - `toedri111111` add & check the info.
+* `toedri111125` uses `creatifyuser` action to register as a driver
+```console
+$ cleost push action toe1userauth creatifyuser '["toedri111125", "driver", "7f6487394369dcd326d776e0578daae7ff510988411c01945387c95212d185e5", "register by adding info as a driver" ]' -p toedri111125@active
+executed transaction: cb8015f9249ca3198795e4b44adc05654de9e38aa9bf2b054b78971059318fbf  176 bytes  991 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"toedri111125","type":"driver","profile_hash":"7f6487394369dcd326d776e0578daae7ff510988411c0...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111125","message":"the user details is added."}
+#  toedri111125 <= toe1userauth::sendreceipt    {"user":"toedri111125","message":"the user details is added."}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### 1. Commuter - `toecom111111`
+Just like driver - `toedri111111` add & check the info.
+* `toecom111111` uses `creatifyuser` action to register as a commuter
+```console
+$ cleost push action toe1userauth creatifyuser '["toecom111111", "commuter", "cd61dd65af92e0d9b0a157ac6c13116e5bd446c2b5ec2eb9cb8b7f7a2e79b4be", "register by adding info as a commuter" ]' -p toecom111111@active
+executed transaction: c55a077adf359ee829aaade3900646cbc5dfb4ae934460704495e223b27cecfe  184 bytes  916 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"toecom111111","type":"commuter","profile_hash":"cd61dd65af92e0d9b0a157ac6c13116e5bd446c2b5e...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toecom111111","message":"the user details is added."}
+#  toecom111111 <= toe1userauth::sendreceipt    {"user":"toecom111111","message":"the user details is added."}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### 2. Commuter - `toecom111112`
+Just like driver - `toedri111111` add & check the info.
+* `toecom111112` uses `creatifyuser` action to register as a commuter
+```console
+$ cleost push action toe1userauth creatifyuser '["toecom111112", "commuter", "6498978de380f1050c6a15771deaf3b70b771fcb00408fa6584d297c6f8b9a2a", "register by adding info as a commuter" ]' -p toecom111112@active
+executed transaction: 663079caaf1f5e71e2cd83df629918f0f702e05234768c95784f475f28744a56  184 bytes  1115 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"toecom111112","type":"commuter","profile_hash":"6498978de380f1050c6a15771deaf3b70b771fcb004...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toecom111112","message":"the user registers by adding as a commuter"}
+#  toecom111112 <= toe1userauth::sendreceipt    {"user":"toecom111112","message":"the user registers by adding as a commuter"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
 
 ## Utility
 * [Calculate profile hash](./utils)
-	- `toedri111111` driver
+	1. `toedri111111` driver
 ```cpp
 string name = "Ramesh Chakravorty";
 string address = "5 Garfa 8th Lane, Jadavpur, Kolkata - 700045";
@@ -168,4 +297,105 @@ string country_id = "653278229043";
 ```console
 e5deda7cafa7b8c861b352e34d6741461ee17a7c2385a0f86763e9ab3298c385
 ```
+	2. `toedri111112` driver
+```cpp
+string name = "Balwinder Dhillon";
+string address = "512 Sector 23-A, New Delhi - 110001";
+string country_id = "564324529287"; 
+```
+```console
+961a7c07040fe3fff086860b04943db2216cb7a4192293e373c7efa8d9d348fb
+```
+	3. `toedri111113` driver
+```cpp
+string name = "Gurwinder Singh";
+string address = "390 Sector 76, Mohali, Punjab - 160076";
+string country_id = "786709853478"; 
+```
+```console
+847081360ffb58362154d0b7e328d18d9bfec74809a1035f8eb0a9c0907549b6
+```
+	4. `toedri111114` driver
+```cpp
+string name = "Manpreet Singh Mokha";
+string address = "90 Sector 89, Bathinda, Punjab - 151001";
+string country_id = "894576326741"; 
+```
+```console
+42b5a35892f4103dce2d707e86cca61df5af06d5dc898418c50b8df5166c7e81
+```
+	5. `toedri111115` driver
+```cpp
+string name = "Kunal Kumar Singh";
+string address = "36HR+27 Sanderi, Maharashtra 402101";
+string country_id = "498327450960"; 
+```
+```console
+071a229f32a7bcca404af704f079bde8ea5e4282f577134f83d0f826c3d8c097
+```
+	6. `toedri111121` driver
+```cpp
+string name = "Abhilash Das";
+string address = "26, 7th A Main Rd, \nKEB Colony, New Gurappana Palya, 1st Stage, BTM Layout \nBengaluru, Karnataka 560029";
+string country_id = "549034528921"; 
+```
+```console
+41dc4b05b5aebc3b06997240eeb8525686453267f233519dabaa4e49e979011c
+```
+
+	7. `toedri111122` driver
+```cpp
+string name = "R. Muthuswamy";
+string address = "12th St \nAmbattur Industrial Estate \nChennai, Tamil Nadu 600058";
+string country_id = "874384218032"; 
+```
+```console
+33bb90fbb8e292be5d7b8db0a076020a4b8f035b4bccfb0bd5fd84ba26b2eb4e
+```
+	8. `toedri111123` driver
+```cpp
+string name = "P.L. Radhakrishnan";
+string address = "Vivekanand Nagar \nKesavadasapuram \nThiruvananthapuram, Kerala 695004";
+string country_id = "435287320341"; 
+```
+```console
+f3469407c99952d21fc54a79c7a9b03530216a0f55e2fa2dc3e38e7960975c37
+```
+	9. `toedri111124` driver
+```cpp
+string name = "Sonam Wangchuk";
+string address = "Pynthorumkhrah \nShillong, Meghalaya 793019";
+string country_id = "324735303275"; 
+```
+```console
+6aff4d0192db8cc6212004b45994c587b303b6c865f843e703d349ddde58b8e6
+```
+	10. `toedri111125` driver
+```cpp
+string name = "Kaushik Jalali";
+string address = "Shalamar \nJammu 180001";
+string country_id = "348732582382"; 
+```
+```console
+7f6487394369dcd326d776e0578daae7ff510988411c01945387c95212d185e5
+```
+	11. `toecom111111` commuter
+```cpp
+string name = "Abhijit Banerjee";
+string address = "650 (1st floor), Sector-78, Mohali, Punjab - 160078";
+string country_id = "732547458343"; 
+```
+```console
+cd61dd65af92e0d9b0a157ac6c13116e5bd446c2b5ec2eb9cb8b7f7a2e79b4be
+```
+	12. `toecom111112` commuter
+```cpp
+string name = "Dharmender Singh Dhillon";
+string address = "K-52 \nBlock K, Kirti Nagar \nNew Delhi, Delhi 110015";
+string country_id = "257425328532"; 
+```
+```console
+6498978de380f1050c6a15771deaf3b70b771fcb00408fa6584d297c6f8b9a2a
+```
+
 
