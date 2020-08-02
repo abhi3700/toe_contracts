@@ -21,8 +21,16 @@ using eosio::permission_level;
 using std::string;
 
 CONTRACT toeuserauth : public contract {
+private:
+	const name company_validator_ac;
 public:
 	using contract::contract;
+
+	toeridetaxi(name receiver, name code, datastream<const char*> ds) : 
+				contract(receiver, code, ds), 
+				company_validator_ac("bhubtoeinval"_n) {}
+	
+
 	/**
 	 * @brief - add/update user details
 	 * @details - add/update user details to the `users` table
@@ -45,7 +53,7 @@ public:
 	 * 
 	 * @param validator_user - validator account name
 	 * @param dricom_user - driver/commuter account name
-	 * @param dricom_user_status - verified/blacklisted
+	 * @param dricom_user_status - to be verified/blacklisted by TOE CARES validators
 	 * @param memo - a note (reason) for the corresponding status, visible 
 	 * 					in the user's action via send_receipt() or send_alert() inline actions
 	 */
@@ -60,7 +68,7 @@ public:
 	 * @details - company verify/blacklist validator_user as verified/blacklisted
 	 * 
 	 * @param validator_user - validator account name
-	 * @param validator_user_status - verified/blacklisted
+	 * @param validator_user_status - to be verified/blacklisted by Company validator account i.e. "bhubtoeinval"
 	 * @param memo - a note (reason) for the corresponding status, visible 
 	 * 					in the user's action via send_receipt() or send_alert() inline actions
 	 */

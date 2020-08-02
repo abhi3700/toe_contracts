@@ -104,9 +104,9 @@ void toeuserauth::vbdricom( const name& validator_user,
 void toeuserauth::compvbvdator( const name& validator_user,
 								const name& validator_user_status,
 								const string& memo) {
-	// authority by the company itself @TODO: can be replaced by a company a/c name: "bhubtoeindia"
+	// authority by the company itself @TODO: can be replaced by a company a/c name: "bhubtoeinval"
 	require_auth(get_self());
-	// require_auth("bhubtoeindia"_n);
+	// require_auth("bhubtoeinval"_n);
 
 	check(is_account(validator_user), "invalid validator user account name");
 	check( (validator_user_status == "verified"_n) 
