@@ -113,7 +113,7 @@ void toeuserauth::compvbvdator( const name& validator_user,
 	user_index user_compvalidator_table(get_self(), company_validator_ac.value);
 	auto user_compvalidator_it = user_compvalidator_table.find(company_validator_ac.value);
 	check(user_compvalidator_it != user_compvalidator_table.end(), "the company validator exists in the table.");
-	check(user_compvalidator_it->user_status != "verified"_n, "the company validator is not yet verified. Please self-verify.");
+	check(user_compvalidator_it->user_status == "verified"_n, "the company validator is not yet verified. Please self-verify.");
 
 
 	check(is_account(validator_user), "invalid validator user account name");
