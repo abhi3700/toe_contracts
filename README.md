@@ -285,8 +285,9 @@ n = no. of Rides needed (in no.)
 
 ### CARES
 * Customer Service Partners which are associated with the platform for doing the work assigned to them.
-* The initial partners will be validated/verified by the Company itself. The concerned account - `bhubtoeinval`
-* And these partners will further verify the drivers/commuters & eventually other new partners. Then this action - `compvbvdator` will be __DEPRECATED__.
+* Register & self-verify company validator account - `bhubtoeinval` as validator.
+* The initial partners like `toepar111111`,... will be validated/verified by the Company itself. The concerned account - `bhubtoeinval`
+* And these partners will further verify the drivers/commuters & eventually other new partners. Then this action - `compvbvdator` will be __DEPRECATED__ & the `bhubtoeinval` will be removed from the `users` table.
 * Their works:
 	- verify/blacklist the drivers (more strictly), commuters
 	- attend to issues raised by drivers, commuters
