@@ -23,6 +23,10 @@ void toeuserauth::creatifyuser( const name& user,
 			row.user_status = "added"_n;
 			row.add_timestamp = now();
 		});
+
+		// send_receipt() to user for adding
+		send_receipt(user, "the user registers by adding as a " + type.to_string());
+
 	} else {								// found
 		check( user_it->type == type, "user's type doesn't match with the stored one.");
 
@@ -30,13 +34,13 @@ void toeuserauth::creatifyuser( const name& user,
 			row.profile_hash = profile_hash;
 			row.user_status = "updated"_n;
 			row.update_timestamp = now();
+	
+		// send_receipt() to user for updating
+		send_receipt(user, "the user registers by updating as a " + type.to_string());
+	
 		});
 	}
 
-
-
-	// send_receipt() to user for getting added
-	send_receipt(user, "the user details is added.");
 }
 
 // --------------------------------------------------------------------------------------------------------------------
