@@ -285,6 +285,110 @@ executed transaction: 663079caaf1f5e71e2cd83df629918f0f702e05234768c95784f475f28
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
 
+#### 1. Company Validator - `bhubtoeinval`
+Just like driver - `toedri111111` add & check the info.
+* `bhubtoeinval` uses `creatifyuser` action to register as a validator
+```console
+$ cleost push action toe1userauth creatifyuser '["bhubtoeinval", "validator", "77c219ee156e40ffb3e05c4084ab3268c07e1658c8c5da48d38546f330a720ac", "register by adding info as a company validator" ]' -p bhubtoeinval@active
+executed transaction: d4f822ebef14dc0cb654fb9de4e3a170759746ccc45a204703249b7a077400a5  192 bytes  306 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"bhubtoeinval","type":"validator","profile_hash":"77c219ee156e40ffb3e05c4084ab3268c07e1658c8...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"bhubtoeinval","message":"the user registers by adding as a validator"}
+#  bhubtoeinval <= toe1userauth::sendreceipt    {"user":"bhubtoeinval","message":"the user registers by adding as a validator"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### 1. Validator - `toepar111111`
+Just like driver - `toedri111111` add & check the info.
+* `toepar111111` uses `creatifyuser` action to register as a validator
+```console
+$ cleost push action toe1userauth creatifyuser '["toepar111111", "validator", "2f01723e886ad39bc7cbf330faf131310f82392af082b1b0a0598ce1dd538cf7", "register by adding info as a validator" ]' -p toepar111111@active
+executed transaction: 9e1e2a7096d33e753a7202fd450621881c4a0dc9094fa11a2f08e7fc41edeb7f  184 bytes  290 us
+#  toe1userauth <= toe1userauth::creatifyuser   {"user":"toepar111111","type":"validator","profile_hash":"2f01723e886ad39bc7cbf330faf131310f82392af0...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toepar111111","message":"the user registers by adding as a validator"}
+#  toepar111111 <= toe1userauth::sendreceipt    {"user":"toepar111111","message":"the user registers by adding as a validator"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+### Action - `compvbvdator`
+* `bhubtoeinval` verifies itself
+```console
+$ cleost push action toe1userauth compvbvdator '["bhubtoeinval", "verified", "verify itself as validator"]' -p bhubtoeinval@active
+executed transaction: 42e80377aacee1481db32391ec8b5ffa98c66705dc9d441ac436818d81f4bc63  136 bytes  689 us
+#  toe1userauth <= toe1userauth::compvbvdator   {"validator_user":"bhubtoeinval","validator_user_status":"verified","memo":"verify itself as validat...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"bhubtoeinval","message":"the user status is updated to verified by bhubtoeinval. Note for t...
+#  bhubtoeinval <= toe1userauth::sendalert      {"user":"bhubtoeinval","message":"the user status is updated to verified by bhubtoeinval. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+	- view the table after this operation
+```console
+$ cleost get table toe1userauth bhubtoeinval users
+{
+  "rows": [{
+      "user": "bhubtoeinval",
+      "type": "validator",
+      "profile_hash": "77c219ee156e40ffb3e05c4084ab3268c07e1658c8c5da48d38546f330a720ac",
+      "user_status": "verified",
+      "add_timestamp": 1596407762,
+      "update_timestamp": 0,
+      "verify_timestamp": 1596407911,
+      "blist_timestamp": 0,
+      "validator_verify": "bhubtoeinval",
+      "validator_blacklist": "",
+      "rating": "0.00000000000000000",
+      "ride_total": 0,
+      "ride_rated": 0
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+* `bhubtoeinval` verifies `toepar111111` validator
+```console
+$ cleost push action toe1userauth compvbvdator '["toepar111111", "verified", "verify validator"]' -p bhubtoeinval@active
+executed transaction: 41f448b6ad880ef7a34280636a0b6c7a42b5f49a161cbf2d3713fc0ea714043b  128 bytes  304 us
+#  toe1userauth <= toe1userauth::compvbvdator   {"validator_user":"toepar111111","validator_user_status":"verified","memo":"verify validator"}
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toepar111111","message":"the user status is updated to verified by bhubtoeinval. Note for t...
+#  toepar111111 <= toe1userauth::sendalert      {"user":"toepar111111","message":"the user status is updated to verified by bhubtoeinval. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+	- view the table after this operation
+```console
+$ cleost get table toe1userauth toepar111111 users
+{
+  "rows": [{
+      "user": "toepar111111",
+      "type": "validator",
+      "profile_hash": "2f01723e886ad39bc7cbf330faf131310f82392af082b1b0a0598ce1dd538cf7",
+      "user_status": "verified",
+      "add_timestamp": 1596408554,
+      "update_timestamp": 0,
+      "verify_timestamp": 1596408859,
+      "blist_timestamp": 0,
+      "validator_verify": "bhubtoeinval",
+      "validator_blacklist": "",
+      "rating": "0.00000000000000000",
+      "ride_total": 0,
+      "ride_rated": 0
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+
+
+
+### Action - `deluser`
+* delete a user `bhubtoeinval` from table
+```console
+$ cleost push action toe1userauth deluser '["bhubtoeinval", "del user, register as validator"]' -p bhubtoeinval@active
+executed transaction: 8d291de375bfdd5724bf6d09f7d0e3af5c4e1e601f12889cfabed4bf4656cafd  136 bytes  372 us
+#  toe1userauth <= toe1userauth::deluser        {"user":"bhubtoeinval","memo":"del user, register as validator"}
+#  toe1userauth <= toe1userauth::sendalert      {"user":"bhubtoeinval","message":"The user is deleted due to: del user, register as validator"}
+#  bhubtoeinval <= toe1userauth::sendalert      {"user":"bhubtoeinval","message":"The user is deleted due to: del user, register as validator"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
 
 ## Utility
 * [Calculate profile hash](./utils)
@@ -396,6 +500,24 @@ string country_id = "257425328532";
 ```
 ```console
 6498978de380f1050c6a15771deaf3b70b771fcb00408fa6584d297c6f8b9a2a
+```
+	13. `bhubtoeinval` validator
+```cpp
+string name = "Block.Hub TOE company validator";
+string address = "Mohali, Punjab - 160055";
+string country_id = "652439874932"; 
+```
+```console
+77c219ee156e40ffb3e05c4084ab3268c07e1658c8c5da48d38546f330a720ac
+```
+	14. `toepar111111` validator
+```cpp
+string name = "Ramesh Chopra";
+string address = "F-24 \nBlock F, Kirti Nagar \nNew Delhi, Delhi 110015";
+string country_id = "434731547311"; 
+```
+```console
+2f01723e886ad39bc7cbf330faf131310f82392af082b1b0a0598ce1dd538cf7
 ```
 
 
