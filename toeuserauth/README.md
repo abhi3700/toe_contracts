@@ -309,6 +309,148 @@ executed transaction: 9e1e2a7096d33e753a7202fd450621881c4a0dc9094fa11a2f08e7fc41
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
 
+### Action - `vbdricom`
+* `toepar111111` verifies driver - `toedri111111`
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111111", "verified", "verify user"]' -p toepar111111@active
+executed transaction: 172797738cf436b25d5eb776c1f66afd8965d48912565c41f18733ad0a431e1e  128 bytes  869 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toedri111111","dricom_user_status":"verified","memo"...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111111","message":"the user status is updated to verified by toepar111111. Note for t...
+#  toedri111111 <= toe1userauth::sendalert      {"user":"toedri111111","message":"the user status is updated to verified by toepar111111. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+	- view the table after this operation
+```console
+$ cleost get table toe1userauth toedri111111 users
+{
+  "rows": [{
+      "user": "toedri111111",
+      "type": "driver",
+      "profile_hash": "e5deda7cafa7b8c861b352e34d6741461ee17a7c2385a0f86763e9ab3298c385",
+      "user_status": "verified",
+      "add_timestamp": 1596366825,
+      "update_timestamp": 0,
+      "verify_timestamp": 1596410116,
+      "blist_timestamp": 0,
+      "validator_verify": "toepar111111",
+      "validator_blacklist": "",
+      "rating": "0.00000000000000000",
+      "ride_total": 0,
+      "ride_rated": 0
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+* `toepar111111` verifies driver - `toedri111112`
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111112", "verified", "verify user"]' -p toepar111111@active
+executed transaction: 18c54e02157d6a43e4c47d0c6b35c3c52e5378ee4358cdde5170a5612042e322  128 bytes  683 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toedri111112","dricom_user_status":"verified","memo"...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111112","message":"the user status is updated to verified by toepar111111. Note for t...
+#  toedri111112 <= toe1userauth::sendalert      {"user":"toedri111112","message":"the user status is updated to verified by toepar111111. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* `toepar111111` verifies driver - `toedri111113`
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111113", "verified", "verify user"]' -p toepar111111@active
+executed transaction: 8e7a15e85371e45384f6425e3b29f19ed6e269c3b1b10527fddcf05723f31205  128 bytes  735 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toedri111113","dricom_user_status":"verified","memo"...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111113","message":"the user status is updated to verified by toepar111111. Note for t...
+#  toedri111113 <= toe1userauth::sendalert      {"user":"toedri111113","message":"the user status is updated to verified by toepar111111. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* `toepar111111` verifies driver - `toedri111114`
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111114", "verified", "verify user"]' -p toepar111111@active
+executed transaction: 438fb910994c124a2266b242a6eda7b5a0b9f51bdf930131011272b4d8498586  128 bytes  746 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toedri111114","dricom_user_status":"verified","memo"...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111114","message":"the user status is updated to verified by toepar111111. Note for t...
+#  toedri111114 <= toe1userauth::sendalert      {"user":"toedri111114","message":"the user status is updated to verified by toepar111111. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* `toepar111111` verifies driver - `toedri111115`
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111115", "verified", "verify user"]' -p toepar111111@active
+executed transaction: 3ed8ed6a2ef426a0826a2510289bf19768d523b24e3f68f6cc9bb603fd0eca83  128 bytes  275 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toedri111115","dricom_user_status":"verified","memo"...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111115","message":"the user status is updated to verified by toepar111111. Note for t...
+#  toedri111115 <= toe1userauth::sendalert      {"user":"toedri111115","message":"the user status is updated to verified by toepar111111. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* `toepar111111` verifies driver - `toedri111121`
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111121", "verified", "verify user"]
+' -p toepar111111@active
+executed transaction: b30bf90296d459db06ffdb82129a6a1327d517d9c046bf6846cf6c8a4eb77d04  128 bytes  683 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toedri111121","dricom_user_status":"verified","memo"...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111121","message":"the user status is updated to verified by toepar111111. Note for t...
+#  toedri111121 <= toe1userauth::sendalert      {"user":"toedri111121","message":"the user status is updated to verified by toepar111111. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* `toepar111111` verifies driver - `toedri111122`
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111122", "verified", "verify user"]
+' -p toepar111111@active
+executed transaction: d8f37163eb623f6f2feb544b3bf83c4dee65def2e0453bf7aa6d7f775450722d  128 bytes  755 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toedri111122","dricom_user_status":"verified","memo"...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111122","message":"the user status is updated to verified by toepar111111. Note for t...
+#  toedri111122 <= toe1userauth::sendalert      {"user":"toedri111122","message":"the user status is updated to verified by toepar111111. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* `toepar111111` verifies driver - `toedri111123`
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111123", "verified", "verify user"]
+' -p toepar111111@active
+executed transaction: bcc2fa8c5700dfc77d609edf91e67b5bf3457d2090fde8a576a73e4079edbe9f  128 bytes  291 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toedri111123","dricom_user_status":"verified","memo"...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111123","message":"the user status is updated to verified by toepar111111. Note for t...
+#  toedri111123 <= toe1userauth::sendalert      {"user":"toedri111123","message":"the user status is updated to verified by toepar111111. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* `toepar111111` verifies driver - `toedri111124`
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111124", "verified", "verify user"]
+' -p toepar111111@active
+executed transaction: c45e48659742fba1bf31efa32d347ed215cda7cd1416c1c57198600c54de3b35  128 bytes  318 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toedri111124","dricom_user_status":"verified","memo"...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111124","message":"the user status is updated to verified by toepar111111. Note for t...
+#  toedri111124 <= toe1userauth::sendalert      {"user":"toedri111124","message":"the user status is updated to verified by toepar111111. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* `toepar111111` verifies driver - `toedri111125`
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111125", "verified", "verify user"]
+' -p toepar111111@active
+executed transaction: dfcd46ed5d3cdcac20f9743b7f8eb81e01ae95726ea484648188179322edc20f  128 bytes  274 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toedri111125","dricom_user_status":"verified","memo"...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111125","message":"the user status is updated to verified by toepar111111. Note for t...
+#  toedri111125 <= toe1userauth::sendalert      {"user":"toedri111125","message":"the user status is updated to verified by toepar111111. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* `toepar111111` verifies commuter - `toecom111111`
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toecom111111", "verified", "verify user"]
+' -p toepar111111@active
+executed transaction: cd3e6c0adba7cd80b9280314b188c5856b9f451269b7f79d43b831b166556d2c  128 bytes  723 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toecom111111","dricom_user_status":"verified","memo"...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toecom111111","message":"the user status is updated to verified by toepar111111. Note for t...
+#  toecom111111 <= toe1userauth::sendalert      {"user":"toecom111111","message":"the user status is updated to verified by toepar111111. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* `toepar111111` verifies commuter - `toecom111112`
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toecom111112", "verified", "verify user"]
+' -p toepar111111@active
+executed transaction: 93d04f4b657a93fa964233066e5a84b093aec898b221a87c59c938628a5dece9  128 bytes  709 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toecom111112","dricom_user_status":"verified","memo"...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toecom111112","message":"the user status is updated to verified by toepar111111. Note for t...
+#  toecom111112 <= toe1userauth::sendalert      {"user":"toecom111112","message":"the user status is updated to verified by toepar111111. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+
 ### Action - `compvbvdator`
 * `bhubtoeinval` verifies itself
 ```console
