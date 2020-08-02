@@ -19,7 +19,8 @@ The main contracts for CabEOS are as follows:
 * `toe1111ridex`: TOE Ride Exchange (RIDEX)
 
 ### Others
-* `bhubtoeindia`: Block.Hub TOE India
+* `bhubtoeindia`: Block.Hub TOE India (Token issuer)
+* `bhubtoeinval`: Block.Hub TOE India Validator (by Company)
 * `toeridexsupp`: TOE RIDEX Supply
 * `toeridexfees`: TOE RIDEX Fees
 * `toe11rreward`: TOE Ride Reward
@@ -280,3 +281,12 @@ Ride price (in TOE) = (n * quote.balance) / (n + base.balance)
 where,
 n = no. of Rides needed (in no.)
 ```
+
+
+### CARES
+* Customer Service Partners which are associated with the platform for doing the work assigned to them.
+* The initial partners will be validated/verified by the Company itself. The concerned account - `bhubtoeinval`
+* Their works:
+	- verify/blacklist the drivers (more strictly), commuters
+	- attend to issues raised by drivers, commuters
+	- conduct (schedule datetime) voting for any decision making. E.g. - deciding inflation rate, 
