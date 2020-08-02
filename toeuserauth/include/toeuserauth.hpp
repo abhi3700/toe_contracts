@@ -17,6 +17,7 @@ using eosio::current_time_point;
 using eosio::same_payer;
 using eosio::action;
 using eosio::permission_level;
+using eosio::datastream;
 
 using std::string;
 
@@ -26,7 +27,7 @@ private:
 public:
 	using contract::contract;
 
-	toeridetaxi(name receiver, name code, datastream<const char*> ds) : 
+	toeuserauth(name receiver, name code, datastream<const char*> ds) : 
 				contract(receiver, code, ds), 
 				company_validator_ac("bhubtoeinval"_n) {}
 	

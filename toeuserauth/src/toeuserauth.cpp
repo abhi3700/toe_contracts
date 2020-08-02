@@ -104,8 +104,8 @@ void toeuserauth::vbdricom( const name& validator_user,
 void toeuserauth::compvbvdator( const name& validator_user,
 								const name& validator_user_status,
 								const string& memo) {
-	// authority by the company itself @TODO: can be replaced by a company a/c name: "bhubtoeinval"
-	require_auth(get_self());
+	// authority by the company itself i.e. company a/c name: "bhubtoeinval"
+	require_auth(company_validator_ac);
 	// require_auth("bhubtoeinval"_n);
 
 	check(is_account(validator_user), "invalid validator user account name");
@@ -127,12 +127,12 @@ void toeuserauth::compvbvdator( const name& validator_user,
 		row.user_status = validator_user_status;
 
 		if(validator_user_status == "verified"_n) {
-			row.validator_verify = get_self();		// contract or company name
+			row.validator_verify = company_validator_ac;		// contract or company name
 			row.verify_timestamp = now();
 		}
 
 		if(validator_user_status == "blacklisted"_n) { 
-			row.validator_blacklist = get_self();	// contract or company name
+			row.validator_blacklist = company_validator_ac;	// contract or company name
 			row.blist_timestamp = now();
 		}
 
@@ -140,7 +140,7 @@ void toeuserauth::compvbvdator( const name& validator_user,
 
 	//send_alert() to validator_user for getting verified/blacklisted
 	send_alert(validator_user, "the user status is updated to " + validator_user_status.to_string() + " by " 
-											+ get_self().to_string() + ". Note for this: " + memo);
+											+ company_validator_ac.to_string() + ". Note for this: " + memo);
 
 }
 
