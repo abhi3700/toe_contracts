@@ -61,7 +61,7 @@ void toeridetaxi::create(
 
 	check( user_it != user_table.end(), "The commuter is not added in the Auth Table.");
 	check( user_it->type == "commuter"_n, "The given user is not a commuter");
-	check( user_it->user_status == "verify"_n, "The commuter is not verified yet.");
+	check( user_it->user_status == "verified"_n, "The commuter is not verified yet.");
 
 	// Ensure that the `vehicle_type` is either of this list:
 	/*
@@ -163,7 +163,7 @@ void toeridetaxi::assign( const name& driver_ac,
 
 	check( user_it != user_table.end(), "The driver is not added in the Auth Table.");
 	check( user_it->type == "driver"_n, "The given user is not a driver");
-	check( user_it->user_status == "verify"_n, "The driver is not verified yet.");
+	check( user_it->user_status == "verified"_n, "The driver is not verified yet.");
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -448,7 +448,7 @@ void toeridetaxi::addristatus( const name& driver_ac,
 
 	check( user_it != user_table.end(), "The driver is not added in the Auth Table.");
 	check( user_it->type == "driver"_n, "The given user is not a driver");
-	check( user_it->user_status == "verify"_n, "The driver is not verified yet.");
+	check( user_it->user_status == "verified"_n, "The driver is not verified yet.");
 
 	// check the status is either online/offline
 	check( (status == "online"_n) || (status == "offline"_n), "status must be either online/offline.");
