@@ -65,22 +65,27 @@ void toeridetaxi::create(
 
 	// Ensure that the `vehicle_type` is either of this list:
 	/*
-			- [x] TOEX
-			- [x] TOEXL
-			- [ ] TOEPool
-			- [x] TOESUV
-			- [x] TOEBlack
-			- [x] TOESelect
-			- [ ] TOEExpressPool
+			- [x] TOE Auto
+			- [x] TOE Moto
+			- [x] TOE Go
+			- [x] TOE Go Executive
+			- [x] TOE Premier
+			- [x] TOE Premier Executive
+			- [x] TOE XL
+			- [x] TOE Go Intercity
+			- [x] TOE XL Intercity
 	*/
 	check(
-		(vehicle_type == "toex"_n)
-		|| (vehicle_type == "toexl"_n)
-		// || (vehicle_type == "toepool"_n)
-		|| (vehicle_type == "toesuv"_n)
-		|| (vehicle_type == "toeblack"_n)
+		(vehicle_type == "toeauto"_n)
+		|| (vehicle_type == "toemoto"_n)
+		|| (vehicle_type == "toego"_n)
+		|| (vehicle_type == "toegoexec"_n)
+		|| (vehicle_type == "toepremier"_n)
 		|| (vehicle_type == "toeselect"_n)
-		// || (vehicle_type == "toeexprpool"_n)
+		|| (vehicle_type == "toepremexec"_n)
+		|| (vehicle_type == "toexl"_n)
+		|| (vehicle_type == "toegointcity"_n)
+		|| (vehicle_type == "toexlintcity"_n)
 		, "Sorry! The vehicle type is not available with us.");
 
 
