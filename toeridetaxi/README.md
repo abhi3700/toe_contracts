@@ -92,38 +92,6 @@ Warning, action <eraseride> does not have a ricardian contract
 > NOTE: Here, actions is repeating during compilation bcoz it is likely using multiple jobs. So, it prints multiple times.
 
 ## Deploy
-* check contract account before deploying
-```
-$ cleost get account toe1ridetaxi
-created: 2020-07-29T21:49:56.000
-permissions:
-     owner     1:    1 EOS8Z6nsjP3xGVaBokqKqSHGTQfAdrpH8m4TEQDaoqsmmg4fpUofv
-        active     1:    1 EOS8Z6nsjP3xGVaBokqKqSHGTQfAdrpH8m4TEQDaoqsmmg4fpUofv
-memory:
-     quota:     755.5 KiB    used:      3.49 KiB
-
-net bandwidth:
-     staked:          1.0000 EOS           (total stake delegated from account to self)
-     delegated:       0.0000 EOS           (total staked delegated to account from others)
-     used:               256 bytes
-     available:        62.49 KiB
-     limit:            62.74 KiB
-
-cpu bandwidth:
-     staked:          1.0000 EOS           (total stake delegated from account to self)
-     delegated:       0.0000 EOS           (total staked delegated to account from others)
-     used:             1.054 ms
-     available:        57.98 ms
-     limit:            59.03 ms
-
-EOS balances:
-     liquid:           10.0000 EOS
-     staked:            2.0000 EOS
-     unstaking:         0.0000 EOS
-     total:            12.0000 EOS
-
-producers:     <not voted>
-```
 * deploy contract
 ```
 /toe_contracts/toeridetaxi
@@ -135,41 +103,38 @@ executed transaction: 9acd19a54d1bc42c4476d0d15a2f1b0568ef3338b489d014170f6079be
 #         eosio <= eosio::setabi                {"account":"toe1ridetaxi","abi":"0e656f73696f3a3a6162692f312e3100110a6164646661726561637400030964726...
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
+	- EOS Resources usage:
+		+ __RAM__: 715.41 KB
+		+ __NET__: 21624 bytes
+		+ __CPU__: 8781 us
 
-* check contract account after deploying
+* Adding eosio.code to permissions (for inline actions)
 ```
-$ cleost get account toe1ridetaxi
-created: 2020-07-29T21:49:56.000
-permissions:
-     owner     1:    1 EOS8Z6nsjP3xGVaBokqKqSHGTQfAdrpH8m4TEQDaoqsmmg4fpUofv
-        active     1:    1 EOS8Z6nsjP3xGVaBokqKqSHGTQfAdrpH8m4TEQDaoqsmmg4fpUofv
-memory:
-     quota:     755.5 KiB    used:     718.9 KiB
-
-net bandwidth:
-     staked:          1.0000 EOS           (total stake delegated from account to self)
-     delegated:       0.0000 EOS           (total staked delegated to account from others)
-     used:             21.37 KiB
-     available:        41.38 KiB
-     limit:            62.74 KiB
-
-cpu bandwidth:
-     staked:          1.0000 EOS           (total stake delegated from account to self)
-     delegated:       0.0000 EOS           (total staked delegated to account from others)
-     used:               6.8 ms
-     available:        52.23 ms
-     limit:            59.03 ms
-
-EOS balances:
-     liquid:           10.0000 EOS
-     staked:            2.0000 EOS
-     unstaking:         0.0000 EOS
-     total:            12.0000 EOS
-
-producers:     <not voted>
+$ cleost set account permission toe1ridetaxi active --add-code
+executed transaction: b97da9ceb63f41071bfa05282ef3d22207ca051306960eb0b8f4d2019de896df  184 bytes  324 us
+#         eosio <= eosio::updateauth            {"account":"toe1ridetaxi","permission":"active","parent":"owner","auth":{"threshold":1,"keys":[{"key...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
+
 
 ## Testing
+### Action - `create`
+* create ride by `toecom111111` in __crypto__ mode
+```console
+$ cleost push action toe1ridetaxi create '["toecom111111", "30.6715713", "76.701094", "30.703957", "76.6999052", "toego", "crypto", "79.00", "15.8000 TOE", "1596470138", "2"]' -p toecom111111@active
+```
+	- trip related info: src loc & des loc
+```md
+- "Preet City ,Sector 86,Mohali, Sector 86, Sahibzada Ajit Singh Nagar, Punjab": "30.6715713,76.701094"
+- "Semi-conductor Laboratory, Department of Space, Govt. of India, Phase 8, Industrial Area, Sector 73, Phase 8, Industrial Area, Sahibzada Ajit Singh Nagar, Punjab": "30.703957,76.6999052"
+- "finish_timestamp_est": "Mon, 03 Aug 2020 21:20:38 IST" i.e. 1596469838
+- 
+```
+	- For details of vehicle type with fare, please refer this [img](../images/fare/preet_city_to_scl_ride_request.png)
+	- For conversion of INR to TOE: 5 Rs. --> 1.0000 TOE
+	- Use [this](https://www.epochconverter.com/) for IST to Unix timestamp conversion
+* create ride by `toecom111112` in __fiatcash__ mode
+
 
 ## TODO
 - [ ] addrating action

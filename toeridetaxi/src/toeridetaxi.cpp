@@ -100,6 +100,8 @@ void toeridetaxi::create(
 	ridewallet_index ridewallet_table("toe11rwallet"_n, commuter_ac.value);
 	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
 
+	check(wallet_it != ridewallet_table.end(), "the symbol doesn't exist in the wallet.");
+
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
 	if(pay_mode == "crypto"_n) {
 		// ensure that the min. ride wallet's balance has `fare_est` value
@@ -247,6 +249,8 @@ void toeridetaxi::changedes( const name& commuter_ac,
 	// instantiate the `ridewallet` table from `ridewallet` contract
 	ridewallet_index ridewallet_table("toe11rwallet"_n, commuter_ac.value);
 	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
+
+	check(wallet_it != ridewallet_table.end(), "the symbol doesn't exist in the wallet.");
 
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
 	if(pay_mode == "crypto"_n) {
@@ -400,6 +404,8 @@ void toeridetaxi::recvfare( const name& driver_ac ) {
 */  // instantiate the `ridewallet` table
 	ridewallet_index ridewallet_table("toe11rwallet"_n, (ride_it->commuter_ac).value);
 	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
+
+	check(wallet_it != ridewallet_table.end(), "the symbol doesn't exist in the wallet.");
 
 	// check if balance < fare_act, then return
 	if( wallet_it->balance < ride_it->fare_crypto_act ) {
