@@ -109,7 +109,7 @@
                 },
                 {
                     "name": "pay_mode",
-                    "type": "string"
+                    "type": "name"
                 }
             ]
         },
@@ -143,7 +143,7 @@
                 },
                 {
                     "name": "pay_mode",
-                    "type": "string"
+                    "type": "name"
                 },
                 {
                     "name": "fare_est",
@@ -255,11 +255,11 @@
                 },
                 {
                     "name": "pay_mode",
-                    "type": "string"
+                    "type": "name"
                 },
                 {
                     "name": "pay_status",
-                    "type": "string"
+                    "type": "name"
                 },
                 {
                     "name": "assign_timestamp",

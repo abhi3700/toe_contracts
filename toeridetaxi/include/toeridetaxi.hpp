@@ -75,7 +75,7 @@ public:
 					double des_lat, 
 					double des_lon,
 					const name& vehicle_type,
-					const string& pay_mode,
+					const name& pay_mode,
 					float fare_est,
 					asset fare_crypto_est,
 					uint32_t finish_timestamp_est,
@@ -147,7 +147,7 @@ public:
 						double des_lon,
 						float fare_est,
 						asset fare_crypto_est,
-						const string& pay_mode );
+						const name& pay_mode );
 
 	/**
 	 * @brief - action to timestamp pickup point
@@ -273,8 +273,8 @@ private:
 		double des_lon;
 		name vehicle_type;      // list of taxis - toex, toexl, toepool, toesuv, toeblack, toeselect, toeexprpool
 		uint32_t seat_count;        // set for pool, else default is 2
-		string pay_mode;            // crypto or fiatdigi or fiatcash
-		string pay_status;          // paidbycom or paidtodri
+		name pay_mode;            // crypto or fiatdigi or fiatcash
+		name pay_status;          // paidbycom or paidtodri
 		uint32_t assign_timestamp;  // at which ride is assigned
 		uint32_t reachsrc_timestamp_est;    // at which driver is estimated to reach source location to pick-up
 		uint32_t reachsrc_timestamp_act;    // at which driver actually reached source location to pick-up

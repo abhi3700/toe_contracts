@@ -25,13 +25,13 @@ void toeridetaxi::addpaymost( const name& commuter_ac ) {
 	if(ride_it == ridetaxi_table.end()) {
 		ridetaxi_table.emplace(commuter_ac, [&] (auto& row) {
 			row.commuter_ac = commuter_ac;
-			row.pay_mode = "crypto";
-			row.pay_status = "paidbycom";
+			row.pay_mode = "crypto"_n;
+			row.pay_status = "paidbycom"_n;
 		});
 	} else {
 		ridetaxi_table.modify(ride_it, commuter_ac, [&] (auto& row) {
-			row.pay_mode = "crypto";
-			row.pay_status = "paidbycom";
+			row.pay_mode = "crypto"_n;
+			row.pay_status = "paidbycom"_n;
 		});
 	}
 }
@@ -45,7 +45,7 @@ void toeridetaxi::create(
 	double des_lat, 
 	double des_lon,
 	const name& vehicle_type,
-	const string& pay_mode,
+	const name& pay_mode,
 	float fare_est,
 	asset fare_crypto_est,
 	uint32_t finish_timestamp_est,
@@ -91,9 +91,9 @@ void toeridetaxi::create(
 
 	// check the `pay_mode` as crypto/fiatdigi/fiatcash
 	check(
-		(pay_mode == "crypto")
-		|| (pay_mode == "fiatdigi")
-		|| (pay_mode == "fiatcash")
+		(pay_mode == "crypto"_n)
+		|| (pay_mode == "fiatdigi"_n)
+		|| (pay_mode == "fiatcash"_n)
 		, "Sorry! The payment mode is not compatible.");
 
 	// instantiate the `ridewallet` table.
@@ -101,7 +101,7 @@ void toeridetaxi::create(
 	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
 
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
-	if(pay_mode == "crypto") {
+	if(pay_mode == "crypto"_n) {
 		// ensure that the min. ride wallet's balance has `fare_est` value
 		if (
 			(wallet_it->balance) < fare_crypto_est) {
@@ -115,7 +115,7 @@ void toeridetaxi::create(
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
-	if(pay_mode == "crypto") {
+	if(pay_mode == "crypto"_n) {
 		// modify the ride details for commuter
 		ridetaxi_table.modify(ride_it, commuter_ac, [&]( auto& row ) {
 			row.src_lat = src_lat;
@@ -227,7 +227,7 @@ void toeridetaxi::changedes( const name& commuter_ac,
 					double des_lon,
 					float fare_est,
 					asset fare_crypto_est,
-					const string& pay_mode ) {
+					const name& pay_mode ) {
 	require_auth(commuter_ac);
 
 	// instantiate the `ride` table
@@ -239,9 +239,9 @@ void toeridetaxi::changedes( const name& commuter_ac,
 
 	// check the `pay_mode` as crypto/fiatdigi/fiatcash
 	check(
-		(pay_mode == "crypto")
-		|| (pay_mode == "fiatdigi")
-		|| (pay_mode == "fiatcash")
+		(pay_mode == "crypto"_n)
+		|| (pay_mode == "fiatdigi"_n)
+		|| (pay_mode == "fiatcash"_n)
 		, "Sorry! The payment mode is not compatible.");
 
 	// instantiate the `ridewallet` table from `ridewallet` contract
@@ -249,7 +249,7 @@ void toeridetaxi::changedes( const name& commuter_ac,
 	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
 
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
-	if(pay_mode == "crypto") {
+	if(pay_mode == "crypto"_n) {
 		// ensure that the min. ride wallet's balance has `fare_crypto_est` value
 		if ((wallet_it->balance) < fare_crypto_est) {
 			// print("Sorry! Low balance in the ride wallet.");						// only for debugging
@@ -393,7 +393,7 @@ void toeridetaxi::recvfare( const name& driver_ac ) {
 	check( ride_it->ride_status == "complete"_n, "Sorry! The ride is not completed yet.");
 
 	// check if the pay_mode is `crypto`
-	check( ride_it->pay_mode == "crypto", "Sorry! the payment mode opted by commuter is not crypto.");
+	check( ride_it->pay_mode == "crypto"_n, "Sorry! the payment mode opted by commuter is not crypto.");
 
 /*  check if there is any balance & it is greater than the 'fare_crypto_act'
 	corresponding to the ride
@@ -418,7 +418,7 @@ void toeridetaxi::recvfare( const name& driver_ac ) {
 
 	// change the pay_status to `paid`
 	driver_idx.modify( ride_it, driver_ac, [&](auto& row){
-		row.pay_status = "paidtodri";
+		row.pay_status = "paidtodri"_n;
 	});
 
 	// erase the `fareamount` record only if the balance amount is zero
