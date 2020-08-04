@@ -81,7 +81,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ```
 
 ## Testing
-* `create`:
+### Action - `create`:
 ```console
 $ cleost push action toe1111token create '["bhubtoeindia", "100000000000.0000 TOE"]' -p toe1111token@active
 executed transaction: 4bbdddad0230aee2c6669674f50670b83174117ca08b2e0f72c7ed590c26d18d  120 bytes  658 us
@@ -102,10 +102,22 @@ $ cleost get table toe1111token TOE stat
   "next_key": ""
 }
 ```
-* `issue`:
+
+### Action - `issue`:
 ```console
 $ cleost push action toe1111token issue '["bhubtoeindia", "1000000000.0000 TOE", "issue 1 B TOE tokens"]' -p bhubtoeindia@active
 executed transaction: 7e988d203ee809d8361b92f3f6517b95dd2172ef85b22182e6f3dfe182c7cba8  144 bytes  310 us
 #  toe1111token <= toe1111token::issue          {"to":"bhubtoeindia","quantity":"1000000000.0000 TOE","memo":"issue 1 B TOE tokens"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+### Action - `transfer`
+* transfer "20 EOS" to commuter - `toecom111111`
+```console
+$ cleost push action toe1111token transfer '["bhubtoeindia", "toecom111111", "20.0000 TOE", "transfer 20 TOE after being verified for making ride."]' -p bhubtoeindia@active
+executed transaction: 82b74081e7e25545cb8ad5d4f24d9ccd8239db0bc9cd666d03b646e61bacceaa  184 bytes  768 us
+#  toe1111token <= toe1111token::transfer       {"from":"bhubtoeindia","to":"toecom111111","quantity":"20.0000 TOE","memo":"transfer 20 TOE after be...
+#  bhubtoeindia <= toe1111token::transfer       {"from":"bhubtoeindia","to":"toecom111111","quantity":"20.0000 TOE","memo":"transfer 20 TOE after be...
+#  toecom111111 <= toe1111token::transfer       {"from":"bhubtoeindia","to":"toecom111111","quantity":"20.0000 TOE","memo":"transfer 20 TOE after be...
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
