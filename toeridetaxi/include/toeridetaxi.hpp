@@ -33,22 +33,20 @@ CONTRACT toeridetaxi : public contract
 
 private:
 	const symbol ride_token_symbol;
+	const name wallet_contract_ac;
+	const name auth_contract_ac;
+	const name token_contract_ac;
 
 public:
 	using contract::contract;
 
 	toeridetaxi(name receiver, name code, datastream<const char*> ds) : 
 				contract(receiver, code, ds), 
-				ride_token_symbol("TOE", 4) {}
+				ride_token_symbol("TOE", 4),
+				wallet_contract_ac("toe14rwallet"_n),
+				auth_contract_ac("toe1userauth"_n),
+				token_contract_ac("toe1111token"_n) {}
 	
-	/**
-	 * @brief - Add pay mode & status
-	 * @details - Add pay mode ("crypto") & status ("paidbycom") into the `ridetaxi` table
-	 * 
-	 * @param commuter_ac - commuter, transfers money to the contract's token balance & update the amount value in `ridewallet` table & 
-	 * 								updates the transferred status into the `ridetaxi` table
-	 */
-	ACTION addpaymost( const name& commuter_ac );
 
 	/**
 	 * @brief - change source location
@@ -77,7 +75,7 @@ public:
 					const name& vehicle_type,
 					const name& pay_mode,
 					float fare_est,
-					asset fare_crypto_est,
+					const asset& fare_crypto_est,
 					uint32_t finish_timestamp_est,
 					uint32_t seat_count     // define only for Pool rides. passed as default [Optional] parameter
 				);
@@ -146,7 +144,7 @@ public:
 						double des_lat, 
 						double des_lon,
 						float fare_est,
-						asset fare_crypto_est,
+						const asset& fare_crypto_est,
 						const name& pay_mode );
 
 	/**
@@ -154,7 +152,7 @@ public:
 	 * @details - action to timestamp pickup point
 	 * 
 	 * @param driver_ac - driver account
-	 */
+	*/	 
 	ACTION reachsrc( const name& driver_ac );
 
 	/**
@@ -189,7 +187,7 @@ public:
 	 */
 	ACTION addfareact(const name& driver_ac, 
 						float fare_act,
-						asset fare_crypto_act);
+						const asset& fare_crypto_act);
 
 	/**
 	 * @brief - send fare to the contract
@@ -255,11 +253,6 @@ public:
 	ACTION eraseride( const name& commuter_ac);
 
 
-	// Action wrappers
-	using sendalert_action = action_wrapper<"sendalert"_n, &toeridetaxi::sendalert>;
-	using sendreceipt_action = action_wrapper<"sendreceipt"_n, &toeridetaxi::sendreceipt>;
-	using addpaymost_action = action_wrapper<"addpaymost"_n, &toeridetaxi::addpaymost>;
-
 private:
 // ========TABLES========================================================================================================
 	TABLE ridetaxi
@@ -271,7 +264,7 @@ private:
 		double src_lon; 
 		double des_lat; 
 		double des_lon;
-		name vehicle_type;      // list of taxis - toex, toexl, toepool, toesuv, toeblack, toeselect, toeexprpool
+		name vehicle_type;      // list of taxis - toeauto, toemoto, toego, toegoexec, toepremier, toepremexec, toexl, toegointcity, toexlintcity
 		uint32_t seat_count;        // set for pool, else default is 2
 		name pay_mode;            // crypto or fiatdigi or fiatcash
 		name pay_status;          // paidbycom or paidtodri
@@ -314,7 +307,7 @@ private:
 	{
 		asset balance;
 
-		auto primary_key() const { return balance.amount; }
+		auto primary_key() const { return balance.symbol.raw(); }
 	};
 
 	using ridewallet_index = multi_index<"ridewallet"_n, ridewallet>;

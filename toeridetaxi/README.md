@@ -107,7 +107,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 		+ __RAM__: 715.41 KB
 		+ __NET__: 21624 bytes
 		+ __CPU__: 8781 us
-
+	- Also, get to see the RAM consumption [here](https://jungle.bloks.io/transaction/9c3ea65b7e5f511ef44fec39adfaf79f87e1ecf81231e4b3cfa763d9396fc382?tab=ram-deltas) in "bloks.io" block explorer
 * Adding eosio.code to permissions (for inline actions)
 ```
 $ cleost set account permission toe1ridetaxi active --add-code
@@ -121,7 +121,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ### Action - `create`
 * create ride by `toecom111111` in __crypto__ mode
 ```console
-$ cleost push action toe1ridetaxi create '["toecom111111", "30.6715713", "76.701094", "30.703957", "76.6999052", "toego", "crypto", "79.00", "15.8000 TOE", "1596470138", "2"]' -p toecom111111@active
+$ cleost push action toe1ridetaxi create '["toecom111111", "30.6715713", "76.701094", "30.703957", "76.6999052", "toego", "crypto", "79.00", "15.8000 TOE", "1596483938", "2"]' -p toecom111111@active
 ```
 	- trip related info: src loc & des loc
 ```md

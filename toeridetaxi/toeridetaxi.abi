@@ -22,16 +22,6 @@
             ]
         },
         {
-            "name": "addpaymost",
-            "base": "",
-            "fields": [
-                {
-                    "name": "commuter_ac",
-                    "type": "name"
-                }
-            ]
-        },
-        {
             "name": "addristatus",
             "base": "",
             "fields": [
@@ -346,11 +336,6 @@
         {
             "name": "addfareact",
             "type": "addfareact",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "addpaymost",
-            "type": "addpaymost",
             "ricardian_contract": ""
         },
         {
