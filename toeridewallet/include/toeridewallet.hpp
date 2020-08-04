@@ -30,7 +30,8 @@ CONTRACT toeridewallet : public contract
 {
 private:
 	const symbol ride_token_symbol;
-	const name ride_contract_ac;
+	const name token_contract_ac;
+	const name auth_contract_ac;
 
 public:
 	using contract::contract;
@@ -38,7 +39,8 @@ public:
 	toeridewallet(name receiver, name code, datastream<const char*> ds) : 
 				contract(receiver, code, ds), 
 				ride_token_symbol("TOE", 4),
-				ride_contract_ac("toe1ridetaxi"_n) {}
+				token_contract_ac("toe1111token"_n),
+				auth_contract_ac("toe1userauth"_n) {}
 
 
 	/**
@@ -91,7 +93,7 @@ private:
 	{
 		asset balance;
 
-		auto primary_key() const { return balance.amount; }
+		auto primary_key() const { return balance.symbol.raw(); }
 	};
 
 	using ridewallet_index = multi_index<"ridewallet"_n, ridewallet>;

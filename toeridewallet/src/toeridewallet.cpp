@@ -1,12 +1,4 @@
 #include "../include/toeridewallet.hpp"
-#include "../../toeridetaxi/include/toeridetaxi.hpp"
-
-
-// --------------------------------------------------------------------------------------------------------------------
-void toeridewallet::addpay_mode_status( const name& commuter_ac ) {
-	toeridetaxi::addpaymost_action apay(ride_contract_ac, {get_self(), "active"_n} );
-	apay.send(commuter_ac);
-}
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridewallet::sendfare(
@@ -23,7 +15,7 @@ void toeridewallet::sendfare(
 	}
 
 	// check whether the `commuter_ac` is a verified commuter by reading the `auth` table
-	user_index user_table("toe1userauth"_n, commuter_ac.value);
+	user_index user_table(auth_contract_ac, commuter_ac.value);
 	auto user_it = user_table.find(commuter_ac.value);
 
 	check( user_it != user_table.end(), "The commuter is not added in the Auth Table.");
@@ -49,37 +41,12 @@ void toeridewallet::sendfare(
 			row.balance += quantity;
 		});
 	}
-
-	// add payment related status
-	addpay_mode_status(commuter_ac);
-
-	// instantiate the `ride` table to read data
-/*	ridetaxi_index ridetaxi_table("toe1111rtaxi"_n, "toe1111rtaxi"_n.value);
-	auto ride_it = ridetaxi_table.find(commuter_ac.value);
-*/
-	// update(add/modify) the & `pay_status`
-/*	if(ride_it == ridetaxi_table.end()) {
-		// @TODO: emplace data in the ridetaxi table
-		ridetaxi_table.emplace(commuter_ac, [&] (auto& row) {
-			row.commuter_ac = commuter_ac;
-			row.pay_mode = "crypto";
-			row.pay_status = "paidbycom";
-		});
-	} else {
-		// @TODO: modify data in the ridetaxi table
-		ridetaxi_table.modify(ride_it, commuter_ac, [&] (auto& row) {
-			row.pay_mode = "crypto";
-			row.pay_status = "paidbycom";
-		});
-	}
-*/
-	
 	
 	// On successful execution, an alert is sent
 	send_receipt(
 		commuter_ac, 
-		name{commuter_ac}.to_string() + " transfers an amount of " 
-		+ quantity.to_string() + " to the contract -> " + name(contract_ac).to_string() );
+		commuter_ac.to_string() + " transfers an amount of " 
+		+ quantity.to_string() + " to the contract -> " + contract_ac.to_string() );
 
 }
 
@@ -100,7 +67,7 @@ void toeridewallet::withdraw( const name& commuter_ac,
 	if(quantity <= wallet_it->balance ) {
 		action(
 			permission_level{get_self(), "active"_n},
-			"toe1111token"_n,
+			token_contract_ac,
 			"transfer"_n,
 			std::make_tuple(get_self(), commuter_ac, quantity, "commuter withdraws " + quantity.to_string() + " money.")
 		).send();
@@ -138,10 +105,9 @@ void toeridewallet::withdrawfull( const name& commuter_ac ) {
 	// Make sure that the commuter is present in the table
 	check( wallet_it != ridewallet_table.end(), "Sorry! There is no such commuter in the ride wallet.");
 
-
 	action(
 		permission_level{get_self(), "active"_n},
-		"toe1111token"_n,
+		token_contract_ac,
 		"transfer"_n,
 		std::make_tuple(get_self(), commuter_ac, wallet_it->balance, "commuter withdraws " + (wallet_it->balance).to_string() + " money.")
 	).send();
