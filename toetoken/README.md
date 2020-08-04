@@ -79,6 +79,13 @@ executed transaction: 30afb374166fc9cd928648f5701ffbe38de6741854566a3b4879723175
 #         eosio <= eosio::setabi                {"account":"toe1111token","abi":"0e656f73696f3a3a6162692f312e31000b076163636f756e7400010762616c616e6...
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
+* Adding eosio.code to permissions (for inline actions)
+```console
+$ cleost set account permission toe1111token active --add-code
+executed transaction: 3b358a564d20579001798320edeafe926203710db1d8046a14c424f0fd47509b  184 bytes  203 us
+#         eosio <= eosio::updateauth            {"account":"toe1111token","permission":"active","parent":"owner","auth":{"threshold":1,"keys":[{"key...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
 
 ## Testing
 ### Action - `create`:
