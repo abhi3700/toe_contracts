@@ -4,7 +4,7 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridewallet::addpay_mode_status( const name& commuter_ac ) {
-	toeridetaxi::addpaymost_action apay("toe1111rtaxi"_n, {get_self(), "active"_n} );
+	toeridetaxi::addpaymost_action apay(ride_contract_ac, {get_self(), "active"_n} );
 	apay.send(commuter_ac);
 }
 
@@ -22,12 +22,14 @@ void toeridewallet::sendfare(
 		return;
 	}
 
-	// @TODO: check whether the `commuter_ac` is a verified commuter by reading the `auth` table
+	// check whether the `commuter_ac` is a verified commuter by reading the `auth` table
+	user_index user_table("toe1userauth"_n, commuter_ac.value);
+	auto user_it = user_table.find(commuter_ac.value);
 
-	/*
-		@TODO
-		- create the `toetoken` contract
-	*/
+	check( user_it != user_table.end(), "The commuter is not added in the Auth Table.");
+	check( user_it->type == "commuter"_n, "The given user is not a commuter");
+	check( user_it->user_status == "verified"_n, "The commuter is not verified yet.");
+
 	// check for negative amount value
 	check( quantity.amount > 0, "Your quantity has negative amount value.");
 	// Check for token symbol to be 'TOE'
