@@ -13,9 +13,13 @@ toe1ridetaxi
 Private key: 5K6RDm4NeGJnnUDLmvJeUeSbf3yz1wpSa54dGRPsnCUo1Jnt12m
 Public key: EOS8Z6nsjP3xGVaBokqKqSHGTQfAdrpH8m4TEQDaoqsmmg4fpUofv
 -------------------------------------------------------------
-toe11rwallet
+toe11rwallet [DEPRECATED]
 Private key: 5KLTsofphfmQFMp1YBXTw2kQfHkTDhG8Q3NXmagnQcsi8NTxy4M
 Public key: EOS673WKnS3JGz6pnxPgCEdWAFNiyMa6GbMqW5rjLHkyWKZKwEpow
+-------------------------------------------------------------
+toe14rwallet
+Private key: 5KUcHHiFmeLxVkpiSWi4jx29iCsiNnVSavqV2tbv43hNoaxZ6fW
+Public key: EOS6eSUxN9y3w3cW1JqQEj5NixSFUuiy6eJqLCzHb5PYpvaofxNT4
 -------------------------------------------------------------
 toe1111ridex
 Private key: 5Jy5dBgE7xCkn4H8R9oVGe8hCNdEBYJidmwjbAf1vLMvVLrWEiL
