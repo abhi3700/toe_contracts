@@ -15,7 +15,7 @@ The main contracts for CabEOS are as follows:
 * `toe1userauth`: TOE User Auth
 * `toe1111token`: TOE Token
 * `toe1111rtaxi`: TOE Ride Taxi
-* `toe11rwallet`: TOE Ride Wallet
+* `toe14rwallet`: TOE Ride Wallet
 * `toe1111ridex`: TOE Ride Exchange (RIDEX)
 
 ### Others
