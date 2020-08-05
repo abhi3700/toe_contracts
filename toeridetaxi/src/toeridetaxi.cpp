@@ -70,8 +70,8 @@ void toeridetaxi::create(
 		// ensure that the min. ride wallet's balance has `fare_est` value
 		if (
 			(wallet_it->balance) <= fare_crypto_est) {
-			print("Sorry! Low balance in the ride wallet.");					// only for debugging
-			// send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
+			// print("Sorry! Low balance in the ride wallet.");					// only for debugging
+			send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
 			return;
 		}
 	}
