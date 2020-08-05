@@ -6,7 +6,7 @@
 
 ## About
 * contract name - `toeridewallet`
-* contract's account name - `toe12rwallet`
+* contract's account name - `toe14rwallet`
 * actions
 	- `sendfare` (on_notify)
 	- `withdrawfare`
