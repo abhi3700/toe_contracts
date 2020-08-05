@@ -1,5 +1,11 @@
 # Phase-1
-## ride contract
+- testing of all contracts
+  + auth
+  + token
+  + ridewallet
+  - ridetaxi
+  - ridex
+- replacing `check` with `send_alert()` in all the contracts
 
 
 # Phase-2
