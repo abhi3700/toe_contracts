@@ -133,6 +133,50 @@ $ cleost get table toe14rwallet toecom111111 ridewallet
   "next_key": ""
 }
 ```
+* `toecom111111` withdraws exactly same amount as stored i.e. __"15.8000 TOE"__ balance `ridewallet` table stored in `toe14rwallet` contract
+```console
+$ cleost push action toe14rwallet withdraw '["toecom111111", "15.8000 TOE"]' -p toecom111111@active
+executed transaction: e97869fc477b71835f6a72271249983ee1a7e64e49ed4855a5af5918e5249a87  120 bytes  860 us
+#  toe14rwallet <= toe14rwallet::withdraw       {"commuter_ac":"toecom111111","quantity":"15.8000 TOE"}
+#  toe1111token <= toe1111token::transfer       {"from":"toe14rwallet","to":"toecom111111","quantity":"15.8000 TOE","memo":"commuter withdraws 15.80...
+#  toe14rwallet <= toe14rwallet::sendreceipt    {"user":"toecom111111","message":"toecom111111 withdraws 15.8000 TOE amount."}
+#  toe14rwallet <= toe1111token::transfer       {"from":"toe14rwallet","to":"toecom111111","quantity":"15.8000 TOE","memo":"commuter withdraws 15.80...
+>> Either money is not sent to the contract or contract itself is the commuter.
+#  toecom111111 <= toe1111token::transfer       {"from":"toe14rwallet","to":"toecom111111","quantity":"15.8000 TOE","memo":"commuter withdraws 15.80...
+#  toecom111111 <= toe14rwallet::sendreceipt    {"user":"toecom111111","message":"toecom111111 withdraws 15.8000 TOE amount."}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* check if the withdrawn balance (__"15.8000 TOE"__) is substracted from __"15.8000 TOE"__ balance `ridewallet` table for `toecom111111` commuter
+```console
+$ cleost get table toe14rwallet toecom111111 ridewallet
+{
+  "rows": [],
+  "more": false,
+  "next_key": ""
+}
+```
+* `toecom111111` withdraws higher amount - __"16.8000 TOE"__  than stored i.e. __"15.8000 TOE"__ balance `ridewallet` table stored in `toe14rwallet` contract
+```console
+$ cleost push action toe14rwallet withdraw '["toecom111111", "16.8000 TOE"]' -p toecom111111@active
+executed transaction: bf15a3987dda566f98be00a6f7647c94a159588c29e09c8647a2dd5b9098b5cb  120 bytes  238 us
+#  toe14rwallet <= toe14rwallet::withdraw       {"commuter_ac":"toecom111111","quantity":"16.8000 TOE"}
+#  toe14rwallet <= toe14rwallet::sendreceipt    {"user":"toecom111111","message":"16.8000 TOE asked is higher than the balance amount in the ride wa...
+#  toecom111111 <= toe14rwallet::sendreceipt    {"user":"toecom111111","message":"16.8000 TOE asked is higher than the balance amount in the ride wa...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+* check if the withdrawn balance (__"16.8000 TOE"__) is substracted from __"15.8000 TOE"__ balance `ridewallet` table for `toecom111111` commuter. So, it is not susbstracted as higher amount is asked.
+```console
+$ cleost get table toe14rwallet toecom111111 ridewallet
+{
+  "rows": [{
+      "balance": "15.8000 TOE"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+* view the action i.e. `sendreceipt` happening [here](https://jungle.bloks.io/account/toecom111111), [image](../images/receipt_toecom111111.png)
 
 
 ### Action - `withdrawfull`
