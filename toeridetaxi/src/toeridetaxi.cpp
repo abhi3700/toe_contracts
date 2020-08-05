@@ -98,13 +98,46 @@ void toeridetaxi::create(
 		
 		if (pay_mode == "crypto"_n)
 		{
-			row.pay_status = "paidbycom"_n;
+			row.crypto_paystatus = "paidbycom"_n;
 		}
 	});
 	
 
 	// On successful execution, a receipt is sent
 	send_receipt(commuter_ac, commuter_ac.to_string() + " requested a ride.");
+
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::setfiatpayst( const name& commuter_ac,
+								const name& fiat_paystatus )
+{
+	require_auth( commuter_ac );
+
+	// check whether the `commuter_ac` is a verified commuter by reading the `auth` table
+	user_index user_table(auth_contract_ac, commuter_ac.value);
+	auto user_it = user_table.find(commuter_ac.value);
+
+	check( user_it != user_table.end(), "The commuter is not added in the Auth Table.");
+	check( user_it->type == "commuter"_n, "The given user is not a commuter");
+	check( user_it->user_status == "verified"_n, "The commuter is not verified yet.");
+
+	// check the fiat_paystatus as "fiatdigi" or "fiatcash"
+	check( (fiat_paystatus == "fiatdigi"_n) || (fiat_paystatus == "fiatcash"_n), "In order to use this action, the pay_mode must be fiatdigi or fiatcash.");
+
+	// instantiate the `ride` table
+	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
+	auto ride_it = ridetaxi_table.find(commuter_ac.value);
+
+	// Ensure that there is a ride by `commuter_ac`
+	check( ride_it != ridetaxi_table.end(), "Ride by the " + commuter_ac.to_string() + " doesn't exist.");
+
+	ridetaxi_table.modify(ride_it, commuter_ac, [&](auto& row) {
+		row.fiat_paystatus = fiat_paystatus;
+	});
+
+	// On successful execution, a receipt is sent
+	send_receipt(commuter_ac, " You set the ride's pay_status as \'" + fiat_paystatus.to_string() + "\'");
 
 }
 
@@ -377,9 +410,9 @@ void toeridetaxi::recvfare( const name& driver_ac ) {
 		std::make_tuple(get_self(), driver_ac, ride_it->fare_crypto_act, "fare sent to " + driver_ac.to_string())
 		).send();
 
-	// change the pay_status to `paid`
+	// change the crypto pay status to `paid`
 	driver_idx.modify( ride_it, driver_ac, [&](auto& row){
-		row.pay_status = "paidtodri"_n;
+		row.crypto_paystatus = "paidtodri"_n;
 	});
 
 	// erase the `fareamount` record only if the balance amount is zero

@@ -37,7 +37,7 @@
 * Notes:
 	- For each row, `ram_payer` would be users (driver/commuter) for their piece of data. TODO: 
 		+ if the ride is costing too much for their use, then additional amount of CPU, NET will be added to their account during account creation.
-
+	- Here, the scope of the `ridestaxi` table is chosen as __contract name__ (i.e.`get_self().value` syntactically), because there are 2 parties (driver, commuter) involved. So, if either of the user is used as scope, then the other portion of the other user will not be shown. E.g. In other applications where the table row consists of more than 1 party, then it is always better to use __contract name__ as the table's scope.
 
 
 

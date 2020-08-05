@@ -248,7 +248,11 @@
                     "type": "name"
                 },
                 {
-                    "name": "pay_status",
+                    "name": "crypto_paystatus",
+                    "type": "name"
+                },
+                {
+                    "name": "fiat_paystatus",
                     "type": "name"
                 },
                 {
@@ -318,6 +322,20 @@
                 {
                     "name": "message",
                     "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "setfiatpayst",
+            "base": "",
+            "fields": [
+                {
+                    "name": "commuter_ac",
+                    "type": "name"
+                },
+                {
+                    "name": "fiat_paystatus",
+                    "type": "name"
                 }
             ]
         },
@@ -396,6 +414,11 @@
         {
             "name": "sendreceipt",
             "type": "sendreceipt",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setfiatpayst",
+            "type": "setfiatpayst",
             "ricardian_contract": ""
         },
         {

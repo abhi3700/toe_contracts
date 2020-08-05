@@ -80,6 +80,16 @@ public:
 					uint32_t seat_count     // define only for Pool rides. passed as default [Optional] parameter
 				);
 
+	/**
+	 * @brief - only valid for non-crypto pay_mode 
+	 * @details - set pay_status for 'fiatdigi' & 'fiatcash' pay_mode
+	 * 
+	 * @param commuter_ac - commuter a/c
+	 * @param fiat_paystatus - fiat pay_status
+	 * 
+	 */
+	ACTION setfiatpayst( const name& commuter_ac,
+							const name& fiat_paystatus );
 
 	/**
 	 * @brief - ride assigned
@@ -189,24 +199,9 @@ public:
 						float fare_act,
 						const asset& fare_crypto_act);
 
+
 	/**
-	 * @brief - send fare to the contract
-	 * @details 
-	 *      - send the `fare_est` to the contract before ride for automatic deduction.
-	 *      - this table `faretaxi` acts as a wallet for commuter
-	 * @param commuter_ac - commuter account
-	 * @param contract_ac - contract account
-	 * @param quantity - the fare_est amount
-	 * @param memo - remarks
-	 */
-/*  [[eosio::on_notify("toe1111token::transfer")]]
-	void sendfare( const name& commuter_ac, 
-					const name& contract_ac, 
-					const asset& quantity, 
-					const string& memo );
-*/
-	/**
-	 * @brief - a driver receives fare
+	 * @brief - valid for 'crypto' pay_mode
 	 * @details - a driver receives fare after ride is completed, only when the pay_mode chosen as `crypto`
 	 * 
 	 * @param driver_ac - driver account
@@ -267,7 +262,8 @@ private:
 		name vehicle_type;      // list of taxis - toeauto, toemoto, toego, toegoexec, toepremier, toepremexec, toexl, toegointcity, toexlintcity
 		uint32_t seat_count;        // set for pool, else default is 2
 		name pay_mode;            // crypto or fiatdigi or fiatcash
-		name pay_status;          // paidbycom or paidtodri
+		name crypto_paystatus;          // paidbycom or paidtodri
+		name fiat_paystatus;          // paidbycom or paidtodri
 		uint32_t assign_timestamp;  // at which ride is assigned
 		uint32_t reachsrc_timestamp_est;    // at which driver is estimated to reach source location to pick-up
 		uint32_t reachsrc_timestamp_act;    // at which driver actually reached source location to pick-up
