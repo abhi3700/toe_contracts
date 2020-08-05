@@ -101,6 +101,7 @@ public:
 	 * 
 	 * @pre driver must be a verified user
 	 * @pre driver_status must be online from `dridestatus` table
+	 * 
 	 */
 	ACTION assign( const name& driver_ac, 
 					const name& commuter_ac,

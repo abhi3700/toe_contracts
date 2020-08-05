@@ -155,6 +155,13 @@ void toeridetaxi::assign( const name& driver_ac,
 	check( user_it->type == "driver"_n, "The given user is not a driver");
 	check( user_it->user_status == "verified"_n, "The driver is not verified yet.");
 
+	//instantiate the `dridestatus` table
+	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
+	auto dridestatus_it = dridestatus_table.find("online"_n.value);
+
+	// check the driver is online
+	check(dridestatus_it != dridestatus_table.end(), "driver's status is not shown online.");
+
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
