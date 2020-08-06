@@ -12,7 +12,8 @@ void toeridetaxi::create(
 	float fare_est,
 	const asset& fare_crypto_est,
 	uint32_t finish_timestamp_est,
-	uint32_t seat_count = 2     // define only for Pool rides. passed as default [Optional] parameter, which should be defined always as last param
+	uint32_t seat_count, // define only for Pool rides. passed as default [Optional] parameter, which should be defined always as last param
+	const string& memo
 	) {
 	// require authority of commuter_ac
 	// also checks for whether it is an eosio account or not. 
@@ -53,6 +54,8 @@ void toeridetaxi::create(
 		|| (pay_mode == "fiatdigi"_n)
 		|| (pay_mode == "fiatcash"_n)
 		, "Sorry! The payment mode is not compatible.");
+
+	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `ridewallet` table.
 	ridewallet_index ridewallet_table(wallet_contract_ac, commuter_ac.value);
@@ -105,7 +108,8 @@ void toeridetaxi::create(
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::setfiatpayst( const name& commuter_ac,
-								const name& fiat_paystatus )
+								const name& fiat_paystatus,
+								const string& memo )
 {
 	require_auth( commuter_ac );
 
@@ -114,6 +118,8 @@ void toeridetaxi::setfiatpayst( const name& commuter_ac,
 
 	// check the fiat_paystatus as "fiatdigi" or "fiatcash"
 	check( (fiat_paystatus == "fiatdigi"_n) || (fiat_paystatus == "fiatcash"_n), "In order to use this action, the pay_mode must be fiatdigi or fiatcash.");
+
+	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -133,19 +139,15 @@ void toeridetaxi::setfiatpayst( const name& commuter_ac,
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::assign( const name& driver_ac, 
-				const name& commuter_ac,
-				uint32_t reachsrc_timestamp_est ) {
+							const name& commuter_ac,
+							uint32_t reachsrc_timestamp_est ) {
 	require_auth(driver_ac);
 
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
 	check_userauth(driver_ac, "driver"_n);
 
-	//instantiate the `dridestatus` table
-	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
-	auto dridestatus_it = dridestatus_table.find("online"_n.value);
-
-	// check the driver is online
-	check(dridestatus_it != dridestatus_table.end(), "driver's status is not shown online.");
+	// check if the driver is online
+	check_dridestatus(driver_ac);
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -168,11 +170,14 @@ void toeridetaxi::assign( const name& driver_ac,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::cancelbycom( const name& commuter_ac ) {
+void toeridetaxi::cancelbycom( const name& commuter_ac,
+								const string& memo ) {
 	require_auth(commuter_ac);
 
 	// check whether the `commuter_ac` is a verified commuter by reading the `auth` table
 	check_userauth(commuter_ac, "commuter"_n);
+
+	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -188,11 +193,14 @@ void toeridetaxi::cancelbycom( const name& commuter_ac ) {
 
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::cancelbydri( const name& driver_ac ) {
+void toeridetaxi::cancelbydri( const name& driver_ac,
+								const string& memo ) {
 	require_auth(driver_ac);
 
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
 	check_userauth(driver_ac, "driver"_n);
+
+	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -215,7 +223,8 @@ void toeridetaxi::changedes( const name& commuter_ac,
 					double des_lon,
 					float fare_est,
 					const asset& fare_crypto_est,
-					const name& pay_mode ) {
+					const name& pay_mode,
+					const string& memo ) {
 	require_auth(commuter_ac);
 
 	// check whether the `commuter_ac` is a verified commuter by reading the `auth` table
@@ -234,6 +243,8 @@ void toeridetaxi::changedes( const name& commuter_ac,
 		|| (pay_mode == "fiatdigi"_n)
 		|| (pay_mode == "fiatcash"_n)
 		, "Sorry! The payment mode is not compatible.");
+
+	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `ridewallet` table from `ridewallet` contract
 	ridewallet_index ridewallet_table(wallet_contract_ac, commuter_ac.value);
@@ -515,8 +526,11 @@ void toeridetaxi::send_receipt(const name& user,
 
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::eraseride( const name& commuter_ac ) {
+void toeridetaxi::eraseride( const name& commuter_ac,
+								const string& memo ) {
 	require_auth( get_self() );
+
+	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);

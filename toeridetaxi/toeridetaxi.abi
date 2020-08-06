@@ -60,6 +60,10 @@
                 {
                     "name": "commuter_ac",
                     "type": "name"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
                 }
             ]
         },
@@ -70,6 +74,10 @@
                 {
                     "name": "driver_ac",
                     "type": "name"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
                 }
             ]
         },
@@ -100,6 +108,10 @@
                 {
                     "name": "pay_mode",
                     "type": "name"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
                 }
             ]
         },
@@ -150,6 +162,10 @@
                 {
                     "name": "seat_count",
                     "type": "uint32"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
                 }
             ]
         },
@@ -170,6 +186,10 @@
                 {
                     "name": "commuter_ac",
                     "type": "name"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
                 }
             ]
         },
@@ -336,6 +356,10 @@
                 {
                     "name": "fiat_paystatus",
                     "type": "name"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
                 }
             ]
         },

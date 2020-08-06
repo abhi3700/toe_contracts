@@ -56,11 +56,12 @@ public:
 	 * @param des_lat - destination latitude
 	 * @param des_lon - destination longitude
 	 * @param vehicle_type - it has to be among the defined list of taxi names - toex, toexl, toepool, toesuv, toeblack, toeselect, toeexprpool
-	 * @param seat_count - to be defined for Pool ride [Optional]. Otherwise, it's value is 2 for other rides
 	 * @param pay_mode - either crypto/fiatdigi/fiatcash
 	 * @param fare_est - estimated fare (in fiat curr) to be calculated from calling API before calling the action
 	 * @param fare_crypto_est - estimated fare (in crypto curr) to be calculated from calling API before calling the action
 	 * @param finish_timestamp_est - estimated finish timestamp to be calculated from calling API before calling the action
+	 * @param seat_count - to be defined for Pool ride [Optional]. Otherwise, it's value is 2 for other rides
+	 * @param memo - the memo string to create a ride
 	 */
 	ACTION create( const name& commuter_ac,
 					double src_lat, 
@@ -72,7 +73,8 @@ public:
 					float fare_est,
 					const asset& fare_crypto_est,
 					uint32_t finish_timestamp_est,
-					uint32_t seat_count     // define only for Pool rides. passed as default [Optional] parameter
+					uint32_t seat_count,     // define only for Pool rides. passed as default [Optional] parameter
+					const string& memo
 				);
 
 	/**
@@ -81,10 +83,12 @@ public:
 	 * 
 	 * @param commuter_ac - commuter a/c
 	 * @param fiat_paystatus - fiat pay_status
+	 * @param memo - the memo string to set fiat payment status e.g. paytm, etc..
 	 * 
 	 */
 	ACTION setfiatpayst( const name& commuter_ac,
-							const name& fiat_paystatus );
+							const name& fiat_paystatus,
+							const string& memo );
 
 	/**
 	 * @brief - ride assigned
@@ -107,16 +111,20 @@ public:
 	 * @details - cancel ride (if any created) by commuter
 	 * 
 	 * @param commuter_ac - commmuter account
+	 * @param memo - the memo string to cancel a ride
 	 */
-	ACTION cancelbycom( const name& commuter_ac );
+	ACTION cancelbycom( const name& commuter_ac,
+						const string& memo );
 
 	/**
 	 * @brief - cancel ride
 	 * @details - cancel ride (if any created) by driver
 	 * 
 	 * @param driver_ac - commmuter account
+	 * @param memo - the memo string to cancel a ride
 	 */
-	ACTION cancelbydri( const name& driver_ac );
+	ACTION cancelbydri( const name& driver_ac,
+						const string& memo );
 
 	/**
 	 * @brief - change source location
@@ -145,13 +153,15 @@ public:
 	 * @param des_lon - destination longitude
 	 * @param fare_est - estimated fare (in fiat curr)
 	 * @param fare_crypto_est - estimated fare (in crypto curr)
+	 * @param memo - the memo string to change destination
 	 */
 	ACTION changedes( const name& commuter_ac,
 						double des_lat, 
 						double des_lon,
 						float fare_est,
 						const asset& fare_crypto_est,
-						const name& pay_mode );
+						const name& pay_mode,
+						const string& memo );
 
 	/**
 	 * @brief - action to timestamp pickup point
@@ -240,8 +250,10 @@ public:
 	 * @details - erase after the ride is finished & payment is done. 
 	 * 
 	 * @param commuter_ac erasing by searching commuter_ac
+	 * @param memo - the memo string to erase a ride
 	 */
-	ACTION eraseride( const name& commuter_ac);
+	ACTION eraseride( const name& commuter_ac,
+						const string& memo);
 
 	static void check_userauth( const name& user, const name& type) {
 		// check whether the `user` is a verified driver by reading the `auth` table
@@ -260,6 +272,15 @@ public:
 		}
 	}
 
+	static void check_dridestatus( const name& driver_ac ) {
+		//instantiate the `dridestatus` table
+		dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
+		auto dridestatus_it = dridestatus_table.find("online"_n.value);
+
+		// check the driver is online
+		check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present in the table.");
+		check(dridestatus_it->status == "online"_n, "driver is not online.");
+	}
 
 private:
 // ========TABLES========================================================================================================
