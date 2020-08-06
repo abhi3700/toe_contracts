@@ -51,10 +51,10 @@ public:
 	 *      - for modification use `changedes` action
 	 * 
 	 * @param commuter_ac - commuter eosio account name
-	 * @param src_lat - source latitude
-	 * @param src_lon - source longitude
-	 * @param des_lat - destination latitude
-	 * @param des_lon - destination longitude
+	 * @param src_lat_hash - source latitude hash
+	 * @param src_lon_hash - source longitude hash
+	 * @param des_lat_hash - destination latitude hash
+	 * @param des_lon_hash - destination longitude hash
 	 * @param vehicle_type - it has to be among the defined list of taxi names - toex, toexl, toepool, toesuv, toeblack, toeselect, toeexprpool
 	 * @param pay_mode - either crypto/fiatdigi/fiatcash
 	 * @param fare_est - estimated fare (in fiat curr) to be calculated from calling API before calling the action
@@ -64,10 +64,10 @@ public:
 	 * @param memo - the memo string to create a ride
 	 */
 	ACTION create( const name& commuter_ac,
-					double src_lat, 
-					double src_lon, 
-					double des_lat, 
-					double des_lon,
+					checksum256 src_lat_hash, 
+					checksum256 src_lon_hash, 
+					checksum256 des_lat_hash, 
+					checksum256 des_lon_hash,
 					const name& vehicle_type,
 					const name& pay_mode,
 					float fare_est,
@@ -156,8 +156,8 @@ public:
 	 * @param memo - the memo string to change destination
 	 */
 	ACTION changedes( const name& commuter_ac,
-						double des_lat, 
-						double des_lon,
+						checksum256 des_lat_hash, 
+						checksum256 des_lon_hash,
 						float fare_est,
 						const asset& fare_crypto_est,
 						const name& pay_mode,
@@ -289,10 +289,10 @@ private:
 		name commuter_ac;
 		name ride_status;           // enroute/waiting/ontrip/complete
 		name driver_ac;
-		double src_lat; 
-		double src_lon; 
-		double des_lat; 
-		double des_lon;
+		checksum256 src_lat_hash; 
+		checksum256 src_lon_hash; 
+		checksum256 des_lat_hash; 
+		checksum256 des_lon_hash;
 		name vehicle_type;      // list of taxis - toeauto, toemoto, toego, toegoexec, toepremier, toepremexec, toexl, toegointcity, toexlintcity
 		uint32_t seat_count;        // set for pool, else default is 2
 		name pay_mode;            // crypto or fiatdigi or fiatcash

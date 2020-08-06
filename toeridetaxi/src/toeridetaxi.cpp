@@ -3,10 +3,10 @@
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::create(
 	const name& commuter_ac,
-	double src_lat, 
-	double src_lon, 
-	double des_lat, 
-	double des_lon,
+	checksum256 src_lat_hash, 
+	checksum256 src_lon_hash, 
+	checksum256 des_lat_hash, 
+	checksum256 des_lon_hash,
 	const name& vehicle_type,
 	const name& pay_mode,
 	float fare_est,
@@ -65,13 +65,13 @@ void toeridetaxi::create(
 
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
 	if(pay_mode == "crypto"_n) {
-		// ensure that the min. ride wallet's balance has `fare_est` value
-		if (
-			(wallet_it->balance) <= fare_crypto_est) {
-			// print("Sorry! Low balance in the ride wallet.");					// only for debugging
-			send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
-			return;
-		}
+		// ensure that the ride wallet's min. balance has `fare_est` value
+		check( wallet_it->balance >= fare_crypto_est, "Sorry! Low balance in the ride wallet.");
+
+		// if ( (wallet_it->balance) < fare_crypto_est) {
+		// 	send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
+		// 	return;
+		// }
 	}
 
 	// instantiate the `ride` table
@@ -83,10 +83,10 @@ void toeridetaxi::create(
 	// add the ride details for commuter
 	ridetaxi_table.emplace(commuter_ac, [&]( auto& row ) {
 		row.commuter_ac = commuter_ac;
-		row.src_lat = src_lat;
-		row.src_lon = src_lon;
-		row.des_lat = des_lat;
-		row.des_lon = des_lon;
+		row.src_lat_hash = src_lat_hash;
+		row.src_lon_hash = src_lon_hash;
+		row.des_lat_hash = des_lat_hash;
+		row.des_lon_hash = des_lon_hash;
 		row.vehicle_type = vehicle_type;
 		row.seat_count = seat_count;
 		row.pay_mode = pay_mode,
@@ -219,8 +219,8 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::changedes( const name& commuter_ac,
-					double des_lat, 
-					double des_lon,
+					checksum256 des_lat_hash, 
+					checksum256 des_lon_hash,
 					float fare_est,
 					const asset& fare_crypto_est,
 					const name& pay_mode,
@@ -254,27 +254,26 @@ void toeridetaxi::changedes( const name& commuter_ac,
 
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
 	if(pay_mode == "crypto"_n) {
-		// ensure that the min. ride wallet's balance has `fare_crypto_est` value
-		if ((wallet_it->balance) < fare_crypto_est) {
-			// print("Sorry! Low balance in the ride wallet.");						// only for debugging
-			send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
-			return;
-		}
+		// ensure that the ride wallet's min. balance has `fare_est` value
+		check( wallet_it->balance >= fare_crypto_est, "Sorry! Low balance in the ride wallet.");
+
+		// if ( (wallet_it->balance) < fare_crypto_est) {
+		// 	send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
+		// 	return;
+		// }
 	}
 
 	ridetaxi_table.modify(ride_it, commuter_ac, [&](auto& row) {
-		row.des_lat = des_lat;
-		row.des_lon = des_lon;
+		row.des_lat_hash = des_lat_hash;
+		row.des_lon_hash = des_lon_hash;
 		row.fare_est = fare_est;
 		row.fare_crypto_est = fare_crypto_est;
 		row.pay_mode = pay_mode;
 	});
 
 	// On successful execution, an alert is sent
-	send_receipt(commuter_ac, commuter_ac.to_string() + " changes the destination location to " + std::to_string(des_lat) + ", " + std::to_string(des_lon)
-									+ " and the fare is updated to " + std::to_string(fare_est) + " (in INR) & " + fare_crypto_est.to_string() + " (in TOE).");
-	send_alert(ride_it->driver_ac, commuter_ac.to_string() + " changes the destination location to " + std::to_string(des_lat) + ", " + std::to_string(des_lon)
-									+ " and the fare is updated to " + std::to_string(fare_est) + " (in INR) & " + fare_crypto_est.to_string() + " (in TOE).");
+	send_receipt(commuter_ac, commuter_ac.to_string() + " changes the destination location & the fare is updated to " + std::to_string(fare_est) + " (in INR) & " + fare_crypto_est.to_string() + " (in TOE).");
+	send_alert(ride_it->driver_ac, commuter_ac.to_string() + " changes the destination location & the fare is updated to " + std::to_string(fare_est) + " (in INR) & " + fare_crypto_est.to_string() + " (in TOE).");
 
 }
 

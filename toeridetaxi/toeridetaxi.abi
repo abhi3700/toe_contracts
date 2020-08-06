@@ -90,12 +90,12 @@
                     "type": "name"
                 },
                 {
-                    "name": "des_lat",
-                    "type": "float64"
+                    "name": "des_lat_hash",
+                    "type": "checksum256"
                 },
                 {
-                    "name": "des_lon",
-                    "type": "float64"
+                    "name": "des_lon_hash",
+                    "type": "checksum256"
                 },
                 {
                     "name": "fare_est",
@@ -124,20 +124,20 @@
                     "type": "name"
                 },
                 {
-                    "name": "src_lat",
-                    "type": "float64"
+                    "name": "src_lat_hash",
+                    "type": "checksum256"
                 },
                 {
-                    "name": "src_lon",
-                    "type": "float64"
+                    "name": "src_lon_hash",
+                    "type": "checksum256"
                 },
                 {
-                    "name": "des_lat",
-                    "type": "float64"
+                    "name": "des_lat_hash",
+                    "type": "checksum256"
                 },
                 {
-                    "name": "des_lon",
-                    "type": "float64"
+                    "name": "des_lon_hash",
+                    "type": "checksum256"
                 },
                 {
                     "name": "vehicle_type",
@@ -240,20 +240,20 @@
                     "type": "name"
                 },
                 {
-                    "name": "src_lat",
-                    "type": "float64"
+                    "name": "src_lat_hash",
+                    "type": "checksum256"
                 },
                 {
-                    "name": "src_lon",
-                    "type": "float64"
+                    "name": "src_lon_hash",
+                    "type": "checksum256"
                 },
                 {
-                    "name": "des_lat",
-                    "type": "float64"
+                    "name": "des_lat_hash",
+                    "type": "checksum256"
                 },
                 {
-                    "name": "des_lon",
-                    "type": "float64"
+                    "name": "des_lon_hash",
+                    "type": "checksum256"
                 },
                 {
                     "name": "vehicle_type",
