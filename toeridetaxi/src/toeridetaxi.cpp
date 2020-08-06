@@ -19,12 +19,7 @@ void toeridetaxi::create(
 	require_auth(commuter_ac);  
 
 	// check whether the `commuter_ac` is a verified commuter by reading the `auth` table
-	user_index user_table(auth_contract_ac, commuter_ac.value);
-	auto user_it = user_table.find(commuter_ac.value);
-
-	check( user_it != user_table.end(), "The commuter is not added in the Auth Table.");
-	check( user_it->type == "commuter"_n, "The given user is not a commuter");
-	check( user_it->user_status == "verified"_n, "The commuter is not verified yet.");
+	check_userauth(commuter_ac, "commuter"_n);
 
 	// Ensure that the `vehicle_type` is either of this list:
 	/*
@@ -115,12 +110,7 @@ void toeridetaxi::setfiatpayst( const name& commuter_ac,
 	require_auth( commuter_ac );
 
 	// check whether the `commuter_ac` is a verified commuter by reading the `auth` table
-	user_index user_table(auth_contract_ac, commuter_ac.value);
-	auto user_it = user_table.find(commuter_ac.value);
-
-	check( user_it != user_table.end(), "The commuter is not added in the Auth Table.");
-	check( user_it->type == "commuter"_n, "The given user is not a commuter");
-	check( user_it->user_status == "verified"_n, "The commuter is not verified yet.");
+	check_userauth(commuter_ac, "commuter"_n);
 
 	// check the fiat_paystatus as "fiatdigi" or "fiatcash"
 	check( (fiat_paystatus == "fiatdigi"_n) || (fiat_paystatus == "fiatcash"_n), "In order to use this action, the pay_mode must be fiatdigi or fiatcash.");
@@ -148,12 +138,7 @@ void toeridetaxi::assign( const name& driver_ac,
 	require_auth(driver_ac);
 
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
-	user_index user_table(auth_contract_ac, driver_ac.value);
-	auto user_it = user_table.find(driver_ac.value);
-
-	check( user_it != user_table.end(), "The driver is not added in the Auth Table.");
-	check( user_it->type == "driver"_n, "The given user is not a driver");
-	check( user_it->user_status == "verified"_n, "The driver is not verified yet.");
+	check_userauth(driver_ac, "driver"_n);
 
 	//instantiate the `dridestatus` table
 	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
@@ -186,6 +171,9 @@ void toeridetaxi::assign( const name& driver_ac,
 void toeridetaxi::cancelbycom( const name& commuter_ac ) {
 	require_auth(commuter_ac);
 
+	// check whether the `commuter_ac` is a verified commuter by reading the `auth` table
+	check_userauth(commuter_ac, "commuter"_n);
+
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
@@ -202,6 +190,9 @@ void toeridetaxi::cancelbycom( const name& commuter_ac ) {
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::cancelbydri( const name& driver_ac ) {
 	require_auth(driver_ac);
+
+	// check whether the `driver_ac` is a verified driver by reading the `auth` table
+	check_userauth(driver_ac, "driver"_n);
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -226,6 +217,9 @@ void toeridetaxi::changedes( const name& commuter_ac,
 					const asset& fare_crypto_est,
 					const name& pay_mode ) {
 	require_auth(commuter_ac);
+
+	// check whether the `commuter_ac` is a verified commuter by reading the `auth` table
+	check_userauth(commuter_ac, "commuter"_n);
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -277,6 +271,9 @@ void toeridetaxi::changedes( const name& commuter_ac,
 void toeridetaxi::reachsrc( const name& driver_ac ) {
 	require_auth(driver_ac);
 
+	// check whether the `driver_ac` is a verified driver by reading the `auth` table
+	check_userauth(driver_ac, "driver"_n);
+
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
@@ -304,6 +301,9 @@ void toeridetaxi::reachsrc( const name& driver_ac ) {
 void toeridetaxi::start( const name& driver_ac/*, const name& commuter_ac*/ ) {
 	require_auth( driver_ac ); 
 
+	// check whether the `driver_ac` is a verified driver by reading the `auth` table
+	check_userauth(driver_ac, "driver"_n);
+
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
@@ -327,6 +327,9 @@ void toeridetaxi::start( const name& driver_ac/*, const name& commuter_ac*/ ) {
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::finish( const name& driver_ac ) {
 	require_auth(driver_ac);
+
+	// check whether the `driver_ac` is a verified driver by reading the `auth` table
+	check_userauth(driver_ac, "driver"_n);
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -352,6 +355,9 @@ void toeridetaxi::addfareact( const name& driver_ac,
 								float fare_act,
 								const asset& fare_crypto_act) {
 	require_auth(driver_ac);
+
+	// check whether the `driver_ac` is a verified driver by reading the `auth` table
+	check_userauth(driver_ac, "driver"_n);
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -379,6 +385,9 @@ void toeridetaxi::addfareact( const name& driver_ac,
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::recvfare( const name& driver_ac ) {
 	require_auth( driver_ac );
+
+	// check whether the `driver_ac` is a verified driver by reading the `auth` table
+	check_userauth(driver_ac, "driver"_n);
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -442,14 +451,9 @@ void toeridetaxi::addristatus( const name& driver_ac,
 {
 	require_auth(driver_ac);
 
-	// check driver must be a verified user
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
-	user_index user_table(auth_contract_ac, driver_ac.value);
-	auto user_it = user_table.find(driver_ac.value);
-
-	check( user_it != user_table.end(), "The driver is not added in the Auth Table.");
-	check( user_it->type == "driver"_n, "The given user is not a driver");
-	check( user_it->user_status == "verified"_n, "The driver is not verified yet.");
+	// check whether the `driver_ac` is a verified driver by reading the `auth` table
+	check_userauth(driver_ac, "driver"_n);
 
 	// check the status is either online/offline
 	check( (status == "online"_n) || (status == "offline"_n), "status must be either online/offline.");

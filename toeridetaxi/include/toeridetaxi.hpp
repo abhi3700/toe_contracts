@@ -1,12 +1,9 @@
 #pragma once
 #include <eosio/eosio.hpp>
 #include <eosio/asset.hpp>
-// #include <eosio/print.hpp>
 #include <eosio/system.hpp>
 #include <eosio/crypto.hpp>
 #include <string>
-
-
 
 using eosio::contract;
 using eosio::print;
@@ -34,7 +31,6 @@ CONTRACT toeridetaxi : public contract
 private:
 	const symbol ride_token_symbol;
 	const name wallet_contract_ac;
-	const name auth_contract_ac;
 	const name token_contract_ac;
 
 public:
@@ -44,7 +40,6 @@ public:
 				contract(receiver, code, ds), 
 				ride_token_symbol("TOE", 4),
 				wallet_contract_ac("toe14rwallet"_n),
-				auth_contract_ac("toe1userauth"_n),
 				token_contract_ac("toe1111token"_n) {}
 	
 
@@ -247,6 +242,23 @@ public:
 	 * @param commuter_ac erasing by searching commuter_ac
 	 */
 	ACTION eraseride( const name& commuter_ac);
+
+	static void check_userauth( const name& user, const name& type) {
+		// check whether the `user` is a verified driver by reading the `auth` table
+		user_index user_table("toe1userauth"_n, user.value);
+		auto user_it = user_table.find(user.value);
+
+		if(type == "driver"_n) {
+			check( user_it != user_table.end(), "The driver is not added in the Auth Table.");
+			check( user_it->type == "driver"_n, "The given user is not a driver");
+			check( user_it->user_status == "verified"_n, "The driver is not verified yet.");
+		}
+		if (type == "commuter"_n) {
+			check( user_it != user_table.end(), "The commuter is not added in the Auth Table.");
+			check( user_it->type == "commuter"_n, "The given user is not a commuter");
+			check( user_it->user_status == "verified"_n, "The commuter is not verified yet.");
+		}
+	}
 
 
 private:
