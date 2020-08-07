@@ -141,7 +141,7 @@ void toeridetaxi::setfiatpayst( const name& commuter_ac,
 void toeridetaxi::assign( const name& driver_ac, 
 							const name& commuter_ac,
 							uint32_t reachsrc_timestamp_est ) {
-	require_auth(driver_ac);
+	require_auth(get_self());
 
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
 	check_userauth(driver_ac, "driver"_n);
