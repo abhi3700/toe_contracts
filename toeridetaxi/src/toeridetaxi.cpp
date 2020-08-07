@@ -156,7 +156,10 @@ void toeridetaxi::assign( const name& driver_ac,
 	// Ensure that there is a ride by `commuter_ac`
 	check( ride_it != ridetaxi_table.end(), "Ride by the " + commuter_ac.to_string() + " doesn't exist.");
 
-	ridetaxi_table.modify(ride_it, driver_ac, [&](auto& row) {
+	// Ensure that the ride_status is not marked as "enroute"
+	check( ride_it->ride_status != "enroute"_n, "the commuter is already assigned with a driver: " + driver_ac.to_string());
+
+	ridetaxi_table.modify(ride_it, get_self(), [&](auto& row) {
 		row.driver_ac = driver_ac;
 		row.assign_timestamp = now();
 		row.ride_status = "enroute"_n;
@@ -165,7 +168,7 @@ void toeridetaxi::assign( const name& driver_ac,
 
 	// On successful execution, an alert is sent
 	send_alert(driver_ac, driver_ac.to_string() + " is assigned with a ride.");
-	send_alert(commuter_ac, commuter_ac.to_string() + " is assigned with a driver.");
+	send_alert(commuter_ac, commuter_ac.to_string() + " is assigned with a driver: " + driver_ac.to_string());
 
 }
 
