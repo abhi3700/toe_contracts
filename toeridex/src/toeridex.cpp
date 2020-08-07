@@ -208,6 +208,23 @@ void toeridex::sellride( const name& seller,
 
 }
 // --------------------------------------------------------------------------------------------------------------------
+void toeridex::addridequota(const name& type,
+							uint64_t ride_quota )
+{
+	// explicitly given permission to only ride contract ac for this action
+	require_auth(ride_contract_ac);
+
+	// check the type is "driver" or "commuter"
+	check( (type == "driver"_n) || (type == "commuter"_n), "invalid type");
+
+	check(ride_quota != 0, "Ride quantity can't be zero");
+
+	ridexaccount_index ridexaccount_table(get_self(), seller.value);
+	auto ridexaccount_it = ridexaccount_table.find(type.value);
+	check(ridexaccount_it != ridexaccount_table.end(), "Sorry! There is no ride to sell.");
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 void toeridex::sendalert(const name& user,
 							const string& message) {
 	require_auth(get_self());

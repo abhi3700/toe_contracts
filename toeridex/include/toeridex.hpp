@@ -31,6 +31,7 @@ private:
 	const symbol ride_token_symbol;
 	const float supply_factor;
 	const float fees_factor;
+	const name ride_contract_ac;
 
 
 public:
@@ -41,7 +42,8 @@ public:
 				token_issuer("bhubtoeindia"_n),
 				ride_token_symbol("TOE", 4),
 				supply_factor(0.995),
-				fees_factor(0.005) {}
+				fees_factor(0.005),
+				ride_contract_ac("toe1ridetaxi"_n) {}
 
 	/**
 	 * @brief - initialize RIDEX params
@@ -85,6 +87,16 @@ public:
 					const name& type,
 					uint64_t ride_qty,
 					const string& memo);
+
+	/**
+	 * @brief - on finishing a ride, the ride quota gets added
+	 * @details [long description]
+	 * 
+	 * @param type - driver/commuter
+	 * @param ride_quota - increase ride_quota on finishing a ride from toeridetaxi contract
+	 */
+	ACTION addridequota(const name& type, 
+						uint64_t ride_quota);
 
 	/**
 	 * @brief - send alert
