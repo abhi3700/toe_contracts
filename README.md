@@ -263,6 +263,8 @@ rides --> no. of available rides (commission-free/surge-free) to the driver/comm
 	- The value for __fiat ---> crypto__ conversion in fare, is considered the one, which is calculated before setting into the Blockchain record.
 		+ Q. Should the fare conversion be done during the dispersal i.e. `recvfare` action (inside)? 
 			- For this, we can use `eos-api` codebase & market API inside the action.
+		+ Q. Should the __fare_crypto_est__/__fare_crypto_est__ converted from __fare_est__/__fare_act__ be at Market price during __ride_request__ or __finish_ride__?
+			- Need to be voted out for this decision. Most probably, we should go with __ride_request__. Or else, it's left with the community.
 
 * References
 	- [Anonymous Voting on Blockchain by cc32d9](https://github.com/cc32d9/cc32d9_ideas_for_EOSIO/blob/master/Anonymous_Voting_on_Blockchain.md)
