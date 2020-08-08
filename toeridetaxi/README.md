@@ -57,8 +57,8 @@ cabeos_contracts/toeridetaxi
 $ eosio-cpp src/toeridetaxi.cpp -o toeridetaxi.wasm
 Warning, empty ricardian clause file
 Warning, empty ricardian clause file
-Warning, action <addpaymost> does not have a ricardian contract
 Warning, action <create> does not have a ricardian contract
+Warning, action <setfiatpayst> does not have a ricardian contract
 Warning, action <assign> does not have a ricardian contract
 Warning, action <cancelbycom> does not have a ricardian contract
 Warning, action <cancelbydri> does not have a ricardian contract
@@ -72,8 +72,8 @@ Warning, action <addristatus> does not have a ricardian contract
 Warning, action <sendalert> does not have a ricardian contract
 Warning, action <sendreceipt> does not have a ricardian contract
 Warning, action <eraseride> does not have a ricardian contract
-Warning, action <addpaymost> does not have a ricardian contract
 Warning, action <create> does not have a ricardian contract
+Warning, action <setfiatpayst> does not have a ricardian contract
 Warning, action <assign> does not have a ricardian contract
 Warning, action <cancelbycom> does not have a ricardian contract
 Warning, action <cancelbydri> does not have a ricardian contract
@@ -150,11 +150,11 @@ d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2
 - "Preet City ,Sector 86,Mohali, Sector 86, Sahibzada Ajit Singh Nagar, Punjab": "30.6715713,76.701094"
 - "Semi-conductor Laboratory, Department of Space, Govt. of India, Phase 8, Industrial Area, Sector 73, Phase 8, Industrial Area, Sahibzada Ajit Singh Nagar, Punjab": "30.703957,76.6999052"
 - "finish_timestamp_est": "Fri, 07 Aug 2020 22:40:38 IST" i.e. 1596820238
-- 
 ```
-	- For details of vehicle type with fare, please refer this [img](../images/fare/preet_city_to_scl_ride_request.png)
+	- For details of vehicle type with fare, please refer this [img](../images/fare/preet_city_to_scl_ride_request.png) [Link](https://www.uber.com/in/en/price-estimate/)
 	- For conversion of INR to TOE: 5 Rs. --> 1.0000 TOE
 	- Use [this](https://www.epochconverter.com/) for IST to Unix timestamp conversion
+![](../images/ride_exp_app/create_ride.jpg)
 
 * `toecom111111` requested a ride again (with already previous ride ongoing) & gets error
 ```console
@@ -195,11 +195,84 @@ executed transaction: e056b65aa183a87805146af7a66ac81802b2add8be80af23b5c7a66efb
 #  toecom111111 <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"toecom111111 is assigned with a driver: toedri111111"}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
-
 	- trip related info: estimated time taken to reach the src
 ```
 - "reachsrc_timestamp_est": "Fri, 07 Aug 2020 22:20:38 IST" i.e. 1596819038
 ```
+
+### Action - `reachsrc`
+* `toedri111111` reach the src_loc
+```console
+$ cleost push action toe1ridetaxi reachsrc '["toedri111111"]' -p toedri111111@active
+executed transaction: bc185f5791ef6231964bf93eea6b26d2b50d03e6f073f52d7f67ce77d8fcff82  104 bytes  307 us
+#  toe1ridetaxi <= toe1ridetaxi::reachsrc       {"driver_ac":"toedri111111"}
+#  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"toedri111111 has reached the pick-up point."}
+#  toe1ridetaxi <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"Hello, toecom111111, your driver: toedri111111 has reached the pic...
+#  toedri111111 <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"toedri111111 has reached the pick-up point."}
+#  toecom111111 <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"Hello, toecom111111, your driver: toedri111111 has reached the pic...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+### Action - `start`
+* `toedri111111` start the ride
+```console
+$ cleost push action toe1ridetaxi start '["toedri111111"]' -p toedri111111@active
+executed transaction: 6c12e14be9a80965eaa1fbe70bb9697ca7247d951315756c3a07fc0a82d7f8c4  104 bytes  848 us
+#  toe1ridetaxi <= toe1ridetaxi::start          {"driver_ac":"toedri111111"}
+#  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"toedri111111 starts the ride."}
+#  toe1ridetaxi <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"toedri111111 starts the ride."}
+#  toedri111111 <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"toedri111111 starts the ride."}
+#  toecom111111 <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"toedri111111 starts the ride."}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+### Action - `changedes`
+* `toecom111111` change destination in b/w the ride
+	- you can change the `pay_mode`. Note that __Case-2__ & __Case-4__ has to be checked outisde TOE SC, then only `changedes` action will be requested.
+		+ Case-1: if the pay_mode is __"crypto"__ as previous:
+			- then ensure that min __ridewallet__ balance is `fare_crypto_est` (converted from fiat @ Market price rate noted during ride request), or else prompt to send the required amount using `sendfare` func inside `toeridewallet` contract.
+		+ Case-2: if the pay_mode is changed from __"crypto"__ to __"fiatdigi"__:
+			- then ensure that min fiat __ridewallet__ balance is `fiat_est` (calculated using fiat calculator), or else prompt to send the required amount in __fiat__ wallet.
+		+ Case-3: if the pay_mode is changed from __"fiatdigi"__ to __"crypto"__:
+			- then ensure that min __ridewallet__ balance is `fare_crypto_est` (converted from fiat @ Market price rate noted during ride request), or else prompt to send the required amount using `sendfare` func inside `toeridewallet` contract.
+		+ Case-4: if the pay_mode is __"fiatdigi"__ as previous:
+			- then ensure that min fiat __ridewallet__ balance is `fiat_est` (calculated using fiat calculator), or else prompt to send the required amount in __fiat__ wallet.
+	- Here, calculate the new __fare_est__ (using Fare calculator), __fare_crypto_est__ (converted @ MP during __ride_request__)
+	- trip related info: src loc & des loc
+```md
+- hashes of new des lat & lon
+7b598dfa7b2c9f051c2f55ef335e61b9911798a88773b27c60430deab84c21b3
+b75f80aa9ac46065fe405df0b84908d8f0c689b9d1f344964efad64409e43a50
+
+- "Preet City ,Sector 86,Mohali, Sector 86, Sahibzada Ajit Singh Nagar, Punjab": "30.6715713,76.701094"
+- "Panjab University Sector 14, Chandigarh": "30.7580107,76.7662895"
+- "finish_timestamp_est": "Sat, 08 Aug 2020 22:20:38 IST" i.e. 1596905438
+- "fare_est": "180"
+- "fare_crypto_est": "36.0000 TOE" i.e. 180/5, where MP --> 1 TOE = 5 INR
+```
+![](../images/ride_exp_app/change_des.jpg)
+	- Error: low balance in the ride wallet
+```console
+$ cleost push action toe1ridetaxi changedes '["toecom111111", "7b598dfa7b2c9f051c2f55ef335e61b9911798a88773b27c60430deab84c21b3", "b75f80aa9ac46065fe405df0b84908d8f0c689b9d1f344964efad64409e43a50", "180", "36.0000 TOE", "crypto", "change destination"]' -p toecom111111@active
+Error 3050003: eosio_assert_message assertion failure
+Error Details:
+assertion failure with message: Sorry! Low balance in the ride wallet.
+pending console output:
+```
+	- After transferring required TOE tokens to `ridewallet`, successfully changed destination
+```
+$ cleost push action toe1ridetaxi changedes '["toecom111111", "7b598dfa7b2c9f051c2f55ef335e61b9911798a88773b27c60430deab84c21b3", "b75f80aa9ac46065fe405df0b84908d8f0c689b9d1f344964efad64409e43a50", "180", "36.0000 TOE", "crypto", "change destination"]' -p toecom111111@active
+executed transaction: cfb3db081e8f7ec896627d0bce237c0ae49e6c7fa40743fb8a39fff40d6e63fa  216 bytes  447 us
+#  toe1ridetaxi <= toe1ridetaxi::changedes      {"commuter_ac":"toecom111111","des_lat_hash":"7b598dfa7b2c9f051c2f55ef335e61b9911798a88773b27c60430d...
+#  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toecom111111","message":"toecom111111 changes the destination location & the fare is update...
+#  toe1ridetaxi <= toe1ridetaxi::sendalert      {"user":"toedri111111","message":"toecom111111 changes the destination location & the fare is update...
+#  toecom111111 <= toe1ridetaxi::sendreceipt    {"user":"toecom111111","message":"toecom111111 changes the destination location & the fare is update...
+#  toedri111111 <= toe1ridetaxi::sendalert      {"user":"toedri111111","message":"toecom111111 changes the destination location & the fare is update...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+
+### Action - `finish`
 
 
 ### Action - `eraseride`
@@ -214,3 +287,4 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ## TODO
 - [ ] addrating action
 - [ ] increase `rides_limit` when a ride is finished & the corresponding pay_mode is `crypto`
+- [ ] add a field 'Market rate' from fiat to crypto at the time of 'request_ride'

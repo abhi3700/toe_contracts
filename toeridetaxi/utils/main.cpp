@@ -9,8 +9,8 @@ int main() {
 
 string src_lat = "30.6715713";
 string src_lon = "76.701094";
-string des_lat = "30.703957";
-string des_lon = "76.6999052";
+string des_lat = "30.7580107";
+string des_lon = "76.7662895";
 
 	try {
 		std::string src_lat_hash = mywrapper->getHashFromString(src_lat);

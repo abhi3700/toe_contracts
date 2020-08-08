@@ -296,8 +296,8 @@ private:
 		name vehicle_type;      // list of taxis - toeauto, toemoto, toego, toegoexec, toepremier, toepremexec, toexl, toegointcity, toexlintcity
 		uint32_t seat_count;        // set for pool, else default is 2
 		name pay_mode;            // crypto or fiatdigi or fiatcash
-		name crypto_paystatus;          // paidbycom or paidtodri
-		name fiat_paystatus;          // paidbycom or paidtodri
+		name crypto_paystatus;          // paidbycom or paidtodri for "crypto"
+		name fiat_paystatus;          // paidbycom or paidtodri	for "fiatdigi"
 		uint32_t assign_timestamp;  // at which ride is assigned
 		uint32_t reachsrc_timestamp_est;    // at which driver is estimated to reach source location to pick-up
 		uint32_t reachsrc_timestamp_act;    // at which driver actually reached source location to pick-up

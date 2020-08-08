@@ -255,8 +255,22 @@ void toeridetaxi::changedes( const name& commuter_ac,
 
 	check(wallet_it != ridewallet_table.end(), "the symbol doesn't exist in the wallet. Please, transfer some balance to your wallet.");
 
-	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
-	if(pay_mode == "crypto"_n) {
+	// Case-1: if the pay_mode is __"crypto"__ as previous:
+	// if pay_mode is 'crypto', ensure the fare_amount is present in the 'ridewallet' balance.
+	if((ride_it->pay_mode == "crypto"_n) && (pay_mode == "crypto"_n)) {
+		// ensure that the ride wallet's min. balance has `fare_est` value
+		check( wallet_it->balance >= fare_crypto_est, "Sorry! Low balance in the ride wallet.");
+
+		// if ( (wallet_it->balance) < fare_crypto_est) {
+		// 	send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
+		// 	return;
+		// }
+	}
+
+	// Case-2 & Case-4: Not considered inside Smart contract as the wallet exists outside Blockchain world.
+
+	// Case-3: if the pay_mode is changed from __"fiatdigi"__ to __"crypto"__:
+	if((ride_it->pay_mode == "fiatdigi"_n) && (pay_mode == "crypto"_n)) {
 		// ensure that the ride wallet's min. balance has `fare_est` value
 		check( wallet_it->balance >= fare_crypto_est, "Sorry! Low balance in the ride wallet.");
 
@@ -272,6 +286,10 @@ void toeridetaxi::changedes( const name& commuter_ac,
 		row.fare_est = fare_est;
 		row.fare_crypto_est = fare_crypto_est;
 		row.pay_mode = pay_mode;
+
+		if (pay_mode == "crypto"_n) {
+			row.crypto_paystatus = "paidbycom"_n;
+		}
 	});
 
 	// On successful execution, an alert is sent
