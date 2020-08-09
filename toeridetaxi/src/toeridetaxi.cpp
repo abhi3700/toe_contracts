@@ -464,11 +464,14 @@ void toeridetaxi::finish( const name& driver_ac ) {
 	// On successful execution, an alert is sent
 	send_alert(driver_ac, driver_ac.to_string() + " finishes the ride.");
 
-	// add '1' ride to ridex ride_quota for "driver" type
-	add_ridequota("driver"_n, 1);
+	// add ride_quota for __"crypto"__ pay_mode
+	if(ride_it->pay_mode == "crypto"_n) {
+		// add '1' ride to ridex ride_quota for "driver" type
+		add_ridequota("driver"_n, 1);
 
-	// add '1' ride to ridex ride_quota for "commuter" type
-	add_ridequota("commuter"_n, 1);
+		// add '1' ride to ridex ride_quota for "commuter" type
+		add_ridequota("commuter"_n, 1);
+	}
 }
 
 // --------------------------------------------------------------------------------------------------------------------
