@@ -212,3 +212,7 @@ $ cleost get table toe1111token toecom111111 accounts
   "next_key": ""
 }
 ``` 
+
+
+## Notes
+* `disburse` action can be use only using the permission authority of `toeridetaxi` contract account. It is actually created to use as inline action inside `toeridetaxi` contract to make changes in the `toeridewallet`'s `ridewallet` table.

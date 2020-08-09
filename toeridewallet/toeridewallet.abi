@@ -4,12 +4,48 @@
     "types": [],
     "structs": [
         {
+            "name": "disburse",
+            "base": "",
+            "fields": [
+                {
+                    "name": "receiver_ac",
+                    "type": "name"
+                },
+                {
+                    "name": "wallet_holder",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "ridewallet",
             "base": "",
             "fields": [
                 {
                     "name": "balance",
                     "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "sendalert",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "message",
+                    "type": "string"
                 }
             ]
         },
@@ -53,6 +89,16 @@
         }
     ],
     "actions": [
+        {
+            "name": "disburse",
+            "type": "disburse",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "sendalert",
+            "type": "sendalert",
+            "ricardian_contract": ""
+        },
         {
             "name": "sendreceipt",
             "type": "sendreceipt",
