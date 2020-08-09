@@ -195,7 +195,7 @@ void toeridex::sellride( const name& seller,
 		std::make_tuple("toeridexsupp"_n, seller, ride_price_fees, "fees for sell " + std::to_string(ride_qty) + " ride(s)")
 		).send();
 
-	// update the ride_table with new `ride_quota` & `toe_balance`
+	// update the ridex_table with new `ride_quota` & `toe_balance`
 	ridex_table.modify(ridex_it, get_self(), [&](auto& row){
 		row.ride_quota += ride_qty;
 		row.toe_balance -= ride_price;
@@ -209,7 +209,7 @@ void toeridex::sellride( const name& seller,
 }
 // --------------------------------------------------------------------------------------------------------------------
 void toeridex::addridequota(const name& type,
-							uint64_t ride_quota )
+							uint64_t ride_qty )
 {
 	// explicitly given permission to only ride contract ac for this action
 	require_auth(ride_contract_ac);
@@ -217,11 +217,20 @@ void toeridex::addridequota(const name& type,
 	// check the type is "driver" or "commuter"
 	check( (type == "driver"_n) || (type == "commuter"_n), "invalid type");
 
-	check(ride_quota != 0, "Ride quantity can't be zero");
+	check(ride_qty != 0, "Ride quantity can't be zero");
 
-	ridexaccount_index ridexaccount_table(get_self(), seller.value);
-	auto ridexaccount_it = ridexaccount_table.find(type.value);
-	check(ridexaccount_it != ridexaccount_table.end(), "Sorry! There is no ride to sell.");
+	// instantiate the ridex table
+	ridex_index ridex_table(get_self(), get_self().value);
+	auto ridex_it = ridex_table.find(type.value);
+
+	// check if the row exist for given type
+	check(ridex_it != ridex_table.end(), "There is no data found for this type.");
+
+	// update the ridex_table with additional `ride_qty`
+	ridex_table.modify(ridex_it, get_self(), [&](auto& row){
+		row.ride_quota += ride_qty;
+	});
+
 }
 
 // --------------------------------------------------------------------------------------------------------------------

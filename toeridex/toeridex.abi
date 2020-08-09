@@ -4,6 +4,20 @@
     "types": [],
     "structs": [
         {
+            "name": "addridequota",
+            "base": "",
+            "fields": [
+                {
+                    "name": "type",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_qty",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
             "name": "buyride",
             "base": "",
             "fields": [
@@ -127,6 +141,11 @@
         }
     ],
     "actions": [
+        {
+            "name": "addridequota",
+            "type": "addridequota",
+            "ricardian_contract": ""
+        },
         {
             "name": "buyride",
             "type": "buyride",

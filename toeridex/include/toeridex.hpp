@@ -89,14 +89,15 @@ public:
 					const string& memo);
 
 	/**
-	 * @brief - on finishing a ride, the ride quota gets added
-	 * @details [long description]
+	 * @brief - on finishing a ride with __"crypto"__ pay_mode, the ride quota gets added
+	 * @details - the ride quota gets added on finishing a ride from toeridetaxi contract for __"crypto"__ pay_mode
+	 * 			- only accessed by 'ride_contract_ac'
 	 * 
 	 * @param type - driver/commuter
-	 * @param ride_quota - increase ride_quota on finishing a ride from toeridetaxi contract
+	 * @param ride_qty - increase ride_quota by ride_qty
 	 */
 	ACTION addridequota(const name& type, 
-						uint64_t ride_quota);
+						uint64_t ride_qty);
 
 	/**
 	 * @brief - send alert
@@ -118,6 +119,8 @@ public:
 	ACTION sendreceipt( const name& user,
 						const string& message);
 
+
+	using addridequota_action  = action_wrapper<"addridequota"_n, &toeridex::addridequota>;
 
 private:
 	// --------------------------------------------------------------------------------
