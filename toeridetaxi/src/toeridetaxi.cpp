@@ -1,5 +1,6 @@
 #include "../include/toeridetaxi.hpp"
 #include "../../toeridewallet/include/toeridewallet.hpp"
+#include "../../toeridex/include/toeridex.hpp"
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::create(
@@ -462,6 +463,12 @@ void toeridetaxi::finish( const name& driver_ac ) {
 
 	// On successful execution, an alert is sent
 	send_alert(driver_ac, driver_ac.to_string() + " finishes the ride.");
+
+	// add '1' ride to ridex ride_quota for "driver" type
+	add_ridequota("driver"_n, 1);
+
+	// add '1' ride to ridex ride_quota for "commuter" type
+	add_ridequota("commuter"_n, 1);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -628,6 +635,12 @@ void toeridetaxi::disburse_fare(const name& receiver_ac,
 								const string& memo ) {
 	toeridewallet::disburse_action disburse(wallet_contract_ac, {get_self(), "active"_n});
 	disburse.send(receiver_ac, wallet_holder, quantity, memo);
+}
+
+void toeridetaxi::add_ridequota(const name& type, 
+								uint64_t ride_qty ) {
+	toeridex::addridequota_action addridequota(ridex_contract_ac, {get_self(), "active"_n});
+	addridequota.send(type, ride_qty);
 }
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::eraseride( const name& commuter_ac,

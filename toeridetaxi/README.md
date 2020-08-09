@@ -427,11 +427,13 @@ warning: transaction executed locally, but may not be confirmed by the network y
 
 ## TODO
 * [ ] addrating action
-* [ ] increase `rides_limit` when a ride is finished & the corresponding pay_mode is `crypto`
-* [ ] add a field 'Market rate' from fiat to crypto at the time of 'request_ride'
+* [ ] testing of increase `rides_limit` when a ride is finished & the corresponding pay_mode is `crypto`
 * [ ] revisit `addfareact` action after creating fare calculator, whether to add as inline action inside `finish` action
 
 ### NOTES
 * All the actions are ensured to process sequentially based on checking the `ride_status` field of the table, so that an action can't be accessed before using the previous required action. E.g. `cancelbycom` can only be accessed in __"requested"__, __"enroute"__, __"waiting"__ ride status.
 *	addfareact action is not used as inline inside finish action bcoz there are some external factors like waiting time, route etc,...(to be fetched from traditional Database) involved in fare calculation.
+* `toeridetaxi` contract is linked:
+	- via `disburse` (as an inline action inside `toeridetaxi::recvfare` action) to `toeridewallet` contract
+	- via `addridequota` (as an inline action inside `toeridetaxi::finish` action) to `toeridex` contract
 

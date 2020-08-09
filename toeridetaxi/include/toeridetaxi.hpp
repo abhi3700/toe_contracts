@@ -32,6 +32,7 @@ private:
 	const symbol ride_token_symbol;
 	const name wallet_contract_ac;
 	const name token_contract_ac;
+	const name ridex_contract_ac;
 
 public:
 	using contract::contract;
@@ -40,7 +41,8 @@ public:
 				contract(receiver, code, ds), 
 				ride_token_symbol("TOE", 4),
 				wallet_contract_ac("toe14rwallet"_n),
-				token_contract_ac("toe1111token"_n) {}
+				token_contract_ac("toe1111token"_n),
+				ridex_contract_ac("toe1111ridex"_n) {}
 	
 
 	/**
@@ -395,5 +397,8 @@ private:
 						const asset& quantity,
 						const string& memo );
 
+	// Adding inline action for `addridequota` action in the ridex contract   
+	void add_ridequota(const name& type, 
+						uint64_t ride_qty );
 
 };
