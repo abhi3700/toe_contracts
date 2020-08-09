@@ -189,7 +189,7 @@ d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2
 $ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "79.00", "5.00", "15.8000 TOE", "1596931238", "2", "request a ride from home to office"]' -p toecom111111@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
-assertion failure with message: The ride looks like already set by 'toecom111111' using 'crypto'. So, please use the same pay_mode to create the ride.
+assertion failure with message: The ride looks like already set by 'toecom111111' using 'crypto'.
 pending console output:
 ```
 * Case-II (fiatdigi): create ride by `toecom111112` in __fiatdigi__ mode
@@ -391,3 +391,6 @@ warning: transaction executed locally, but may not be confirmed by the network y
 * [ ] addrating action
 * [ ] increase `rides_limit` when a ride is finished & the corresponding pay_mode is `crypto`
 * [ ] add a field 'Market rate' from fiat to crypto at the time of 'request_ride'
+
+### NOTES
+* All the actions are ensured to process sequentially based on checking the `ride_status` field of the table, so that an action can't be accessed before using the previous required action. E.g. `cancelbycom` can only be accessed in __"requested"__, __"enroute"__, __"waiting"__ ride status.

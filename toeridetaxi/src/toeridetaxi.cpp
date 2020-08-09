@@ -84,7 +84,12 @@ void toeridetaxi::create(
 
 	// add the ride details by commuter for __"crypto"__ pay_mode
 	if(pay_mode == "crypto"_n) {
-	 	check(ride_it == ridetaxi_table.end(), "The ride looks like already set by \'"+ commuter_ac.to_string() + "\' using \'" + ride_it->pay_mode.to_string() + 
+		// possibility-1: with "crypto" pay_mode trying again
+		// possibility-2: with "crypto" pay_mode after trying `setfipaymost` action i.e. set "non-crypto" & then create ride using "crypto" pay_mode. So, here, create using same stored pay_mode
+	 	check(ride_it == ridetaxi_table.end(), 
+	 		(ride_it->pay_mode == "crypto"_n) ? "The ride looks like already set by \'"+ commuter_ac.to_string() + "\' using \'" + ride_it->pay_mode.to_string() + 
+	 												"\'." : 
+	 											"The ride looks like already set by \'"+ commuter_ac.to_string() + "\' using \'" + ride_it->pay_mode.to_string() + 
 	 												"\'. So, please use the same pay_mode to create the ride.");
 	
 		ridetaxi_table.emplace(commuter_ac, [&]( auto& row ) {
@@ -235,6 +240,12 @@ void toeridetaxi::cancelbycom( const name& commuter_ac,
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
 	check( ride_it != ridetaxi_table.end(), "Ride by the commuter doesn't exist."); 
+	check( 
+		(ride_it->ride_status == "requested"_n) || 
+		(ride_it->ride_status == "enroute"_n) || 
+		(ride_it->ride_status == "waiting"_n)
+		, "The ride status must be either \'requested\' or \'enroute\' or \'waiting\' in order to cancel ride by commuter.");
+
 	ridetaxi_table.erase(ride_it);
 
 	// On successful execution, an alert is sent
@@ -259,6 +270,12 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 	auto ride_it = driver_idx.find(driver_ac.value);
 
 	check( ride_it != driver_idx.end(), "Ride by the driver doesn't exist.");   
+	check( 
+		(ride_it->ride_status == "requested"_n) || 
+		(ride_it->ride_status == "enroute"_n) || 
+		(ride_it->ride_status == "waiting"_n)
+		, "The ride status must be either \'requested\' or \'enroute\' or \'waiting\' in order to cancel ride by driver.");
+
 	driver_idx.erase(ride_it);
 
 	// On successful execution, a receipt is sent
@@ -284,6 +301,9 @@ void toeridetaxi::changedes( const name& commuter_ac,
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
+
+	// ensure the action is accessed during __"ontrip"__ ride_status
+	check(ride_it->ride_status == "ontrip"_n, "The ride status must be \'ontrip\' in order to use this action.");
 
 	// ensure that the new des_lat_hash or des_lon_hash is different than it's stored counterpart 
 	check(
