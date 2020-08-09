@@ -294,3 +294,24 @@ n = no. of Rides needed (in no.)
 	- verify/blacklist the drivers (more strictly), commuters
 	- attend to issues raised by drivers, commuters
 	- conduct (schedule datetime) voting for any decision making. E.g. - deciding inflation rate, 
+
+### Incentive model
+* deduct Commuter's incentives based on the time taken to start the ride after (5 mins)
+* deduct driver's incentives based on the time diff. (reachsrc_timestamp_est - reachsrc_timestamp_act) > threshold_val.............. i.e. crosses the permissible value i.e. 5 mins.
+* deduction on commuter cancelling
+* deduction on driver cancelling
+* deduction (% wise in rating range below 4.8)
+	- Harsh on lower ratings < 4 
+	- Rating penalty algorithm
+* deduction on care's helpers if they are rated low.
+* deduction if (finish_timestamp_act - finish_timestamp_est) > threshold_value
+* incentivize CARES partners more for validating the user fast (i.e. update_timestamp - auth_timestamp)
+* deduction on commuter's reward & cancellation fee (in fiat) for cancellation (__"waiting"__ > __"enroute"__ > __"requested"__)
+	- relatively lower on __"requested"__ ride status
+	- relatively higher on __"enroute"__ ride status
+	- relatively more higher on __"waiting"__ ride status
+* deduction on driver's reward & cancellation fee (in fiat) for cancellation (__"waiting"__ > __"enroute"__ > __"requested"__)
+	- relatively lower on __"requested"__ ride status
+	- relatively higher on __"enroute"__ ride status
+	- relatively more higher on __"waiting"__ ride status
+* deduction on 
