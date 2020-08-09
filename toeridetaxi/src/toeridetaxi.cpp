@@ -10,6 +10,7 @@ void toeridetaxi::create(
 	const name& vehicle_type,
 	const name& pay_mode,
 	float fare_est,
+	float market_price,
 	const asset& fare_crypto_est,
 	uint32_t finish_timestamp_est,
 	uint32_t seat_count, // define only for Pool rides. passed as default [Optional] parameter, which should be defined always as last param
@@ -78,27 +79,57 @@ void toeridetaxi::create(
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
-	check(ride_it == ridetaxi_table.end(), "There is already a ride ongoing by a commuter.");
+	// As the ride has to be created only once, that's why `check()` is applied before both 
+	// `emplace()` & `modify()` during __"crypto"__ & __"non-crypto" pay_mode
+
+	// add the ride details by commuter for __"crypto"__ pay_mode
+	if(pay_mode == "crypto"_n) {
+	 	check(ride_it == ridetaxi_table.end(), "The ride looks like already set by \'"+ commuter_ac.to_string() + "\' using \'" + ride_it->pay_mode.to_string() + 
+	 												"\'. So, please use the same pay_mode to create the ride.");
 	
-	// add the ride details for commuter
-	ridetaxi_table.emplace(commuter_ac, [&]( auto& row ) {
-		row.commuter_ac = commuter_ac;
-		row.src_lat_hash = src_lat_hash;
-		row.src_lon_hash = src_lon_hash;
-		row.des_lat_hash = des_lat_hash;
-		row.des_lon_hash = des_lon_hash;
-		row.vehicle_type = vehicle_type;
-		row.seat_count = seat_count;
-		row.pay_mode = pay_mode,
-		row.fare_est = fare_est;
-		row.fare_crypto_est = fare_crypto_est;
-		row.finish_timestamp_est = finish_timestamp_est;
-		
-		if (pay_mode == "crypto"_n)
-		{
+		ridetaxi_table.emplace(commuter_ac, [&]( auto& row ) {
+			row.commuter_ac = commuter_ac;
+			row.ride_status = "requested"_n;
+			row.src_lat_hash = src_lat_hash;
+			row.src_lon_hash = src_lon_hash;
+			row.des_lat_hash = des_lat_hash;
+			row.des_lon_hash = des_lon_hash;
+			row.vehicle_type = vehicle_type;
+			row.seat_count = seat_count;
+			row.pay_mode = pay_mode,
+			row.fare_est = fare_est;
+			row.market_price = market_price;
+			row.fare_crypto_est = fare_crypto_est;
+			row.finish_timestamp_est = finish_timestamp_est;
+			
+			// set only for __"crypto"__ pay_mode
 			row.crypto_paystatus = "paidbycom"_n;
-		}
-	});
+		});
+	 }
+	// add the ride details by commuter for __"non-crypto"__ pay_mode
+	else {
+	 	check(ride_it != ridetaxi_table.end(), "First set the fiat pay status using \'setfiatpayst\' action before requesting a ride.");
+	 	check(ride_it->pay_mode == pay_mode, "The pay_mode during ride request doesn't match with the one stored earlier in the table.");
+		check(ride_it->ride_status != "requested"_n, "Sorry, the ride is already requested. So, can't be re-created, but destination can be changed during \'on-trip\'");
+
+		ridetaxi_table.modify(ride_it, commuter_ac, [&]( auto& row ) {
+			row.commuter_ac = commuter_ac;
+			row.ride_status = "requested"_n;
+			row.src_lat_hash = src_lat_hash;
+			row.src_lon_hash = src_lon_hash;
+			row.des_lat_hash = des_lat_hash;
+			row.des_lon_hash = des_lon_hash;
+			row.vehicle_type = vehicle_type;
+			row.seat_count = seat_count;
+			row.pay_mode = pay_mode,
+			row.fare_est = fare_est;
+			row.market_price = market_price;
+			row.fare_crypto_est = fare_crypto_est;
+			row.finish_timestamp_est = finish_timestamp_est;
+
+			// pay_mode already set during `setfiatpayst` action. So, not needed
+		});
+	 } 
 	
 
 	// On successful execution, a receipt is sent
@@ -107,8 +138,8 @@ void toeridetaxi::create(
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::setfiatpayst( const name& commuter_ac,
-								const name& fiat_paystatus,
+void toeridetaxi::setfipaymost( const name& commuter_ac,
+								const name& pay_mode,
 								const string& memo )
 {
 	require_auth( commuter_ac );
@@ -116,8 +147,8 @@ void toeridetaxi::setfiatpayst( const name& commuter_ac,
 	// check whether the `commuter_ac` is a verified commuter by reading the `auth` table
 	check_userauth(commuter_ac, "commuter"_n);
 
-	// check the fiat_paystatus as "fiatdigi" or "fiatcash"
-	check( (fiat_paystatus == "fiatdigi"_n) || (fiat_paystatus == "fiatcash"_n), "In order to use this action, the pay_mode must be fiatdigi or fiatcash.");
+	// check the pay_mode as "fiatdigi" or "fiatcash"
+	check( (pay_mode == "fiatdigi"_n) || (pay_mode == "fiatcash"_n), "In order to use this action, the pay_mode must be fiatdigi or fiatcash.");
 
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
@@ -125,15 +156,32 @@ void toeridetaxi::setfiatpayst( const name& commuter_ac,
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
-	// Ensure that there is a ride by `commuter_ac`
-	check( ride_it != ridetaxi_table.end(), "Ride by the " + commuter_ac.to_string() + " doesn't exist.");
+	if(ride_it == ridetaxi_table.end()) {
+		ridetaxi_table.emplace(commuter_ac, [&](auto& row) {
+			row.commuter_ac = commuter_ac;
+			row.pay_mode = pay_mode;		// set "fiatdigi" or "fiatcash"
 
-	ridetaxi_table.modify(ride_it, commuter_ac, [&](auto& row) {
-		row.fiat_paystatus = fiat_paystatus;
-	});
+			if (pay_mode == "fiatdigi"_n) {
+				row.fiat_paystatus = "paidbycom"_n;
+			}
+		});
+	}
+	else {
+		ridetaxi_table.modify(ride_it, commuter_ac, [&](auto& row) {
+			row.pay_mode = pay_mode;
+			if (pay_mode == "fiatdigi"_n) {
+				row.fiat_paystatus = "paidbycom"_n;
+			}
+		});
+	}
 
 	// On successful execution, a receipt is sent
-	send_receipt(commuter_ac, " You set the ride's pay_status as \'" + fiat_paystatus.to_string() + "\'");
+	if(pay_mode == "fiatdigi"_n) {
+		send_receipt(commuter_ac, " You set the ride's pay_mode as: \'" + pay_mode.to_string() + "\' & pay_status as \'" + ride_it->fiat_paystatus.to_string() + "\'.");
+	}
+	else {		// __"fiatcash"__ pay_mode
+		send_receipt(commuter_ac, " You set the ride's pay_mode as: \'" + pay_mode.to_string() + "\'.");
+	}
 
 }
 
@@ -157,7 +205,7 @@ void toeridetaxi::assign( const name& driver_ac,
 	check( ride_it != ridetaxi_table.end(), "Ride by the " + commuter_ac.to_string() + " doesn't exist.");
 
 	// Ensure that the ride_status is not marked as "enroute"
-	check( ride_it->ride_status != "enroute"_n, "the commuter is already assigned with a driver: " + driver_ac.to_string());
+	check( ride_it->ride_status != "enroute"_n, "the commuter is already assigned with a driver: " + driver_ac.to_string() + ". So, the ride can't be reassigned");
 
 	ridetaxi_table.modify(ride_it, get_self(), [&](auto& row) {
 		row.driver_ac = driver_ac;
@@ -237,6 +285,11 @@ void toeridetaxi::changedes( const name& commuter_ac,
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
+	// ensure that the new des_lat_hash or des_lon_hash is different than it's stored counterpart 
+	check(
+		(ride_it->des_lat_hash != des_lat_hash) || 
+		(ride_it->des_lon_hash != des_lon_hash), "Sorry, both modified latitude & longitude are same as its stored counterpart.");
+
 	// ensure that the ride by the commuter exists
 	check(ride_it != ridetaxi_table.end(), "Sorry! No ride created by the commuter.");
 
@@ -312,6 +365,7 @@ void toeridetaxi::reachsrc( const name& driver_ac ) {
 
 	// ensure that there is a ride by a commuter.
 	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + driver_ac.to_string());
+	check( ride_it->ride_status != "waiting"_n, "Sorry! the ride_status is already marked as \'waiting\'. So, you can't modify.");
 
 	// modify
 	driver_idx.modify(ride_it, driver_ac, [&](auto& row) {
@@ -329,7 +383,7 @@ void toeridetaxi::reachsrc( const name& driver_ac ) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::start( const name& driver_ac/*, const name& commuter_ac*/ ) {
+void toeridetaxi::start( const name& driver_ac ) {
 	require_auth( driver_ac ); 
 
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
@@ -342,6 +396,7 @@ void toeridetaxi::start( const name& driver_ac/*, const name& commuter_ac*/ ) {
 
 	// ensure that there is a ride by a commuter.
 	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + driver_ac.to_string());
+	check( ride_it->ride_status != "ontrip"_n, "Sorry! the trip is already started. So, you can't modify.");
 
 	// modify
 	driver_idx.modify(ride_it, driver_ac, [&](auto& row) {
@@ -369,6 +424,7 @@ void toeridetaxi::finish( const name& driver_ac ) {
 
 	// ensure ride assigned to driver exist 
 	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + driver_ac.to_string());
+	check( ride_it->ride_status != "complete"_n, "Sorry! the ride by the driver is already marked as complete. So, you can't modify.");
 
 	// modify
 	driver_idx.modify(ride_it, driver_ac, [&](auto& row) {
@@ -397,6 +453,8 @@ void toeridetaxi::addfareact( const name& driver_ac,
 
 	// ensure that there is a ride by a commuter.
 	check( ride_it != driver_idx.end(), "Sorry! no ride is assigned to " + driver_ac.to_string());
+	check( ride_it->fare_act == 0.00, "Sorry! the actual fare is already set. You can't modify");
+	check( ride_it->ride_status == "complete"_n, "The ride must be marked as complete. Otherwise, this action can't be used.");
 
 	// modify
 	driver_idx.modify(ride_it, driver_ac, [&] (auto& row) {
@@ -408,7 +466,7 @@ void toeridetaxi::addfareact( const name& driver_ac,
 	send_receipt(driver_ac, driver_ac.to_string() + " adds the actual fare in INR & TOE");
 	send_alert(ride_it->commuter_ac, 
 				"Now " + (ride_it->commuter_ac).to_string() + " has to pay " + 
-									std::to_string(fare_act) + " (in INR) & " + 
+									std::to_string(fare_act) + " (in INR) or " + 
 									fare_crypto_act.to_string() + " (in TOE)."
 									);
 }

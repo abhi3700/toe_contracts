@@ -71,6 +71,7 @@ public:
 					const name& vehicle_type,
 					const name& pay_mode,
 					float fare_est,
+					float market_price,
 					const asset& fare_crypto_est,
 					uint32_t finish_timestamp_est,
 					uint32_t seat_count,     // define only for Pool rides. passed as default [Optional] parameter
@@ -78,16 +79,18 @@ public:
 				);
 
 	/**
-	 * @brief - only valid for non-crypto pay_mode 
-	 * @details - set pay_status for 'fiatdigi' & 'fiatcash' pay_mode
+	 * @brief - only valid for non-crypto pay_mode. set pay_mode & pay_status
+	 * @details - set pay_status for 'fiatdigi' & 'fiatcash' pay_mode, only after ensuring sufficient balance in wallet in cases:
+	 * 				- before creating a ride request
+	 * 				- before changing destination
 	 * 
 	 * @param commuter_ac - commuter a/c
-	 * @param fiat_paystatus - fiat pay_status
+	 * @param pay_mode - pay_mode - "fiatdigi" or "fiatcash"
 	 * @param memo - the memo string to set fiat payment status e.g. paytm, etc..
 	 * 
 	 */
-	ACTION setfiatpayst( const name& commuter_ac,
-							const name& fiat_paystatus,
+	ACTION setfipaymost( const name& commuter_ac,
+							const name& pay_mode,
 							const string& memo );
 
 	/**
@@ -178,10 +181,8 @@ public:
 	 *      - change ride_status (enroute --> ontrip)
 	 * 
 	 * @param driver_ac - driver account
-	 * @param commuter_ac - commuter account
 	 */
-	ACTION start( const name& driver_ac/*,
-					const name& commuter_ac*/);
+	ACTION start( const name& driver_ac );
 
 	/**
 	 * @brief - finish ride
@@ -287,7 +288,7 @@ private:
 	TABLE ridetaxi
 	{
 		name commuter_ac;
-		name ride_status;           // enroute/waiting/ontrip/complete
+		name ride_status;           // /requested/enroute/waiting/ontrip/complete
 		name driver_ac;
 		checksum256 src_lat_hash; 
 		checksum256 src_lon_hash; 
@@ -306,6 +307,7 @@ private:
 		uint32_t finish_timestamp_est;      // at which the ride is estimated to finish
 		float fare_est;			// estimated fare (in national curr)
 		float fare_act;			// actual fare (in national curr)
+		float market_price;		// market price during ride request
 		asset fare_crypto_est;			// estimated fare (in national curr) converted (outside blockchain interaction) to fare (in crypto) based on the market rate.
 		asset fare_crypto_act;			// actual fare (in national curr) converted (outside blockchain interaction) to fare (in crypto) based on the market rate.
 

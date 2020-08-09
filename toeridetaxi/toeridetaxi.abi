@@ -152,6 +152,10 @@
                     "type": "float32"
                 },
                 {
+                    "name": "market_price",
+                    "type": "float32"
+                },
+                {
                     "name": "fare_crypto_est",
                     "type": "asset"
                 },
@@ -308,6 +312,10 @@
                     "type": "float32"
                 },
                 {
+                    "name": "market_price",
+                    "type": "float32"
+                },
+                {
                     "name": "fare_crypto_est",
                     "type": "asset"
                 },
@@ -346,7 +354,7 @@
             ]
         },
         {
-            "name": "setfiatpayst",
+            "name": "setfipaymost",
             "base": "",
             "fields": [
                 {
@@ -354,7 +362,7 @@
                     "type": "name"
                 },
                 {
-                    "name": "fiat_paystatus",
+                    "name": "pay_mode",
                     "type": "name"
                 },
                 {
@@ -441,8 +449,8 @@
             "ricardian_contract": ""
         },
         {
-            "name": "setfiatpayst",
-            "type": "setfiatpayst",
+            "name": "setfipaymost",
+            "type": "setfipaymost",
             "ricardian_contract": ""
         },
         {
