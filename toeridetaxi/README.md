@@ -437,3 +437,4 @@ warning: transaction executed locally, but may not be confirmed by the network y
 	- via `disburse` (as an inline action inside `toeridetaxi::recvfare` action) to `toeridewallet` contract
 	- via `addridequota` (as an inline action inside `toeridetaxi::finish` action) to `toeridex` contract
 
+* additional `ride_quota` gets increased only if the ride is marked __"complete"__ & the pay_mode chosen is __"crypto"__.
