@@ -3,10 +3,9 @@
   + auth
   + token
   + ridewallet
-  - ridetaxi
+  + ridetaxi
   - ridex
-- replacing `check` with `send_alert()` in all the contracts
-
+- Test of all contracts using Java for Android
 
 # Phase-2
 - modify contract for `pool`
