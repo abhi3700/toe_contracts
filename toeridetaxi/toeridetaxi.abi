@@ -224,6 +224,10 @@
                 {
                     "name": "driver_ac",
                     "type": "name"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
                 }
             ]
         },

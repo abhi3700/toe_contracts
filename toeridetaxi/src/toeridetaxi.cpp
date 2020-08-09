@@ -1,4 +1,5 @@
 #include "../include/toeridetaxi.hpp"
+#include "../../toeridewallet/include/toeridewallet.hpp"
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::create(
@@ -56,13 +57,16 @@ void toeridetaxi::create(
 		|| (pay_mode == "fiatcash"_n)
 		, "Sorry! The payment mode is not compatible.");
 
+	// check fareamount is valid for all conditions as 'asset'
+	check_fareamount(fare_crypto_est);
+
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `ridewallet` table.
 	ridewallet_index ridewallet_table(wallet_contract_ac, commuter_ac.value);
 	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
 
-	check(wallet_it != ridewallet_table.end(), "the symbol doesn't exist in the wallet. Please, transfer some balance to your wallet.");
+	check( wallet_it != ridewallet_table.end(), "Sorry! There is no amount transferred by " + commuter_ac.to_string() + "in the ride wallet.");
 
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
 	if(pay_mode == "crypto"_n) {
@@ -310,6 +314,9 @@ void toeridetaxi::changedes( const name& commuter_ac,
 		(ride_it->des_lat_hash != des_lat_hash) || 
 		(ride_it->des_lon_hash != des_lon_hash), "Sorry, both modified latitude & longitude are same as its stored counterpart.");
 
+	// check fareamount is valid for all conditions as 'asset'
+	check_fareamount(fare_crypto_est);
+
 	// ensure that the ride by the commuter exists
 	check(ride_it != ridetaxi_table.end(), "Sorry! No ride created by the commuter.");
 
@@ -326,7 +333,7 @@ void toeridetaxi::changedes( const name& commuter_ac,
 	ridewallet_index ridewallet_table(wallet_contract_ac, commuter_ac.value);
 	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
 
-	check(wallet_it != ridewallet_table.end(), "the symbol doesn't exist in the wallet. Please, transfer some balance to your wallet.");
+	check( wallet_it != ridewallet_table.end(), "Sorry! There is no amount transferred by " + commuter_ac.to_string() + "in the ride wallet.");
 
 	// Case-1: if the pay_mode is __"crypto"__ as previous:
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the 'ridewallet' balance.
@@ -466,6 +473,9 @@ void toeridetaxi::addfareact( const name& driver_ac,
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
 	check_userauth(driver_ac, "driver"_n);
 
+	// check fareamount is valid for all conditions as 'asset'
+	check_fareamount(fare_crypto_act);
+
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
@@ -492,11 +502,14 @@ void toeridetaxi::addfareact( const name& driver_ac,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::recvfare( const name& driver_ac ) {
+void toeridetaxi::recvfare( const name& driver_ac, 
+							const string& memo ) {
 	require_auth( driver_ac );
 
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
 	check_userauth(driver_ac, "driver"_n);
+
+	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -512,46 +525,32 @@ void toeridetaxi::recvfare( const name& driver_ac ) {
 	// check if the pay_mode is `crypto`
 	check( ride_it->pay_mode == "crypto"_n, "Sorry! the payment mode opted by commuter is not crypto.");
 
+	// check if the fare amount is already delivered
+	check(ride_it->crypto_paystatus != "paidtodri"_n, "Sorry! the crypto fare for completed ride to driver: " + driver_ac.to_string() + " is already transferred.");
+
 /*  check if there is any balance & it is greater than the 'fare_crypto_act'
 	corresponding to the ride
 */  // instantiate the `ridewallet` table
 	ridewallet_index ridewallet_table(wallet_contract_ac, (ride_it->commuter_ac).value);
 	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
 
-	check(wallet_it != ridewallet_table.end(), "the symbol doesn't exist in the wallet. Please, transfer some balance to your wallet.");
+	check( wallet_it != ridewallet_table.end(), "Sorry! There is no amount transferred by " + ride_it->commuter_ac.to_string() + "in the ride wallet.");
 
-	// check if balance < fare_act, then return
-	if( wallet_it->balance < ride_it->fare_crypto_act ) {
-		// print("Sorry, the commuter doesn't have sufficient balance in the ride wallet.");		// only for debugging
-		send_alert(ride_it->commuter_ac, "Sorry, the commuter doesn't have sufficient balance in the ride wallet.");
-		return;
-	}
+	// As the pay_mode is 'crypto' for this action, ensure the fare_amount is present in the faretaxi balance.
+	// ensure that the ride wallet's min. balance has `fare_est` value
+	check( wallet_it->balance >= ride_it->fare_crypto_act, "Sorry! Low balance in the ride wallet.");
 
-	// send the fare to the driver using inline action
-	action(
-		permission_level{get_self(), "active"_n},
-		token_contract_ac,
-		"transfer"_n,
-		std::make_tuple(get_self(), driver_ac, ride_it->fare_crypto_act, "fare sent to " + driver_ac.to_string())
-		).send();
+	// if ( (wallet_it->balance) < ride_it->fare_crypto_act) {
+	// 	send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
+	// 	return;
+	// }
+
+	disburse_fare(driver_ac, ride_it->commuter_ac, ride_it->fare_crypto_act, memo);
 
 	// change the crypto pay status to `paid`
 	driver_idx.modify( ride_it, driver_ac, [&](auto& row){
 		row.crypto_paystatus = "paidtodri"_n;
 	});
-
-	// erase the `fareamount` record only if the balance amount is zero
-	if( (wallet_it->balance).amount == 0 ) {        // @TODO: Test for whether asset balance is 0.0000 or 0
-		ridewallet_table.erase(wallet_it);
-
-		// On successful execution, an alert is sent
-		send_alert(driver_ac, driver_ac.to_string() + " receives the actual fare");
-	} else {
-		send_alert(driver_ac, driver_ac.to_string() + " receives the actual fare");       // even if non-zero balance, then also the fare might have been transferred.
-		send_alert(ride_it->commuter_ac, 
-					"Now " + (ride_it->commuter_ac).to_string() + " has a balance of " + (wallet_it->balance).to_string());
-	}
-
 
 }
 
@@ -622,7 +621,14 @@ void toeridetaxi::send_receipt(const name& user,
 		).send();
 }
 
-
+// --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::disburse_fare(const name& receiver_ac,
+								const name& wallet_holder,
+								const asset& quantity,
+								const string& memo ) {
+	toeridewallet::disburse_action disburse(wallet_contract_ac, {get_self(), "active"_n});
+	disburse.send(receiver_ac, wallet_holder, quantity, memo);
+}
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::eraseride( const name& commuter_ac,
 								const string& memo ) {

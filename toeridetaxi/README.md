@@ -378,12 +378,50 @@ assertion failure with message: Sorry! the actual fare is already set. You can't
 pending console output:
 ```
 
+#### Action - `recvfare`
+* `toedri111111` receives `fare_crypto_act` from the ridewallet contract which has wallet owned by `toecom111111`
+```console
+$ cleost push action toe1ridetaxi recvfare '["toedri111111", "receives fare for finishing a ride"]' -p toedri111111@active
+executed transaction: ffb2a1f18a30bb5d23a2d8487847881378f013c710f7a6785105ac6fd29acae4  136 bytes  506 us
+#  toe1ridetaxi <= toe1ridetaxi::recvfare       {"driver_ac":"toedri111111","memo":"receives fare for finishing a ride"}
+#  toe14rwallet <= toe14rwallet::disburse       {"receiver_ac":"toedri111111","wallet_holder":"toecom111111","quantity":"18.0000 TOE","memo":"receiv...
+#  toe1111token <= toe1111token::transfer       {"from":"toe14rwallet","to":"toedri111111","quantity":"18.0000 TOE","memo":"ridewallet disburses 18....
+#  toe14rwallet <= toe14rwallet::sendalert      {"user":"toecom111111","message":"ridewallet of 'toecom111111' is deducted by 18.0000 TOE amount."}
+#  toe14rwallet <= toe14rwallet::sendalert      {"user":"toedri111111","message":"toedri111111 recieves 18.0000 TOE amount for purpose: receives far...
+#  toe14rwallet <= toe1111token::transfer       {"from":"toe14rwallet","to":"toedri111111","quantity":"18.0000 TOE","memo":"ridewallet disburses 18....
+>> Either money is not sent to the contract or contract itself is the commuter.
+#  toedri111111 <= toe1111token::transfer       {"from":"toe14rwallet","to":"toedri111111","quantity":"18.0000 TOE","memo":"ridewallet disburses 18....
+#  toecom111111 <= toe14rwallet::sendalert      {"user":"toecom111111","message":"ridewallet of 'toecom111111' is deducted by 18.0000 TOE amount."}
+#  toedri111111 <= toe14rwallet::sendalert      {"user":"toedri111111","message":"toedri111111 recieves 18.0000 TOE amount for purpose: receives far...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+	- view the ridewallet balance of commuter - `toecom111111`
+```console
+$ cleost get table toe14rwallet toecom111111 ridewallet
+{
+  "rows": [{
+      "balance": "18.8001 TOE"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+* `toedri111111` tries to recive the fare again & gets error:
+```console
+$ cleost push action toe1ridetaxi recvfare '["toedri111111", "receives fare for finishing a ride"]' -p toedri111111@active
+Error 3050003: eosio_assert_message assertion failure
+Error Details:
+assertion failure with message: Sorry! the crypto fare for completed ride to driver: toedri111111 is already transferred.
+pending console output:
+```
+
 #### Action - `eraseride`
 * erase ride of `toecom111111` 
 ```console
-$ cleost push action toe1ridetaxi eraseride '["toecom111111", "erase ride"]' -p toe1ridetaxi@active
-executed transaction: ba8fc22b2517c5332946d3a332f587f2b3137fab4400a77f51f16d7e049e69a0  112 bytes  767 us
-#  toe1ridetaxi <= toe1ridetaxi::eraseride      {"commuter_ac":"toecom111111","memo":"erase ride"}
+$ cleost push action toe1ridetaxi eraseride '["toecom111111", "erase ride after the fare is transferred"]' -p toe1ridetaxi@active
+executed transaction: 350112062f1ff1af78c9015b43f2c55eadcf931762cfc0f730474f99f12d0231  144 bytes  932 us
+#  toe1ridetaxi <= toe1ridetaxi::eraseride      {"commuter_ac":"toecom111111","memo":"erase ride after the fare is transferred"}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
 
@@ -391,6 +429,9 @@ warning: transaction executed locally, but may not be confirmed by the network y
 * [ ] addrating action
 * [ ] increase `rides_limit` when a ride is finished & the corresponding pay_mode is `crypto`
 * [ ] add a field 'Market rate' from fiat to crypto at the time of 'request_ride'
+* [ ] revisit `addfareact` action after creating fare calculator, whether to add as inline action inside `finish` action
 
 ### NOTES
 * All the actions are ensured to process sequentially based on checking the `ride_status` field of the table, so that an action can't be accessed before using the previous required action. E.g. `cancelbycom` can only be accessed in __"requested"__, __"enroute"__, __"waiting"__ ride status.
+*	addfareact action is not used as inline inside finish action bcoz there are some external factors like waiting time, route etc,...(to be fetched from traditional Database) involved in fare calculation.
+

@@ -212,8 +212,10 @@ public:
 	 * @details - a driver receives fare after ride is completed, only when the pay_mode chosen as `crypto`
 	 * 
 	 * @param driver_ac - driver account
+	 * @memo - note for receiving fare to driver
 	 */
-	ACTION recvfare( const name& driver_ac );
+	ACTION recvfare( const name& driver_ac,
+					const string& memo);
 
 	/**
 	 * @brief - driver add status - online/offline
@@ -281,6 +283,12 @@ public:
 		// check the driver is online
 		check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present in the table.");
 		check(dridestatus_it->status == "online"_n, "driver is not online.");
+	}
+
+	static void check_fareamount( const asset& quantity ) {
+		check(quantity.is_valid(), "invalid quantity");
+		check(quantity.amount > 0, "must withdraw positive quantity");
+		check(quantity.symbol == symbol("TOE", 4), "symbol precision mismatch");
 	}
 
 private:
@@ -381,6 +389,11 @@ private:
 		return current_time_point().sec_since_epoch();
 	}
 
+	// Adding inline action for `disburse` action in the ridewallet contract   
+	void disburse_fare(const name& receiver_ac,
+						const name& wallet_holder,
+						const asset& quantity,
+						const string& memo );
 
 
 };
