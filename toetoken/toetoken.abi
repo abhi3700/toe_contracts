@@ -60,6 +60,20 @@
             ]
         },
         {
+            "name": "deltokenstat",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sym_code",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "inflate",
             "base": "",
             "fields": [
@@ -187,6 +201,11 @@
         {
             "name": "create",
             "type": "create",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "deltokenstat",
+            "type": "deltokenstat",
             "ricardian_contract": ""
         },
         {

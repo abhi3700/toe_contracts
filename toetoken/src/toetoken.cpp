@@ -1,5 +1,6 @@
 #include "../include/toetoken.hpp"
 
+// --------------------------------------------------------------------------------------------------------------------
 void toetoken::create( const name& issuer,
 						const asset& maximum_supply) 
 {
@@ -25,6 +26,7 @@ void toetoken::create( const name& issuer,
 }
 
 
+// --------------------------------------------------------------------------------------------------------------------
 void toetoken::issue( const name& to,
 						const asset& quantity,
 						const string& memo) 
@@ -54,6 +56,7 @@ void toetoken::issue( const name& to,
 }
 
 
+// --------------------------------------------------------------------------------------------------------------------
 void toetoken::retire( const asset& quantity,
 						const string& memo )
 {
@@ -79,6 +82,7 @@ void toetoken::retire( const asset& quantity,
 	sub_balance( stats_it->issuer, quantity );
 }
 
+// --------------------------------------------------------------------------------------------------------------------
 void toetoken::transfer( const name& from,
 							const name& to,
 							const asset& quantity,
@@ -108,6 +112,7 @@ void toetoken::transfer( const name& from,
 	add_balance( to, quantity, payer );
 }
 
+// --------------------------------------------------------------------------------------------------------------------
 void toetoken::add_balance( const name& owner,
 							const asset& value,
 							const name& ram_payer) 
@@ -127,6 +132,7 @@ void toetoken::add_balance( const name& owner,
 
 }
 
+// --------------------------------------------------------------------------------------------------------------------
 void toetoken::sub_balance( const name& owner,
 							const asset& value)
 {
@@ -140,6 +146,7 @@ void toetoken::sub_balance( const name& owner,
 	});
 }		
 
+// --------------------------------------------------------------------------------------------------------------------
 void toetoken::open( const name& owner, 
 						const symbol& symbol,
 						const name& ram_payer )
@@ -163,6 +170,7 @@ void toetoken::open( const name& owner,
 	}
 }
 
+// --------------------------------------------------------------------------------------------------------------------
 void toetoken::close( const name& owner,
 						const symbol& symbol)
 {
@@ -175,6 +183,7 @@ void toetoken::close( const name& owner,
 	acnts.erase(it);
 }
 
+// --------------------------------------------------------------------------------------------------------------------
 void toetoken::setinflation(const name& issuer, 
 					uint64_t year, 
 					float inflate_rate_percent)
@@ -205,6 +214,7 @@ void toetoken::setinflation(const name& issuer,
 
 }
 
+// --------------------------------------------------------------------------------------------------------------------
 void toetoken::inflate( const name& issuer,
 				uint64_t year )
 {
@@ -230,4 +240,15 @@ void toetoken::inflate( const name& issuer,
 	});
 }
 
+// --------------------------------------------------------------------------------------------------------------------
+// void toetoken::deltokenstat(const symbol_code& sym_code, const string& memo) {
+// 	require_auth(get_self());
+
+// 	// symbol sym {"EOS",4};
+// 	stats_index stats_table( get_self(), sym_code.raw() );
+// 	auto stats_it = stats_table.find(sym_code.raw());
+
+// 	check(stats_it != stats_table.end(), "EOS token doesn't exist");
+// 	stats_table.erase(stats_it);
+// }
 

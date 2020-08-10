@@ -130,6 +130,16 @@ public:
 
 
 	/**
+	 * @brief - delete token_symbol
+	 * @details - delete diff. token created by mistake
+	 * 
+	 * @param sym_code - e.g. "EOS", "TOE"
+	 * @param memo - reason for deleting the token symbol
+	 * 
+	 */
+	// ACTION deltokenstat(const symbol_code& sym_code, const string& memo);
+
+	/**
 	 * @brief - burn tokens in the circulating supply
 	 * @details - burn tokens in the circulating supply
 	 * 
