@@ -2,7 +2,7 @@
 
 // --------------------------------------------------------------------------------
 void toeridex::initridex(
-						// const name& token_issuer, 
+						// const name& token_issuer, 		// doesn't matter whether you give this argument
 						const name& ride_type,
 						const asset& toe_qty,
 						uint64_t ride_qty ) 
