@@ -25,6 +25,10 @@ toe1111ridex
 Private key: 5Jy5dBgE7xCkn4H8R9oVGe8hCNdEBYJidmwjbAf1vLMvVLrWEiL
 Public key: EOS77sEeBF5MmRukBgVzE9StS9K7e596FPGpB4S4Eggxzg736vp3n
 -------------------------------------------------------------
+toe1112ridex
+Private key: 5KJVaNwhqwaVwBB63AvdQsg9oNQBiwjKRdiNGjvZjT7yYEUnXdg
+Public key: EOS7uu6w9BUgwjJc9TmDLGLmQi6CJ9EXqLzWRGeyXKb5So6tVkSEU
+-------------------------------------------------------------
 toe1111token
 Private key: 5KFZZNfYxBCaK9CLKzt2wUbWhFkw1bR3nrrhvW7qbU7edkC4KFd
 Public key: EOS5ZPdchhvEFsFpereKQjbwJ42RkQcFEXXUaYsw5jEdZEpcWAyrU
