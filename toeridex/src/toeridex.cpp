@@ -1,7 +1,7 @@
 #include "../include/toeridex.hpp"
 
 // --------------------------------------------------------------------------------
-void toeridex::initridex( const name& type,
+void toeridex::initridex( const name& ride_type,
 						const asset& toe_qty,
 						uint64_t ride_qty ) 
 {
@@ -9,40 +9,37 @@ void toeridex::initridex( const name& type,
 	require_auth(token_issuer);
 
 	// check if token_issuer is the one from the token contract's stats table.
-	stats_index stats_table("toe1111token"_n, ride_token_symbol.code().raw());
+	stats_index stats_table(token_contract_ac, ride_token_symbol.code().raw());
 	auto stats_it = stats_table.find(ride_token_symbol.code().raw());
 
 	check(stats_it != stats_table.end(), "the token symbol doesn't exist");
 	check(stats_it->issuer == token_issuer, "The contract initialized toeken issuer doesn't match with stats table's issuer.");
 
-	// check the type is "driver" or "commuter"
-	check( (type == "driver"_n) || (type == "commuter"_n), "invalid type");
+	// check the ride_type is "driver" or "commuter"
+	check( (ride_type == "driver"_n) || (ride_type == "commuter"_n), "invalid ride_type");
 
-	// check the amount is non-zero
-	check( toe_qty.amount > 0, "the amount must be positive.");
-
-	// check the symbol is 'TOE'
-	check(toe_qty.symbol == ride_token_symbol, "The symbol is different than \'TOE\'");
+	// check fareamount is valid for all conditions as 'asset'
+	check_quantity(toe_qty);
 
 	// check the ride_qty is non-zero
 	check(ride_qty != 0, "Ride quantity can't be zero");
 
 	ridex_index ridex_table(get_self(), get_self().value);
-	auto ridex_it = ridex_table.find(type.value);
+	auto ridex_it = ridex_table.find(ride_type.value);
 
-	check(ridex_it == ridex_table.end(), "The values for this type is already initialized.");
+	check(ridex_it == ridex_table.end(), "The values for this ride_type is already initialized.");
 
-	// send the toe_qty from issuer to toeridexsupp using inline action
+	// send the toe_qty from issuer to ridex_supply_ac using inline action
 	action(
-		permission_level{token_issuer, "active"_n},
-		"toe1111token"_n,
+		permission_level{get_self(), "active"_n},
+		token_contract_ac,
 		"transfer"_n,
-		std::make_tuple(token_issuer, "toeridexsupp"_n, toe_qty, "transfer initial toe_qty")
+		std::make_tuple(token_issuer, ridex_supply_ac, toe_qty, "transfer initial toe_qty")
 		).send();
 
 	// modify ridex_table
 	ridex_table.emplace(get_self(), [&](auto& row) {
-		row.type = type;
+		row.ride_type = ride_type;
 		row.ride_quota = ride_qty;
 		row.toe_balance = toe_qty;
 	});
@@ -54,75 +51,71 @@ void toeridex::initridex( const name& type,
 }
 
 void toeridex::buyride( const name& buyer,
-				const name& type,
+				const name& ride_type,
 				uint64_t ride_qty,
 				const string& memo )
 {
 	require_auth( buyer );
 
-	// check the buyer is enlisted in the `toeuserauth` contract table
-	user_index user_table("toe1userauth"_n, buyer.value);
-	auto user_it = user_table.find(buyer.value);
+	// check the ride_type is "driver" or "commuter"
+	check( (ride_type == "driver"_n) || (ride_type == "commuter"_n), "invalid ride type");
 
-	check(user_it != user_table.end(), "Sorry! The buyer is not registered with us.");
-	check(user_it->user_status == "verified"_n, "Sorry! The buyer is not yet verified.");
-
-	// check the type is "driver" or "commuter"
-	check( (type == "driver"_n) || (type == "commuter"_n), "invalid type");
+	// check if the buyer is verified & is eligible to buy asked 'ride_type' rides
+	check_buyer_seller( buyer, ride_type );
 
 	// check the ride_qty is non-zero
 	check(ride_qty != 0, "Ride quantity can't be zero");
 
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
-	// check if the row exist for given type
+	// check if the row exist for given ride_type
 	ridex_index ridex_table(get_self(), get_self().value);
-	auto ridex_it = ridex_table.find(type.value);
-	check(ridex_it != ridex_table.end(), "There is no data found for this type.");
+	auto ridex_it = ridex_table.find(ride_type.value);
+	check(ridex_it != ridex_table.end(), "There is no data found for this ride_type.");
 
-	// initialized the ride_price
-	auto ride_price = asset(0.0000, ride_token_symbol);
+	// initialized the ride_expenditure
+	auto ride_expenditure = asset(0.0000, ride_token_symbol);
 
-	// calc ride_price amount using the Bancor formula
-	ride_price.amount = (ride_qty * (ridex_it->toe_balance.amount))/( ride_qty + (ridex_it->ride_quota) );
+	// calc ride_expenditure amount using the Bancor formula
+	ride_expenditure.amount = (ride_qty * (ridex_it->toe_balance.amount))/( ride_qty + (ridex_it->ride_quota) );
 
-	// initialized the ride_price_supp
-	auto ride_price_supp = asset(0.0000, ride_token_symbol);
-	ride_price_supp.amount = supply_factor * (ride_price.amount);
+	// initialized the ride_expend_supply
+	auto ride_expend_supply = asset(0.0000, ride_token_symbol);
+	ride_expend_supply.amount = supply_factor * (ride_expenditure.amount);
 
-	// initialized the ride_price_fees
-	auto ride_price_fees = asset(0.0000, ride_token_symbol);
-	ride_price_fees.amount = fees_factor * (ride_price.amount);
+	// initialized the ride_expend_fees
+	auto ride_expend_fees = asset(0.0000, ride_token_symbol);
+	ride_expend_fees.amount = fees_factor * (ride_expenditure.amount);
 
-	// send the ride_price_supp from buyer to toeridexsupp using inline action
+	// send the ride_expend_supply from buyer to toeridexsupp using inline action
 	action(
-		permission_level{buyer, "active"_n},
-		"toe1111token"_n,
+		permission_level{get_self(), "active"_n},
+		token_contract_ac,
 		"transfer"_n,
-		std::make_tuple(buyer, "toeridexsupp"_n, ride_price_supp, "buy " + std::to_string(ride_qty) + " ride(s)")
+		std::make_tuple(buyer, ridex_supply_ac, ride_expend_supply, "buy " + std::to_string(ride_qty) + " ride(s)")
 		).send();
 
 	// send the toe_qty from buyer to toeridexsupp using inline action
 	action(
-		permission_level{buyer, "active"_n},
-		"toe1111token"_n,
+		permission_level{get_self(), "active"_n},
+		token_contract_ac,
 		"transfer"_n,
-		std::make_tuple(buyer, "toeridexfees"_n, ride_price_fees, "fees for buy " + std::to_string(ride_qty) + " ride(s)")
+		std::make_tuple(buyer, ridex_fees_ac, ride_expend_fees, "fees for buy " + std::to_string(ride_qty) + " ride(s)")
 		).send();
 
 	// update the ride_table with new `ride_quota` & `toe_balance`
 	ridex_table.modify(ridex_it, get_self(), [&](auto& row){
 		row.ride_quota -= ride_qty;
-		row.toe_balance += ride_price;
+		row.toe_balance += ride_expend_supply;
 	});
 
 	// add ride_qty to the ridexaccount table
 	ridexaccount_index ridexaccount_table(get_self(), buyer.value);
-	auto ridexaccount_it = ridexaccount_table.find(type.value);
+	auto ridexaccount_it = ridexaccount_table.find(ride_type.value);
 
 	if(ridexaccount_it == ridexaccount_table.end()) {
 		ridexaccount_table.emplace(buyer, [&](auto& row){
-			row.type = type;
+			row.ride_type = ride_type;
 			row.rides_limit = ride_qty;
 		});
 	}
@@ -132,73 +125,71 @@ void toeridex::buyride( const name& buyer,
 		});
 	}
 
+	send_receipt(buyer, "You bought " + std::to_string(ride_qty) + " rides for \'" + ride_expenditure.to_string() + "\' amount");
+
 }
 // --------------------------------------------------------------------------------------------------------------------
 void toeridex::sellride( const name& seller,
-						const name& type,
+						const name& ride_type,
 						uint64_t ride_qty,
 						const string& memo)
 {
 	require_auth( seller );
 
-	// check the seller is enlisted in the `toeuserauth` contract table
-	user_index user_table("toe1userauth"_n, seller.value);
-	auto user_it = user_table.find(seller.value);
+	// check the ride_type is "driver" or "commuter"
+	check( (ride_type == "driver"_n) || (ride_type == "commuter"_n), "invalid type");
 
-	check(user_it != user_table.end(), "Sorry! The seller is not registered with us.");
-	check(user_it->user_status == "verified"_n, "Sorry! The seller is not yet verified.");
-
-	// check the type is "driver" or "commuter"
-	check( (type == "driver"_n) || (type == "commuter"_n), "invalid type");
+	// check if the seller is verified & is eligible to sell asked 'ride_type' rides
+	check_buyer_seller( seller, ride_type );
 
 	check(ride_qty != 0, "Ride quantity can't be zero");
 
 	ridexaccount_index ridexaccount_table(get_self(), seller.value);
-	auto ridexaccount_it = ridexaccount_table.find(type.value);
+	auto ridexaccount_it = ridexaccount_table.find(ride_type.value);
 	check(ridexaccount_it != ridexaccount_table.end(), "Sorry! There is no ride to sell.");
 	check(ride_qty <= ridexaccount_it->rides_limit, "The ride no. asked, is more than the limit of the seller.");
 
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
-	// check if the row exist for given type
+	// check if the row exist for given ride_type
 	ridex_index ridex_table(get_self(), get_self().value);
-	auto ridex_it = ridex_table.find(type.value);
-	check(ridex_it != ridex_table.end(), "There is no data found for this type.");
+	auto ridex_it = ridex_table.find(ride_type.value);
+	check(ridex_it != ridex_table.end(), "There is no data found for this ride_type.");
 
-	// initialized the ride_price
-	auto ride_price = asset(0.0000, ride_token_symbol);
+	// initialized the ride_expenditure
+	auto ride_expenditure = asset(0.0000, ride_token_symbol);
 
-	// calc ride_price amount using the Bancor formula
-	ride_price.amount = (ride_qty * (ridex_it->toe_balance.amount))/( ride_qty + (ridex_it->ride_quota) );
+	// calc ride_expenditure amount using the Bancor formula
+	ride_expenditure.amount = (ride_qty * (ridex_it->toe_balance.amount))/( ride_qty + (ridex_it->ride_quota) );
 
-	// initialized the ride_price_supp
-	auto ride_price_supp = asset(0.0000, ride_token_symbol);
-	ride_price_supp.amount = supply_factor * (ride_price.amount);
+	// initialized the ride_expend_supply
+	auto ride_expend_supply = asset(0.0000, ride_token_symbol);
+	ride_expend_supply.amount = supply_factor * (ride_expenditure.amount);
 
-	// initialized the ride_price_fees
-	auto ride_price_fees = asset(0.0000, ride_token_symbol);
-	ride_price_fees.amount = fees_factor * (ride_price.amount);
+	// initialized the ride_expend_fees
+	auto ride_expend_fees = asset(0.0000, ride_token_symbol);
+	ride_expend_fees.amount = fees_factor * (ride_expenditure.amount);
 
-	// send the ride_price_supp from toeridexsupp to seller using inline action
+	// send the ride_expend_supply from toeridexsupp to seller using inline action
 	action(
-		permission_level{"toeridexsupp"_n, "active"_n},
-		"toe1111token"_n,
+		permission_level{get_self(), "active"_n},
+		token_contract_ac,
 		"transfer"_n,
-		std::make_tuple("toeridexsupp"_n, seller, ride_price_supp, "sell " + std::to_string(ride_qty) + " ride(s)")
+		std::make_tuple(ridex_supply_ac, seller, ride_expend_supply, "sell " + std::to_string(ride_qty) + " ride(s)")
 		).send();
 
-	// send the ride_price_fees from toeridexsupp to seller using inline action
+	// send the ride_expend_fees from toeridexsupp to seller using inline action
 	action(
-		permission_level{"toeridexsupp"_n, "active"_n},
-		"toe1111token"_n,
+		permission_level{get_self(), "active"_n},
+		token_contract_ac,
 		"transfer"_n,
-		std::make_tuple("toeridexsupp"_n, seller, ride_price_fees, "fees for sell " + std::to_string(ride_qty) + " ride(s)")
+		std::make_tuple(ridex_supply_ac, seller, ride_expend_fees, "fees for sell " + std::to_string(ride_qty) + " ride(s)")
 		).send();
 
 	// update the ridex_table with new `ride_quota` & `toe_balance`
 	ridex_table.modify(ridex_it, get_self(), [&](auto& row){
 		row.ride_quota += ride_qty;
-		row.toe_balance -= ride_price;
+		row.toe_balance -= ride_expend_supply;
 	});
 
 	// deduct ride_qty to the ridexaccount table	
@@ -206,25 +197,28 @@ void toeridex::sellride( const name& seller,
 		row.rides_limit -= ride_qty;
 	});
 
+	send_receipt(seller, "You sold " + std::to_string(ride_qty) + " rides for \'" + ride_expenditure.to_string() + "\' amount");
+
 }
 // --------------------------------------------------------------------------------------------------------------------
-void toeridex::addridequota(const name& type,
+void toeridex::addridequota(const name& ride_type,
 							uint64_t ride_qty )
 {
 	// explicitly given permission to only ride contract ac for this action
+	// for more linkage to other contracts - 'bus', 'metro', 'trains' use `has_auth()`
 	require_auth(ride_contract_ac);
 
-	// check the type is "driver" or "commuter"
-	check( (type == "driver"_n) || (type == "commuter"_n), "invalid type");
+	// check the ride_type is "driver" or "commuter"
+	check( (ride_type == "driver"_n) || (ride_type == "commuter"_n), "invalid ride_type");
 
 	check(ride_qty != 0, "Ride quantity can't be zero");
 
 	// instantiate the ridex table
 	ridex_index ridex_table(get_self(), get_self().value);
-	auto ridex_it = ridex_table.find(type.value);
+	auto ridex_it = ridex_table.find(ride_type.value);
 
-	// check if the row exist for given type
-	check(ridex_it != ridex_table.end(), "There is no data found for this type.");
+	// check if the row exist for given ride_type
+	check(ridex_it != ridex_table.end(), "There is no data found for this ride_type.");
 
 	// update the ridex_table with additional `ride_qty`
 	ridex_table.modify(ridex_it, get_self(), [&](auto& row){

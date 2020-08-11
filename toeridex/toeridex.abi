@@ -8,7 +8,7 @@
             "base": "",
             "fields": [
                 {
-                    "name": "type",
+                    "name": "ride_type",
                     "type": "name"
                 },
                 {
@@ -26,7 +26,7 @@
                     "type": "name"
                 },
                 {
-                    "name": "type",
+                    "name": "ride_type",
                     "type": "name"
                 },
                 {
@@ -44,7 +44,7 @@
             "base": "",
             "fields": [
                 {
-                    "name": "type",
+                    "name": "ride_type",
                     "type": "name"
                 },
                 {
@@ -62,7 +62,7 @@
             "base": "",
             "fields": [
                 {
-                    "name": "type",
+                    "name": "ride_type",
                     "type": "name"
                 },
                 {
@@ -80,7 +80,7 @@
             "base": "",
             "fields": [
                 {
-                    "name": "type",
+                    "name": "ride_type",
                     "type": "name"
                 },
                 {
@@ -98,7 +98,7 @@
                     "type": "name"
                 },
                 {
-                    "name": "type",
+                    "name": "ride_type",
                     "type": "name"
                 },
                 {

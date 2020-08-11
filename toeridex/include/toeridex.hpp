@@ -32,6 +32,10 @@ private:
 	const float supply_factor;
 	const float fees_factor;
 	const name ride_contract_ac;
+	const name token_contract_ac;
+	const name ridex_supply_ac;
+	const name ridex_fees_ac;
+	const name auth_contract_ac;
 
 
 public:
@@ -41,9 +45,13 @@ public:
 				contract(receiver, code, ds),
 				token_issuer("bhubtoeindia"_n),
 				ride_token_symbol("TOE", 4),
-				supply_factor(0.995),
-				fees_factor(0.005),
-				ride_contract_ac("toe1ridetaxi"_n) {}
+				supply_factor(0.99),	// 99%
+				fees_factor(0.01),		// 1%
+				ride_contract_ac("toe1ridetaxi"_n),
+				token_contract_ac("toe1111token"_n),
+				ridex_supply_ac("toeridexsupp"_n),
+				ridex_fees_ac("toeridexfees"_n),
+				auth_contract_ac("toe1userauth"_n) {}
 
 	/**
 	 * @brief - initialize RIDEX params
@@ -51,12 +59,12 @@ public:
 	 * 				+ toe_balance
 	 * 				+ ride_quota
 	 * 
-	 * @type - driver/commuter
+	 * @ride_type - driver/commuter
 	 * @param toe_qty - quantity in TOE
 	 * @param ride_qty - ride quantity
 	 *
 	 */
-	ACTION initridex( const name& type,
+	ACTION initridex( const name& ride_type,
 						const asset& toe_qty,
 						uint64_t ride_qty );
 
@@ -65,12 +73,12 @@ public:
 	 * @details - buy rides from RIDEX
 	 * 
 	 * @param buyer - any registered user (driver/commuter/validator)
-	 * @type - driver/commuter
+	 * @ride_type - driver/commuter
 	 * @param ride_qty - no. of rides to be bought
 	 * @param memo - note for buying ride
 	 */	
 	ACTION buyride( const name& buyer,
-					const name& type,
+					const name& ride_type,
 					uint64_t ride_qty,
 					const string& memo );
 
@@ -79,12 +87,12 @@ public:
 	 * @details - sell rides from RIDEX
 	 * 
 	 * @param buyer - any registered user (driver/commuter/validator)
-	 * @type - driver/commuter
+	 * @ride_type - driver/commuter
 	 * @param ride_qty - no. of rides to be sold
 	 * @param memo - note for selling ride
 	 */	
 	ACTION sellride( const name& seller,
-					const name& type,
+					const name& ride_type,
 					uint64_t ride_qty,
 					const string& memo);
 
@@ -93,10 +101,10 @@ public:
 	 * @details - the ride quota gets added on finishing a ride from toeridetaxi contract for __"crypto"__ pay_mode
 	 * 			- only accessed by 'ride_contract_ac'
 	 * 
-	 * @param type - driver/commuter
+	 * @param ride_type - driver/commuter
 	 * @param ride_qty - increase ride_quota by ride_qty
 	 */
-	ACTION addridequota(const name& type, 
+	ACTION addridequota(const name& ride_type, 
 						uint64_t ride_qty);
 
 	/**
@@ -119,26 +127,58 @@ public:
 	ACTION sendreceipt( const name& user,
 						const string& message);
 
+	static void check_buyer_seller( const name& user, const name& ride_type) {
+		// check the buyer/seller is enlisted in the `toeuserauth` contract table
+		user_index user_table("toe1userauth"_n, user.value);
+		auto user_it = user_table.find(user.value);
+
+		check(user_it != user_table.end(), "Sorry! The user is not registered with us.");
+		check(user_it->user_status == "verified"_n, "Sorry! The user is not yet verified.");
+		check((user_it->type == "driver"_n) || 
+			(user_it->type == "commuter"_n) || 
+			(user_it->type == "validator"_n)
+			, "Other types are not allowed for this action");
+
+		// check for validator can buy/sell only "commuter" type ride
+		if(user_it->type == "validator"_n) {
+			check(ride_type == "commuter"_n, "Sorry! A validator can't buy \'driver\' type rides.");
+		} 
+		// check for commuter can buy/sell only "commuter" type ride
+		else if(user_it->type == "commuter"_n) {
+			check(ride_type == "commuter"_n, "Sorry! A commuter can't buy \'driver\' type rides.");
+		} 
+		// check for driver can buy/sell only "commuter" type ride
+		else {
+			check(ride_type == "driver"_n, "Sorry! A driver can't buy \'commuter\' type rides.");
+		}
+	}
+
+	static void check_quantity( const asset& quantity ) {
+		check(quantity.is_valid(), "invalid quantity");
+		check(quantity.amount > 0, "must withdraw positive quantity");
+		check(quantity.symbol == symbol("TOE", 4), "symbol precision mismatch");
+	}
+
 
 	using addridequota_action  = action_wrapper<"addridequota"_n, &toeridex::addridequota>;
 
 private:
 	// --------------------------------------------------------------------------------
 	TABLE ridexaccount {
-		name type;
+		name ride_type;
 		uint64_t rides_limit;
 
-		auto primary_key() const { return type.value; }
+		auto primary_key() const { return ride_type.value; }
 	};
 
 	using ridexaccount_index = multi_index<"ridexaccount"_n, ridexaccount>;
 	// --------------------------------------------------------------------------------
 	TABLE ridex {
-		name type;
+		name ride_type;
 		uint64_t ride_quota;
 		asset toe_balance;
 
-		auto primary_key() const { return type.value; }
+		auto primary_key() const { return ride_type.value; }
 	};
 
 	using ridex_index = multi_index<"ridex"_n, ridex>;
