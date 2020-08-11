@@ -44,6 +44,13 @@ bhubtoeinval
 Private key: 5JMnsztYYHdxgR93Wreh2AS4nGwyJBdYsLTCB93RfZThNjaWGKE
 Public key: EOS8ZSqKHaKu3gF9smxCmB6DmQeJUPX26Su3yVV73m8dSdM1tRteb
 -------------------------------------------------------------
+toeridexsupp
+Private key: 5KM4ZJyBXf7Jonpj5w5ytML8Rjq4kp7BB4CpzHQ9vrZKdbqtbFE
+Public key: EOS7qfQh2YcbmaHjpp4ijjRNpd6z37LWwArnaxRMMbsabEvuuvZ7w
+-------------------------------------------------------------
+toeridexfees
+Private key: 5K22sBYFKk4zx6an8F8VG8a1KYfiMhTZobem6X7wbg3NcCA8d8z
+Public key: EOS7bWtcSp7Bf1xP1Ror1Q9NCCYyaPizoFXmh2vAs778oisripAo9
 
 TOE Users
 =========
