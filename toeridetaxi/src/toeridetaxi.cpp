@@ -374,8 +374,8 @@ void toeridetaxi::changedes( const name& commuter_ac,
 	});
 
 	// On successful execution, an alert is sent
-	send_receipt(commuter_ac, commuter_ac.to_string() + " changes the destination location & the fare is updated to " + std::to_string(fare_est) + " (in INR) & " + fare_crypto_est.to_string() + " (in TOE).");
-	send_alert(ride_it->driver_ac, commuter_ac.to_string() + " changes the destination location & the fare is updated to " + std::to_string(fare_est) + " (in INR) & " + fare_crypto_est.to_string() + " (in TOE).");
+	send_receipt(commuter_ac, commuter_ac.to_string() + " changes the destination location & the fare is updated to " + std::to_string(fare_est) + " INR & \'" + fare_crypto_est.to_string() + "\'.");
+	send_alert(ride_it->driver_ac, commuter_ac.to_string() + " changes the destination location & the fare is updated to " + std::to_string(fare_est) + " INR & \'" + fare_crypto_est.to_string() + "\'.");
 
 }
 
@@ -506,8 +506,8 @@ void toeridetaxi::addfareact( const name& driver_ac,
 	send_receipt(driver_ac, driver_ac.to_string() + " adds the actual fare in INR & TOE");
 	send_alert(ride_it->commuter_ac, 
 				"Now " + (ride_it->commuter_ac).to_string() + " has to pay " + 
-									std::to_string(fare_act) + " (in INR) or " + 
-									fare_crypto_act.to_string() + " (in TOE)."
+									std::to_string(fare_act) + " INR or \'" + 
+									fare_crypto_act.to_string() + "\'."
 									);
 }
 
