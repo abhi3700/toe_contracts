@@ -426,6 +426,14 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ```
 
 ## TODO
+* [ ] check for type - commuter/driver along with user being verified
+```cpp
+check((user_it->type == "commuter"_n) || (user_it->type == "validator"_n), "Either commuter/validator can request");
+
+// OR
+// Apply this into every action of `toeridetaxi`
+check(user_it->type != "driver"_n, "A driver can't request");
+```
 * [ ] addrating action
 * [ ] testing of increase `rides_limit` when a ride is finished & the corresponding pay_mode is `crypto`
 * [ ] revisit `addfareact` action after creating fare calculator, whether to add as inline action inside `finish` action
