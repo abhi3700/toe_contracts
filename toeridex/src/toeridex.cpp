@@ -1,12 +1,15 @@
 #include "../include/toeridex.hpp"
 
 // --------------------------------------------------------------------------------
-void toeridex::initridex( const name& ride_type,
+void toeridex::initridex(
+						// const name& token_issuer, 
+						const name& ride_type,
 						const asset& toe_qty,
 						uint64_t ride_qty ) 
 {
 	// require the authority of toe_owner ac - "bhubtoeindia"
 	require_auth(token_issuer);
+	// require_auth(get_self());
 
 	// check if token_issuer is the one from the token contract's stats table.
 	stats_index stats_table(token_contract_ac, ride_token_symbol.code().raw());
@@ -29,15 +32,20 @@ void toeridex::initridex( const name& ride_type,
 
 	check(ridex_it == ridex_table.end(), "The values for this ride_type is already initialized.");
 
-	// send the toe_qty from issuer to ridex_supply_ac using inline action
+	// check the balance of 'token_issuer' greater than drawn amount 'toe_qty'
+	accounts_index tokenissuer_table(token_contract_ac, token_issuer.value);
+	const auto& from = tokenissuer_table.get(toe_qty.symbol.code().raw(), "no balance object found" );
+	check( from.balance.amount >= toe_qty.amount, "overdrawn balance" );
+
+	// send the toe_qty from 'issuer' to 'ridex_supply_ac' using inline action
 	action(
-		permission_level{get_self(), "active"_n},
+		permission_level{token_issuer, "active"_n},
 		token_contract_ac,
 		"transfer"_n,
-		std::make_tuple(token_issuer, ridex_supply_ac, toe_qty, "transfer initial toe_qty")
-		).send();
+		std::make_tuple(token_issuer, ridex_supply_ac, toe_qty, std::string("transfer initial toe quantity"))
+	).send();
 
-	// modify ridex_table
+/*	// modify ridex_table
 	ridex_table.emplace(get_self(), [&](auto& row) {
 		row.ride_type = ride_type;
 		row.ride_quota = ride_qty;
@@ -45,9 +53,8 @@ void toeridex::initridex( const name& ride_type,
 	});
 
 	// On successful execution, a receipt is sent
-	send_receipt( token_issuer, "initialized RIDEX with " + toe_qty.to_string() + " TOE " + 
-								" & " + std::to_string(ride_qty) + " RIDE");
-
+	send_receipt( token_issuer, "initialized RIDEX with " + toe_qty.to_string() + " & " + std::to_string(ride_qty) + " RIDE");
+*/
 }
 
 void toeridex::buyride( const name& buyer,

@@ -76,6 +76,8 @@ warning: transaction executed locally, but may not be confirmed by the network y
 * `bhubtoeindia` account initializing the RIDEX
 ```console
 cleost push action toe1111ridex initridex '["driver", "1000000.0000 TOE", "1000000"]' -p bhubtoeindia@active
+
+cleost push action toe1111ridex initridex '["bhubtoeindia", "driver", "1000000.0000 TOE", "1000000"]' -p bhubtoeindia@active
 ```
 
 ## NOTES

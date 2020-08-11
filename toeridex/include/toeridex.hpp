@@ -64,7 +64,9 @@ public:
 	 * @param ride_qty - ride quantity
 	 *
 	 */
-	ACTION initridex( const name& ride_type,
+	ACTION initridex( 
+		// const name& token_issuer,
+						const name& ride_type,
 						const asset& toe_qty,
 						uint64_t ride_qty );
 
@@ -209,6 +211,16 @@ private:
 						indexed_by<"bystatus"_n, const_mem_fun<user, uint64_t, &user::get_secondary_2>>
 						>;
 	
+	// ------------------------------------------------------------------
+	struct account
+	{
+		asset balance;
+
+		uint64_t primary_key() const { return balance.symbol.code().raw(); }
+	};
+
+	using accounts_index = eosio::multi_index< "accounts"_n, account >;
+
 	// --------------------------------------------------------------------------------
 	struct currency_stats
 	{
