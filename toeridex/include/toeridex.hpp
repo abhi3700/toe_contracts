@@ -30,7 +30,7 @@ using std::size_t;
 CONTRACT toeridex : public contract 
 {
 private:
-	const name token_issuer;
+	// const name token_issuer;
 	const symbol ride_token_symbol;
 	const float supply_factor;
 	const float fees_factor;
@@ -47,7 +47,7 @@ public:
 
 	toeridex(name receiver, name code, datastream<const char*> ds) : 
 				contract(receiver, code, ds),
-				token_issuer("bhubtoeindia"_n),
+				// token_issuer("bhubtoeindia"_n),
 				ride_token_symbol("TOE", 4),
 				supply_factor(0.99),	// 99%
 				fees_factor(0.01),		// 1%
@@ -64,7 +64,7 @@ public:
 	 * 				+ init RIDEX (for driver, commuter ride types)
 	 * 				+ buying ride
 	 * 
-	 * @token_issuer - sender i.e. bhubtoeindia/ buyer/ seller
+	 * @sender - sender i.e. bhubtoeindia/ buyer/ seller
 	 * @contract_ac - this contract
 	 * @param quantity - initialize RIDEX supply quantity in TOE
 	 * @param memo - remarks

@@ -13,12 +13,9 @@ void toeridex::sendridex(
 		return;
 	}
 
-	// check if token_issuer is the one from the token contract's stats table.
+	// instantiate the stat table
 	stats_index stats_table(token_contract_ac, ride_token_symbol.code().raw());
 	auto stats_it = stats_table.find(ride_token_symbol.code().raw());
-
-	check(stats_it != stats_table.end(), "the token symbol doesn't exist");
-	check(stats_it->issuer == token_issuer, "The contract's initialized token issuer doesn't match with stats table's issuer.");
 
 	// Already done in "toetoken::transfer"
 	// check fareamount is valid for all conditions as 'asset'
@@ -53,6 +50,10 @@ void toeridex::sendridex(
 	if(found_1 != string::npos) {
 		ride_type = "driver"_n;
 
+		// check if sender is the token_issuer from token contract's stat table.
+		check(stats_it != stats_table.end(), "the token symbol doesn't exist");
+		check(stats_it->issuer == sender, "The sender doesn't match with stats table's issuer.");
+
 		// instantiate the ridex table for driver
 		ridex_index ridex_table(get_self(), get_self().value);
 		auto ridex_it = ridex_table.find(ride_type.value);
@@ -74,6 +75,10 @@ void toeridex::sendridex(
 
 	if(found_2 != string::npos) {
 		ride_type = "commuter"_n;
+
+		// check if sender is the token_issuer from token contract's stat table.
+		check(stats_it != stats_table.end(), "the token symbol doesn't exist");
+		check(stats_it->issuer == sender, "The sender doesn't match with stats table's issuer.");
 
 		// instantiate the ridex table for driver
 		ridex_index ridex_table(get_self(), get_self().value);
