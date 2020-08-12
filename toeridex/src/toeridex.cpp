@@ -1,62 +1,125 @@
 #include "../include/toeridex.hpp"
 
 // --------------------------------------------------------------------------------
-void toeridex::initridex(
-						// const name& token_issuer, 		// doesn't matter whether you give this argument
-						const name& ride_type,
-						const asset& toe_qty,
-						uint64_t ride_qty ) 
+void toeridex::sendridex(
+						const name& sender,
+						const name& contract_ac,
+						const asset& quantity,
+						const string& memo) 
 {
-	// require the authority of toe_owner ac - "bhubtoeindia"
-	require_auth(token_issuer);
-	// require_auth(get_self());
+	// check for conditions if either or both of these are true for `from` & `to`
+	if(contract_ac != get_self() ||  sender == get_self()) {		// atleast one of the condition is true
+		print("Either money is not sent to the contract or contract itself is the sender.");
+		return;
+	}
 
 	// check if token_issuer is the one from the token contract's stats table.
 	stats_index stats_table(token_contract_ac, ride_token_symbol.code().raw());
 	auto stats_it = stats_table.find(ride_token_symbol.code().raw());
 
 	check(stats_it != stats_table.end(), "the token symbol doesn't exist");
-	check(stats_it->issuer == token_issuer, "The contract initialized toeken issuer doesn't match with stats table's issuer.");
+	check(stats_it->issuer == token_issuer, "The contract's initialized token issuer doesn't match with stats table's issuer.");
 
-	// check the ride_type is "driver" or "commuter"
-	check( (ride_type == "driver"_n) || (ride_type == "commuter"_n), "invalid ride_type");
-
+	// Already done in "toetoken::transfer"
 	// check fareamount is valid for all conditions as 'asset'
-	check_quantity(toe_qty);
+	// check_quantity(quantity);
 
-	// check the ride_qty is non-zero
-	check(ride_qty != 0, "Ride quantity can't be zero");
+	// check the initial_ride_qty is non-zero
+	check(initial_ride_qty != 0, "Ride quantity can't be zero");
 
-	ridex_index ridex_table(get_self(), get_self().value);
-	auto ridex_it = ridex_table.find(ride_type.value);
 
-	check(ridex_it == ridex_table.end(), "The values for this ride_type is already initialized.");
+	auto ride_type = ""_n;
+	// Assuming these
+/*    
+    string memo = "init ridex for driver ride type";
+    string memo = "init ridex for commuter ride type";
+    string memo = "buy 1 ride";
+*/    
 
-	// check the balance of 'token_issuer' greater than drawn amount 'toe_qty'
-	accounts_index tokenissuer_table(token_contract_ac, token_issuer.value);
-	const auto& from = tokenissuer_table.get(toe_qty.symbol.code().raw(), "no balance object found" );
-	check( from.balance.amount >= toe_qty.amount, "overdrawn balance" );
+	size_t found_1 = memo.find("driver");
+	size_t found_2 = memo.find("commuter");
+	size_t found_3 = memo.find("buy");
 
-	// send the toe_qty from 'issuer' to 'ridex_supply_ac' using inline action
-	action(
-		permission_level{token_issuer, "active"_n},
-		token_contract_ac,
-		"transfer"_n,
-		std::make_tuple(token_issuer, ridex_supply_ac, toe_qty, std::string("transfer initial toe quantity"))
-	).send();
 
-/*	// modify ridex_table
-	ridex_table.emplace(get_self(), [&](auto& row) {
-		row.ride_type = ride_type;
-		row.ride_quota = ride_qty;
-		row.toe_balance = toe_qty;
-	});
+	check( 
+		(found_1 != string::npos) ||
+		(found_2 != string::npos) ||
+		(found_3 != string::npos)
+		, "invalid memo type for RIDEX contract");
 
-	// On successful execution, a receipt is sent
-	send_receipt( token_issuer, "initialized RIDEX with " + toe_qty.to_string() + " & " + std::to_string(ride_qty) + " RIDE");
-*/
+	/*
+		Set respective table data for different found(s)
+	*/
+	if(found_1 != string::npos) {
+		ride_type = "driver"_n;
+
+		// instantiate the ridex table for driver
+		ridex_index ridex_table(get_self(), get_self().value);
+		auto ridex_it = ridex_table.find(ride_type.value);
+
+		check(ridex_it == ridex_table.end(), "The values for \'" + ride_type.to_string() + "\' ride_type is already initialized.");
+
+		// add ridex_table for driver
+		ridex_table.emplace(get_self(), [&](auto& row) {
+			row.ride_type = ride_type;
+			row.ride_quota = initial_ride_qty;
+			row.toe_balance = quantity;
+		});
+
+		// On successful execution, a receipt is sent
+		send_receipt( sender, "initialized RIDEX with " + quantity.to_string() + " & " 
+			+ std::to_string(initial_ride_qty) + " RIDE for \'" + ride_type.to_string() + "\' ride type.");
+
+	} 
+
+	if(found_2 != string::npos) {
+		ride_type = "commuter"_n;
+
+		// instantiate the ridex table for driver
+		ridex_index ridex_table(get_self(), get_self().value);
+		auto ridex_it = ridex_table.find(ride_type.value);
+
+		check(ridex_it == ridex_table.end(), "The values for \'" + ride_type.to_string() + "\' ride_type is already initialized.");
+
+		// add ridex_table for driver
+		ridex_table.emplace(get_self(), [&](auto& row) {
+			row.ride_type = ride_type;
+			row.ride_quota = initial_ride_qty;
+			row.toe_balance = quantity;
+		});
+
+		// On successful execution, a receipt is sent
+		send_receipt( sender, "initialized RIDEX with " + quantity.to_string() + " & " 
+			+ std::to_string(initial_ride_qty) + " RIDE for \'" + ride_type.to_string() + "\' ride type.");
+
+	}
+
+	if(found_3 != string::npos) {
+		// ride_type = "buy"_n;
+	
+		// instantiate the rexusrwallet table
+		rexusrwallet_index rexusrwallet_table(get_self(), sender.value);
+		auto rexusrwallet_it = rexusrwallet_table.find(quantity.symbol.raw());	// finding the ("TOE", 4)
+
+		if(rexusrwallet_it == rexusrwallet_table.end()) {
+			rexusrwallet_table.emplace(get_self(), [&](auto& row){
+				row.balance = quantity;
+			});
+		} else {
+			rexusrwallet_table.modify(rexusrwallet_it, get_self(), [&](auto& row){
+				row.balance += quantity;
+			});
+		}
+
+		// On successful execution, a receipt is sent
+		send_receipt( sender, sender.to_string() + " sent \'" + quantity.to_string() + "\' money for purpose: " + memo);
+
+	}
+
 }
 
+
+// --------------------------------------------------------------------------------------------------------------------
 void toeridex::buyride( const name& buyer,
 				const name& ride_type,
 				uint64_t ride_qty,
@@ -116,18 +179,18 @@ void toeridex::buyride( const name& buyer,
 		row.toe_balance += ride_expend_supply;
 	});
 
-	// add ride_qty to the ridexaccount table
-	ridexaccount_index ridexaccount_table(get_self(), buyer.value);
-	auto ridexaccount_it = ridexaccount_table.find(ride_type.value);
+	// add ride_qty to the rexuseraccnt table
+	rexuseraccnt_index rexuseraccnt_table(get_self(), buyer.value);
+	auto rexuseraccnt_it = rexuseraccnt_table.find(ride_type.value);
 
-	if(ridexaccount_it == ridexaccount_table.end()) {
-		ridexaccount_table.emplace(buyer, [&](auto& row){
+	if(rexuseraccnt_it == rexuseraccnt_table.end()) {
+		rexuseraccnt_table.emplace(buyer, [&](auto& row){
 			row.ride_type = ride_type;
 			row.rides_limit = ride_qty;
 		});
 	}
 	else {
-		ridexaccount_table.modify(ridexaccount_it, buyer, [&](auto& row){
+		rexuseraccnt_table.modify(rexuseraccnt_it, buyer, [&](auto& row){
 			row.rides_limit += ride_qty;
 		});
 	}
@@ -151,10 +214,10 @@ void toeridex::sellride( const name& seller,
 
 	check(ride_qty != 0, "Ride quantity can't be zero");
 
-	ridexaccount_index ridexaccount_table(get_self(), seller.value);
-	auto ridexaccount_it = ridexaccount_table.find(ride_type.value);
-	check(ridexaccount_it != ridexaccount_table.end(), "Sorry! There is no ride to sell.");
-	check(ride_qty <= ridexaccount_it->rides_limit, "The ride no. asked, is more than the limit of the seller.");
+	rexuseraccnt_index rexuseraccnt_table(get_self(), seller.value);
+	auto rexuseraccnt_it = rexuseraccnt_table.find(ride_type.value);
+	check(rexuseraccnt_it != rexuseraccnt_table.end(), "Sorry! There is no ride to sell.");
+	check(ride_qty <= rexuseraccnt_it->rides_limit, "The ride no. asked, is more than the limit of the seller.");
 
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
@@ -200,7 +263,7 @@ void toeridex::sellride( const name& seller,
 	});
 
 	// deduct ride_qty to the ridexaccount table	
-	ridexaccount_table.modify(ridexaccount_it, seller, [&](auto& row){
+	rexuseraccnt_table.modify(rexuseraccnt_it, seller, [&](auto& row){
 		row.rides_limit -= ride_qty;
 	});
 

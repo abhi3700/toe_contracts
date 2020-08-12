@@ -40,7 +40,17 @@
             ]
         },
         {
-            "name": "initridex",
+            "name": "rexfeewallet",
+            "base": "",
+            "fields": [
+                {
+                    "name": "balance",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "rexuseraccnt",
             "base": "",
             "fields": [
                 {
@@ -48,12 +58,18 @@
                     "type": "name"
                 },
                 {
-                    "name": "toe_qty",
-                    "type": "asset"
-                },
-                {
-                    "name": "ride_qty",
+                    "name": "rides_limit",
                     "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "rexusrwallet",
+            "base": "",
+            "fields": [
+                {
+                    "name": "balance",
+                    "type": "asset"
                 }
             ]
         },
@@ -72,20 +88,6 @@
                 {
                     "name": "toe_balance",
                     "type": "asset"
-                }
-            ]
-        },
-        {
-            "name": "ridexaccount",
-            "base": "",
-            "fields": [
-                {
-                    "name": "ride_type",
-                    "type": "name"
-                },
-                {
-                    "name": "rides_limit",
-                    "type": "uint64"
                 }
             ]
         },
@@ -152,11 +154,6 @@
             "ricardian_contract": ""
         },
         {
-            "name": "initridex",
-            "type": "initridex",
-            "ricardian_contract": ""
-        },
-        {
             "name": "sellride",
             "type": "sellride",
             "ricardian_contract": ""
@@ -174,15 +171,29 @@
     ],
     "tables": [
         {
-            "name": "ridex",
-            "type": "ridex",
+            "name": "rexfeewallet",
+            "type": "rexfeewallet",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "ridexaccount",
-            "type": "ridexaccount",
+            "name": "rexuseraccnt",
+            "type": "rexuseraccnt",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "rexusrwallet",
+            "type": "rexusrwallet",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "ridex",
+            "type": "ridex",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

@@ -5,6 +5,8 @@
 #include <eosio/crypto.hpp>
 #include <iterator>
 
+#include <string>
+
 using eosio::contract;
 using eosio::print;
 using eosio::name;
@@ -23,6 +25,7 @@ using eosio::action_wrapper;
 using eosio::checksum256;
 
 using std::string;
+using std::size_t;
 
 CONTRACT toeridex : public contract 
 {
@@ -36,6 +39,7 @@ private:
 	const name ridex_supply_ac;
 	const name ridex_fees_ac;
 	const name auth_contract_ac;
+	const uint64_t initial_ride_qty;
 
 
 public:
@@ -51,24 +55,32 @@ public:
 				token_contract_ac("toe1111token"_n),
 				ridex_supply_ac("toeridexsupp"_n),
 				ridex_fees_ac("toeridexfees"_n),
-				auth_contract_ac("toe1userauth"_n) {}
+				auth_contract_ac("toe1userauth"_n),
+				initial_ride_qty(1000000) {}
 
 	/**
-	 * @brief - initialize RIDEX params
-	 * @details - initialize RIDEX params
-	 * 				+ toe_balance
-	 * 				+ ride_quota
+	 * @brief - send money for 3 purposes: init RIDEX (for driver, commuter ride types)
+	 * @details - send money for 3 purposes:
+	 * 				+ init RIDEX (for driver, commuter ride types)
+	 * 				+ buying ride
 	 * 
-	 * @ride_type - driver/commuter
-	 * @param toe_qty - quantity in TOE
-	 * @param ride_qty - ride quantity
+	 * @token_issuer - sender i.e. bhubtoeindia/ buyer/ seller
+	 * @contract_ac - this contract
+	 * @param quantity - initialize RIDEX supply quantity in TOE
+	 * @param memo - remarks
+	 * 
+	 * @pre memo must contain either "driver" or "commuter" or "buy" or "sell"
 	 *
 	 */
-	ACTION initridex( 
-		// const name& token_issuer,
-						const name& ride_type,
-						const asset& toe_qty,
-						uint64_t ride_qty );
+	[[eosio::on_notify("toe1111token::transfer")]]
+	void sendridex( const name& sender,
+						const name& contract_ac,
+						const asset& quantity,
+						const string& memo);
+
+
+
+
 
 	/**
 	 * @brief - buy rides from RIDEX
@@ -155,26 +167,19 @@ public:
 		}
 	}
 
+	// --------------------------------------------------------------------------------
 	static void check_quantity( const asset& quantity ) {
 		check(quantity.is_valid(), "invalid quantity");
 		check(quantity.amount > 0, "must withdraw positive quantity");
 		check(quantity.symbol == symbol("TOE", 4), "symbol precision mismatch");
 	}
 
-
 	using addridequota_action  = action_wrapper<"addridequota"_n, &toeridex::addridequota>;
 
 private:
-	// --------------------------------------------------------------------------------
-	TABLE ridexaccount {
-		name ride_type;
-		uint64_t rides_limit;
 
-		auto primary_key() const { return ride_type.value; }
-	};
-
-	using ridexaccount_index = multi_index<"ridexaccount"_n, ridexaccount>;
 	// --------------------------------------------------------------------------------
+	// RIDEX
 	TABLE ridex {
 		name ride_type;
 		uint64_t ride_quota;
@@ -185,6 +190,36 @@ private:
 
 	using ridex_index = multi_index<"ridex"_n, ridex>;
 	
+	// --------------------------------------------------------------------------------
+	// RIDEX User wallet
+	TABLE rexusrwallet {
+		asset balance;
+
+		auto primary_key() const { return balance.symbol.raw(); }
+	};
+
+	using rexusrwallet_index = multi_index<"rexusrwallet"_n, rexusrwallet>;
+
+	// --------------------------------------------------------------------------------
+	// RIDEX Fee wallet
+	TABLE rexfeewallet {
+		asset balance;
+
+		auto primary_key() const { return balance.symbol.raw(); }
+	};
+
+	using rexfeewallet_index = multi_index<"rexfeewallet"_n, rexfeewallet>;
+	// --------------------------------------------------------------------------------
+	// RIDEX User account
+	TABLE rexuseraccnt {
+		name ride_type;
+		uint64_t rides_limit;
+
+		auto primary_key() const { return ride_type.value; }
+	};
+
+	using rexuseraccnt_index = multi_index<"rexuseraccnt"_n, rexuseraccnt>;
+
 	// --------------------------------------------------------------------------------
 	struct user {
 		name user;
