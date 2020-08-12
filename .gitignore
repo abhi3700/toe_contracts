@@ -2,5 +2,8 @@
 test*
 *.out
 
+# ignore opened files
+~$*
+
 # ignore folders
 build
