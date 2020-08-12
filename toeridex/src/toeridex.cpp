@@ -71,9 +71,7 @@ void toeridex::sendridex(
 		send_receipt( sender, "initialized RIDEX with " + quantity.to_string() + " & " 
 			+ std::to_string(initial_ride_qty) + " RIDE for \'" + ride_type.to_string() + "\' ride type.");
 
-	} 
-
-	if(found_2 != string::npos) {
+	} else if(found_2 != string::npos) {
 		ride_type = "commuter"_n;
 
 		// check if sender is the token_issuer from token contract's stat table.
@@ -97,9 +95,7 @@ void toeridex::sendridex(
 		send_receipt( sender, "initialized RIDEX with " + quantity.to_string() + " & " 
 			+ std::to_string(initial_ride_qty) + " RIDE for \'" + ride_type.to_string() + "\' ride type.");
 
-	}
-
-	if(found_3 != string::npos) {
+	} else if(found_3 != string::npos) {
 		// ride_type = "buy"_n;
 	
 		// instantiate the rexusrwallet table
