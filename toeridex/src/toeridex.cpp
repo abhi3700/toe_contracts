@@ -37,17 +37,21 @@ void toeridex::sendridex(
 	size_t found_2 = memo.find("commuter");
 	size_t found_3 = memo.find("buy");
 
+	// 3 cases
+	auto case_1 = (found_1 != string::npos) && (found_2 == string::npos) && (found_3 == string::npos);		// contain only "driver"
+	auto case_2 = (found_2 != string::npos) && (found_1 == string::npos) && (found_3 == string::npos);		// contain only "commuter"
+	auto case_3	= (found_3 != string::npos) && (found_1 == string::npos) && (found_2 == string::npos);		// contain only "buy"
 
 	check( 
-		(found_1 != string::npos) ||
-		(found_2 != string::npos) ||
-		(found_3 != string::npos)
+		case_1 ||
+		case_2 ||
+		case_3
 		, "invalid memo type for RIDEX contract");
 
 	/*
 		Set respective table data for different found(s)
 	*/
-	if(found_1 != string::npos) {
+	if( case_1 ) {
 		ride_type = "driver"_n;
 
 		// check if sender is the token_issuer from token contract's stat table.
@@ -71,7 +75,7 @@ void toeridex::sendridex(
 		send_receipt( sender, "initialized RIDEX with " + quantity.to_string() + " & " 
 			+ std::to_string(initial_ride_qty) + " RIDE for \'" + ride_type.to_string() + "\' ride type.");
 
-	} else if(found_2 != string::npos) {
+	} else if( case_2 ) {
 		ride_type = "commuter"_n;
 
 		// check if sender is the token_issuer from token contract's stat table.
@@ -95,7 +99,7 @@ void toeridex::sendridex(
 		send_receipt( sender, "initialized RIDEX with " + quantity.to_string() + " & " 
 			+ std::to_string(initial_ride_qty) + " RIDE for \'" + ride_type.to_string() + "\' ride type.");
 
-	} else if(found_3 != string::npos) {
+	} else if( case_3 ) {
 		// ride_type = "buy"_n;
 	
 		// instantiate the rexusrwallet table

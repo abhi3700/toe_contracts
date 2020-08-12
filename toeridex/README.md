@@ -194,6 +194,14 @@ $ cleost get table toe1111token toe1111ridex accounts
   "next_key": ""
 }
 ```
+* Here, `bhubtoeindia` tries to transfer token to `toe1111ridex` but gets error as it contains both __"driver"__ & __"commuter"__ ride_type in the memo
+```console
+$ cleost push action toe1111token transfer '["bhubtoeindia", "toe1111ridex" "1000000.0000 TOE", "transfer 1 M TOE tokens to RIDEX contract for driver commuter ride type"]' -p bhubtoeindia@active
+Error 3050003: eosio_assert_message assertion failure
+Error Details:
+assertion failure with message: invalid memo type for RIDEX contract
+pending console output:
+```
 
 ## TODO
 - [ ] whenever resetting the RIDEX table (either ride type), ensure all the tokens are returned back to the supply
