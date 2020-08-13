@@ -21,8 +21,9 @@ The main contracts for CabEOS are as follows:
 ### Others
 * `bhubtoeindia`: Block.Hub TOE India (Token issuer)
 * `bhubtoeinval`: Block.Hub TOE India Validator (by Company)
-* ~~`toeridexsupp`: TOE RIDEX Supply~~
-* `toeridexfees`: TOE RIDEX Fees
+* ~~`toeridexsupp`: TOE RIDEX Supply~~ it is owned by RIDEX contract account itself
+* `toeridesfees`: TOE Rides Fees: All the crypto commission is collected here.
+* `toeridexfees`: TOE RIDEX Fees: All the trade fees is collected here.
 * `toe11rreward`: TOE Ride Reward
 
 ## Contracts
@@ -318,4 +319,4 @@ n = no. of Rides needed (in no.)
 	- relatively lower on __"requested"__ ride status
 	- relatively higher on __"enroute"__ ride status
 	- relatively more higher on __"waiting"__ ride status
-* deduction on 
+* For commuter, all the incentives/rewards disbursed post-ride, will not be compared to a country's economy. But for driver, the incentive especially in case of ensuring ride during surge condition has to be sufficient enough, bcoz it will be compared w.r.t total value in fiat. After all, fiat currency is going to be used mostly within a nation to buy/sell commodities. 
