@@ -52,6 +52,10 @@ toeridexsupp
 Private key: 5KM4ZJyBXf7Jonpj5w5ytML8Rjq4kp7BB4CpzHQ9vrZKdbqtbFE
 Public key: EOS7qfQh2YcbmaHjpp4ijjRNpd6z37LWwArnaxRMMbsabEvuuvZ7w
 -------------------------------------------------------------
+toeridesfees
+Private key: 5Hr4yW5aeQLt37WwJ6nLreLjyJYW3NPDchbbVCf4kwZq33ZR9za
+Public key: EOS8fRn1H49DBNoFJBU47vxEHWMBT2pkN5irToDGdCUuRHtMiL5wN
+-------------------------------------------------------------
 toeridexfees
 Private key: 5K22sBYFKk4zx6an8F8VG8a1KYfiMhTZobem6X7wbg3NcCA8d8z
 Public key: EOS7bWtcSp7Bf1xP1Ror1Q9NCCYyaPizoFXmh2vAs778oisripAo9
