@@ -202,6 +202,203 @@ Error Details:
 assertion failure with message: invalid memo type for RIDEX contract
 pending console output:
 ```
+* driver `toedri111111` transfers '9.9999 TOE' to `toe1111ridex` for buying 10 rides
+```console
+$ cleost push action toe1111token transfer '["toedri111111", "toe1111ridex" "9.9999 TOE", "transfer almost 10 TOE for buy 10 rides"]' -p toedri111111@active
+executed transaction: b25b1e39a8bc2edf1d4d9ce459e92153efb6e301c0c33d16e6d837dc2f58b2d4  168 bytes  425 us
+#  toe1111token <= toe1111token::transfer       {"from":"toedri111111","to":"toe1111ridex","quantity":"9.9999 TOE","memo":"transfer almost 10 TOE fo...
+#  toedri111111 <= toe1111token::transfer       {"from":"toedri111111","to":"toe1111ridex","quantity":"9.9999 TOE","memo":"transfer almost 10 TOE fo...
+#  toe1111ridex <= toe1111token::transfer       {"from":"toedri111111","to":"toe1111ridex","quantity":"9.9999 TOE","memo":"transfer almost 10 TOE fo...
+#  toe1111ridex <= toe1111ridex::sendreceipt    {"user":"toedri111111","message":"toedri111111 sent '9.9999 TOE' money for purpose: transfer almost ...
+#  toedri111111 <= toe1111ridex::sendreceipt    {"user":"toedri111111","message":"toedri111111 sent '9.9999 TOE' money for purpose: transfer almost ...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+	- view the '9.9999 TOE' in ridex user wallet table
+```console
+$ cleost get table toe1111ridex toedri111111 rexusrwallet --show-payer
+{
+  "rows": [{
+      "data": {
+        "balance": "9.9999 TOE"
+      },
+      "payer": "toe1111ridex"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+
+### Action - `buyride`
+* driver `toedri111111` buys 10 rides (__"driver"__ ride type) & gets error as no __balance__:
+```console
+$ cleost push action toe1111ridex buyride '["toedri111111", "driver", "10", "buy 10 rides"]' -p toedri111111@active
+Error 3050003: eosio_assert_message assertion failure
+Error Details:
+assertion failure with message: The RIDEX wallet for buyer has no balance. Please, transfer '9.9999 TOE'
+pending console output:
+```
+* driver `toedri111111` buys 10 rides (__"commuter"__ ride type) & gets error as wrong __ride_type__:
+```console
+$ cleost push action toe1111ridex buyride '["toedri111111", "commuter", "10", "buy 10 rides"]' -p toedri111111@active
+Error 3050003: eosio_assert_message assertion failure
+Error Details:
+assertion failure with message: Sorry! A driver can't buy 'commuter' type rides.
+pending console output:
+```
+* driver `toedri111111` buys 10 rides (__"driver"__ ride type) successfully
+```console
+$ cleost push action toe1111ridex buyride '["toedri111111", "driver", "10", "buy 10 rides"]' -p toedri111111@active
+executed transaction: 0b021a796eb013fc316e0a2ff6b4d81a120484b1c540646a01b3faaaaf269228  136 bytes  1185 us
+#  toe1111ridex <= toe1111ridex::buyride        {"buyer":"toedri111111","ride_type":"driver","ride_qty":10,"memo":"buy 10 rides"}
+#  toe1111token <= toe1111token::transfer       {"from":"toe1111ridex","to":"toeridexfees","quantity":"0.0999 TOE","memo":"transfer fees amount for ...
+#  toe1111ridex <= toe1111ridex::sendreceipt    {"user":"toedri111111","message":"You bought 10 rides for '9.9999 TOE' amount"}
+#  toe1111ridex <= toe1111token::transfer       {"from":"toe1111ridex","to":"toeridexfees","quantity":"0.0999 TOE","memo":"transfer fees amount for ...
+>> Either money is not sent to the contract or contract itself is the sender.
+#  toeridexfees <= toe1111token::transfer       {"from":"toe1111ridex","to":"toeridexfees","quantity":"0.0999 TOE","memo":"transfer fees amount for ...
+#  toedri111111 <= toe1111ridex::sendreceipt    {"user":"toedri111111","message":"You bought 10 rides for '9.9999 TOE' amount"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+	- view the token balance for `toe1111ridex`
+```console
+$ cleost get table toe1111token toe1111ridex accounts
+{
+  "rows": [{
+      "balance": "2000009.9000 TOE"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+	- view the token balance for `toeridexfees`
+```console
+$ cleost get table toe1111token toeridexfees accounts
+{
+  "rows": [{
+      "balance": "0.0999 TOE"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+	- view the ridex user wallet balance for `toedri111111`
+```console
+{
+  "rows": [{
+      "balance": "0.0000 TOE"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+	- view the ridex ride accounts for `toedri111111`
+```console
+$ cleost get table toe1111ridex toedri111111 rexuseraccnt
+{
+  "rows": [{
+      "ride_type": "driver",
+      "rides_limit": 10
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+	- view the RIDEX table
+```console
+$ cleost get table toe1111ridex toe1111ridex ridex
+{
+  "rows": [{
+      "ride_type": "commuter",
+      "ride_quota": 1000000,
+      "toe_balance": "1000000.0000 TOE"
+    },{
+      "ride_type": "driver",
+      "ride_quota": 999990,
+      "toe_balance": "1000009.8999 TOE"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+
+### Action - `sellride`
+* driver `toedri111111` sells '5 rides' successfully
+```console
+$ cleost push action toe1111ridex sellride '["toedri111111", "driver", "5", "sell 5 rides"]' -p toedri111111@active
+executed transaction: ae85313b73cf70a138baa8af48b20d0dc3ae8794df10036e0504160e56a5cbba  136 bytes  422 us
+#  toe1111ridex <= toe1111ridex::sellride       {"seller":"toedri111111","ride_type":"driver","ride_qty":5,"memo":"sell 5 rides"}
+#  toe1111token <= toe1111token::transfer       {"from":"toe1111ridex","to":"toedri111111","quantity":"4.9500 TOE","memo":"sell 5 ride(s)"}
+#  toe1111token <= toe1111token::transfer       {"from":"toe1111ridex","to":"toeridexfees","quantity":"0.0500 TOE","memo":"transfer fees amount for ...
+#  toe1111ridex <= toe1111ridex::sendreceipt    {"user":"toedri111111","message":"You sold 5 rides for '5.0000 TOE' amount"}
+#  toe1111ridex <= toe1111token::transfer       {"from":"toe1111ridex","to":"toedri111111","quantity":"4.9500 TOE","memo":"sell 5 ride(s)"}
+>> Either money is not sent to the contract or contract itself is the sender.
+#  toedri111111 <= toe1111token::transfer       {"from":"toe1111ridex","to":"toedri111111","quantity":"4.9500 TOE","memo":"sell 5 ride(s)"}
+#  toe1111ridex <= toe1111token::transfer       {"from":"toe1111ridex","to":"toeridexfees","quantity":"0.0500 TOE","memo":"transfer fees amount for ...
+>> Either money is not sent to the contract or contract itself is the sender.
+#  toeridexfees <= toe1111token::transfer       {"from":"toe1111ridex","to":"toeridexfees","quantity":"0.0500 TOE","memo":"transfer fees amount for ...
+#  toedri111111 <= toe1111ridex::sendreceipt    {"user":"toedri111111","message":"You sold 5 rides for '5.0000 TOE' amount"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+	- view the token table for `toedri111111`. increment from '26.0001 TOE' to '30.9501 TOE'
+```console
+$ cleost get table toe1111token toedri111111 accounts
+{
+  "rows": [{
+      "balance": "30.9501 TOE"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+	- view the RIDEX table
+```console
+$ cleost get table toe1111ridex toe1111ridex ridex
+{
+  "rows": [{
+      "ride_type": "commuter",
+      "ride_quota": 1000000,
+      "toe_balance": "1000000.0000 TOE"
+    },{
+      "ride_type": "driver",
+      "ride_quota": 999995,
+      "toe_balance": "1000004.9499 TOE"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+	- view the token balance for `toeridexfees`. An increment from '0.0999 TOE' to '0.1499 TOE'
+```console
+$ cleost get table toe1111token toeridexfees accounts
+{
+  "rows": [{
+      "balance": "0.1499 TOE"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+	- view the ridex ride accounts for `toedri111111`. ride_limit decreases from '10' to '5'.
+```console
+$ cleost get table toe1111ridex toedri111111 rexuseraccnt
+{
+  "rows": [{
+      "ride_type": "driver",
+      "rides_limit": 5
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
 
 ## TODO
 - [ ] whenever resetting the RIDEX table (either ride type), ensure all the tokens are returned back to the supply

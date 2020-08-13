@@ -40,16 +40,6 @@
             ]
         },
         {
-            "name": "rexfeewallet",
-            "base": "",
-            "fields": [
-                {
-                    "name": "balance",
-                    "type": "asset"
-                }
-            ]
-        },
-        {
             "name": "rexuseraccnt",
             "base": "",
             "fields": [
@@ -140,6 +130,30 @@
                     "type": "string"
                 }
             ]
+        },
+        {
+            "name": "withdraw",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "withdrawfull",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                }
+            ]
         }
     ],
     "actions": [
@@ -167,16 +181,19 @@
             "name": "sendreceipt",
             "type": "sendreceipt",
             "ricardian_contract": ""
+        },
+        {
+            "name": "withdraw",
+            "type": "withdraw",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "withdrawfull",
+            "type": "withdrawfull",
+            "ricardian_contract": ""
         }
     ],
     "tables": [
-        {
-            "name": "rexfeewallet",
-            "type": "rexfeewallet",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
         {
             "name": "rexuseraccnt",
             "type": "rexuseraccnt",

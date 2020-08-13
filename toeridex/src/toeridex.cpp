@@ -146,7 +146,7 @@ void toeridex::buyride( const name& buyer,
 	// check if the row exist for given ride_type
 	ridex_index ridex_table(get_self(), get_self().value);
 	auto ridex_it = ridex_table.find(ride_type.value);
-	check(ridex_it != ridex_table.end(), "There is no data found for this ride_type.");
+	check(ridex_it != ridex_table.end(), "There is no data found in RIDEX for \'" + ride_type.to_string() + "\' ride_type.");
 
 	// initialized the ride_expenditure
 	auto ride_expenditure = asset(0.0000, ride_token_symbol);
@@ -154,28 +154,26 @@ void toeridex::buyride( const name& buyer,
 	// calc ride_expenditure amount using the Bancor formula
 	ride_expenditure.amount = (ride_qty * (ridex_it->toe_balance.amount))/( ride_qty + (ridex_it->ride_quota) );
 
-	// initialized the ride_expend_supply
-	auto ride_expend_supply = asset(0.0000, ride_token_symbol);
-	ride_expend_supply.amount = supply_factor * (ride_expenditure.amount);
-
 	// initialized the ride_expend_fees
 	auto ride_expend_fees = asset(0.0000, ride_token_symbol);
 	ride_expend_fees.amount = fees_factor * (ride_expenditure.amount);
 
-	// send the ride_expend_supply from buyer to toeridexsupp using inline action
-	action(
-		permission_level{get_self(), "active"_n},
-		token_contract_ac,
-		"transfer"_n,
-		std::make_tuple(buyer, ridex_supply_ac, ride_expend_supply, "buy " + std::to_string(ride_qty) + " ride(s)")
-		).send();
+	// to get the ride_expend_supply, just substract: (expenditure - fees) 
+	auto ride_expend_supply = ride_expenditure - ride_expend_fees;
 
-	// send the toe_qty from buyer to toeridexsupp using inline action
+	// check if the rexusrwallet table for buyer has `ride_expenditure` as min. balance
+	rexusrwallet_index rexusrwallet_table(get_self(), buyer.value);
+	auto rexusrwallet_it = rexusrwallet_table.find(ride_expenditure.symbol.raw());	// finding the ("TOE", 4)
+
+	check(rexusrwallet_it != rexusrwallet_table.end(), "The RIDEX wallet for buyer has no balance. Please, transfer \'" + ride_expenditure.to_string() + "\'");
+	check(rexusrwallet_it->balance >= ride_expenditure, "Low balance. So, transfer \'" + (ride_expenditure - rexusrwallet_it->balance).to_string() + "\' to RIDEX wallet");
+
+	// send the fees from toeridex to toeridexsupp using inline action
 	action(
 		permission_level{get_self(), "active"_n},
 		token_contract_ac,
 		"transfer"_n,
-		std::make_tuple(buyer, ridex_fees_ac, ride_expend_fees, "fees for buy " + std::to_string(ride_qty) + " ride(s)")
+		std::make_tuple(get_self(), ridex_fees_ac, ride_expend_fees, "transfer fees amount for buying " + std::to_string(ride_qty) + " ride(s)")
 		).send();
 
 	// update the ride_table with new `ride_quota` & `toe_balance`
@@ -200,6 +198,11 @@ void toeridex::buyride( const name& buyer,
 		});
 	}
 
+	// substract the 'ride_expenditure' from 'buyer' rexusrwallet table
+	rexusrwallet_table.modify(rexusrwallet_it, get_self(), [&](auto& row){
+		row.balance -= ride_expenditure;
+	});
+
 	send_receipt(buyer, "You bought " + std::to_string(ride_qty) + " rides for \'" + ride_expenditure.to_string() + "\' amount");
 
 }
@@ -219,17 +222,20 @@ void toeridex::sellride( const name& seller,
 
 	check(ride_qty != 0, "Ride quantity can't be zero");
 
+	// instantiate the rexuseraccnt table
 	rexuseraccnt_index rexuseraccnt_table(get_self(), seller.value);
 	auto rexuseraccnt_it = rexuseraccnt_table.find(ride_type.value);
+
+	// check if the ride_qty < ride_limit of seller
 	check(rexuseraccnt_it != rexuseraccnt_table.end(), "Sorry! There is no ride to sell.");
-	check(ride_qty <= rexuseraccnt_it->rides_limit, "The ride no. asked, is more than the limit of the seller.");
+	check(ride_qty <= rexuseraccnt_it->rides_limit, "The ride no. asked, is more than the seller's limit");
 
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// check if the row exist for given ride_type
 	ridex_index ridex_table(get_self(), get_self().value);
 	auto ridex_it = ridex_table.find(ride_type.value);
-	check(ridex_it != ridex_table.end(), "There is no data found for this ride_type.");
+	check(ridex_it != ridex_table.end(), "There is no data found in RIDEX for \'" + ride_type.to_string() + "\' ride_type.");
 
 	// initialized the ride_expenditure
 	auto ride_expenditure = asset(0.0000, ride_token_symbol);
@@ -237,29 +243,28 @@ void toeridex::sellride( const name& seller,
 	// calc ride_expenditure amount using the Bancor formula
 	ride_expenditure.amount = (ride_qty * (ridex_it->toe_balance.amount))/( ride_qty + (ridex_it->ride_quota) );
 
-	// initialized the ride_expend_supply
-	auto ride_expend_supply = asset(0.0000, ride_token_symbol);
-	ride_expend_supply.amount = supply_factor * (ride_expenditure.amount);
-
 	// initialized the ride_expend_fees
 	auto ride_expend_fees = asset(0.0000, ride_token_symbol);
 	ride_expend_fees.amount = fees_factor * (ride_expenditure.amount);
 
-	// send the ride_expend_supply from toeridexsupp to seller using inline action
-	action(
-		permission_level{get_self(), "active"_n},
-		token_contract_ac,
-		"transfer"_n,
-		std::make_tuple(ridex_supply_ac, seller, ride_expend_supply, "sell " + std::to_string(ride_qty) + " ride(s)")
-		).send();
+	// to get the ride_expend_supply, just substract: (expenditure - fees) 
+	auto ride_expend_supply = ride_expenditure - ride_expend_fees;
 
-	// send the ride_expend_fees from toeridexsupp to seller using inline action
+	// send the ride_expend_supply from contract_ac to seller using inline action
 	action(
 		permission_level{get_self(), "active"_n},
 		token_contract_ac,
 		"transfer"_n,
-		std::make_tuple(ridex_supply_ac, seller, ride_expend_fees, "fees for sell " + std::to_string(ride_qty) + " ride(s)")
-		).send();
+		std::make_tuple(get_self(), seller, ride_expend_supply, "sell " + std::to_string(ride_qty) + " ride(s)")
+	).send();
+
+	// send the ride_expend_fees from contract_ac to toeridexfees account using inline action
+	action(
+		permission_level{get_self(), "active"_n},
+		token_contract_ac,
+		"transfer"_n,
+		std::make_tuple(get_self(), ridex_fees_ac, ride_expend_fees, "transfer fees amount for selling " + std::to_string(ride_qty) + " ride(s)")
+	).send();
 
 	// update the ridex_table with new `ride_quota` & `toe_balance`
 	ridex_table.modify(ridex_it, get_self(), [&](auto& row){
@@ -301,6 +306,70 @@ void toeridex::addridequota(const name& ride_type,
 	});
 
 }
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridex::withdraw( const name& user, 
+							const asset& quantity) {
+	require_auth(user);
+
+	// check quantity is valid for all conditions as 'asset'
+	check_quantity(quantity);
+
+	// instantiate the `rexusrwallet` table
+	rexusrwallet_index rexusrwallet_table(get_self(), user.value);
+	auto rexusrwallet_it = rexusrwallet_table.find(ride_token_symbol.raw());
+
+	// Make sure that the commuter is present in the table
+	check( rexusrwallet_it != rexusrwallet_table.end(), "Sorry! There is no amount transferred by " + user.to_string() + "in the RIDEX wallet.");
+
+	// if the quantity is less than or equal to ride wallet balance
+	check(rexusrwallet_it->balance >= quantity, "The user is trying to overdraw from the ride wallet's balance.");
+		
+	action(
+		permission_level{get_self(), "active"_n},
+		token_contract_ac,
+		"transfer"_n,
+		std::make_tuple(get_self(), user, quantity, "user withdraws " + quantity.to_string() + " money.")
+	).send();
+
+	// update the previous balance with new balance after substraction
+	rexusrwallet_table.modify(rexusrwallet_it, get_self(), [&](auto& row) {
+		row.balance -= quantity;
+	});
+
+	// check if zero balance, then delete the data
+	if( (rexusrwallet_it->balance).amount == 0 ) {
+		rexusrwallet_table.erase(rexusrwallet_it);
+	}
+
+	// On execution, a receipt is sent
+	send_receipt( user, user.to_string() + " withdraws " + quantity.to_string() + " amount." );
+
+}
+
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridex::withdrawfull( const name& user ) {
+	require_auth(user);
+
+	// instantiate the `ridewallet` table
+	rexusrwallet_index rexusrwallet_table(get_self(), user.value);
+	auto rexusrwallet_it = rexusrwallet_table.find(ride_token_symbol.raw());
+
+	// Make sure that the commuter is present in the table
+	check( rexusrwallet_it != rexusrwallet_table.end(), "Sorry! There is no amount transferred by " + user.to_string() + "in the ride wallet.");
+
+	action(
+		permission_level{get_self(), "active"_n},
+		token_contract_ac,
+		"transfer"_n,
+		std::make_tuple(get_self(), user, rexusrwallet_it->balance, "commuter withdraws " + (rexusrwallet_it->balance).to_string() + " money.")
+	).send();
+
+	// erase after transferring the entire amount in ride wallet balance
+	rexusrwallet_table.erase(rexusrwallet_it);
+}
+
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridex::sendalert(const name& user,

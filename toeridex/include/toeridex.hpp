@@ -32,7 +32,7 @@ CONTRACT toeridex : public contract
 private:
 	// const name token_issuer;
 	const symbol ride_token_symbol;
-	const float supply_factor;
+	// const float supply_factor;
 	const float fees_factor;
 	const name ride_contract_ac;
 	const name token_contract_ac;
@@ -49,7 +49,7 @@ public:
 				contract(receiver, code, ds),
 				// token_issuer("bhubtoeindia"_n),
 				ride_token_symbol("TOE", 4),
-				supply_factor(0.99),	// 99%
+				// supply_factor(0.99),	// 99%
 				fees_factor(0.01),		// 1%
 				ride_contract_ac("toe1ridetaxi"_n),
 				token_contract_ac("toe1111token"_n),
@@ -122,6 +122,23 @@ public:
 						uint64_t ride_qty);
 
 	/**
+	 * @brief - withdraw some money
+	 * @details - A user wants to withdraw the quantity from wallet [optional]
+	 * 
+	 * @param user - user account
+	 */
+	ACTION withdraw( const name& user, 
+					const asset& quantity);
+
+	/**
+	 * @brief - withdraw entire money
+	 * @details - A user wants to withdraw the entire money from wallet [optional]
+	 * 
+	 * @param user - user account
+	 */
+	ACTION withdrawfull( const name& user );
+
+	/**
 	 * @brief - send alert
 	 * @details - send alert after the action is successfully done. e.g. driver alerting commuter that the vehicle has arrived
 	 * 
@@ -176,6 +193,15 @@ public:
 
 	using addridequota_action  = action_wrapper<"addridequota"_n, &toeridex::addridequota>;
 
+	// ACTION delruwallet(const name& user)
+	// {
+	// 	rexusrwallet_index rexusrwallet_table(get_self(), user.value);
+	// 	auto rexusrwallet_it = rexusrwallet_table.find(ride_token_symbol.raw());	// finding the ("TOE", 4)
+
+	// 	check(rexusrwallet_it != rexusrwallet_table.end(), " no balance.");
+	// 	rexusrwallet_table.erase(rexusrwallet_it);	
+	// }
+
 private:
 
 	// --------------------------------------------------------------------------------
@@ -200,15 +226,6 @@ private:
 
 	using rexusrwallet_index = multi_index<"rexusrwallet"_n, rexusrwallet>;
 
-	// --------------------------------------------------------------------------------
-	// RIDEX Fee wallet
-	TABLE rexfeewallet {
-		asset balance;
-
-		auto primary_key() const { return balance.symbol.raw(); }
-	};
-
-	using rexfeewallet_index = multi_index<"rexfeewallet"_n, rexfeewallet>;
 	// --------------------------------------------------------------------------------
 	// RIDEX User account
 	TABLE rexuseraccnt {
