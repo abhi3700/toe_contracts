@@ -66,33 +66,28 @@ void toeridewallet::withdraw( const name& commuter_ac,
 	// Make sure that the commuter is present in the table
 	check( wallet_it != ridewallet_table.end(), "Sorry! There is no amount transferred by " + commuter_ac.to_string() + "in the ride wallet.");
 
-	// if the quantity is less than or equal to ride wallet balance
-	if(quantity <= wallet_it->balance ) {
-		action(
-			permission_level{get_self(), "active"_n},
-			token_contract_ac,
-			"transfer"_n,
-			std::make_tuple(get_self(), commuter_ac, quantity, "commuter withdraws " + quantity.to_string() + " money.")
-		).send();
+	check( wallet_it->balance >= quantity, "The user is trying to overdraw from the ride wallet's balance." );
 
-		// update the previous balance with new balance after substraction
-		ridewallet_table.modify(wallet_it, get_self(), [&](auto& row) {
-			row.balance -= quantity;
-		});
+	action(
+		permission_level{get_self(), "active"_n},
+		token_contract_ac,
+		"transfer"_n,
+		std::make_tuple(get_self(), commuter_ac, quantity, "commuter withdraws " + quantity.to_string() + " money.")
+	).send();
 
-		// check if zero balance, then delete the data
-		// @TODO: test whether 0 or 0.0000
-		if( (wallet_it->balance).amount == 0 ) {
-			ridewallet_table.erase(wallet_it);
-		}
+	// update the previous balance with new balance after substraction
+	ridewallet_table.modify(wallet_it, get_self(), [&](auto& row) {
+		row.balance -= quantity;
+	});
 
-		// On execution, a receipt is sent
-		send_receipt( commuter_ac, name{commuter_ac}.to_string() + " withdraws " + quantity.to_string() + " amount." );
-	} else {
-		// On failure, a receipt is sent
-		send_receipt( commuter_ac, quantity.to_string() + " asked is higher than the balance amount in the ride wallet.");
-		return;
+	// check if zero balance, then delete the data
+	// @TODO: test whether 0 or 0.0000
+	if( (wallet_it->balance).amount == 0 ) {
+		ridewallet_table.erase(wallet_it);
 	}
+
+	// On execution, a receipt is sent
+	send_receipt( commuter_ac, name{commuter_ac}.to_string() + " withdraws " + quantity.to_string() + " amount." );
 
 }
 
