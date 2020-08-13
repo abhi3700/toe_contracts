@@ -266,6 +266,7 @@ public:
 	ACTION eraseride( const name& commuter_ac,
 						const string& memo);
 
+	// --------------------------------------------------------------------------------------------------------------------
 	static void check_userauth( const name& user, const name& type) {
 		// check whether the `user` is a verified driver by reading the `auth` table
 		user_index user_table("toe1userauth"_n, user.value);
@@ -275,14 +276,14 @@ public:
 			check( user_it != user_table.end(), "The driver is not added in the Auth Table.");
 			check( user_it->type == "driver"_n, "The given user is not a driver");
 			check( user_it->user_status == "verified"_n, "The driver is not verified yet.");
-		}
-		if (type == "commuter"_n) {
+		} else if (type == "commuter"_n) {
 			check( user_it != user_table.end(), "The commuter is not added in the Auth Table.");
 			check( user_it->type == "commuter"_n, "The given user is not a commuter");
 			check( user_it->user_status == "verified"_n, "The commuter is not verified yet.");
 		}
 	}
 
+	// --------------------------------------------------------------------------------------------------------------------
 	static void check_dridestatus( const name& driver_ac ) {
 		//instantiate the `dridestatus` table
 		dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
@@ -293,6 +294,7 @@ public:
 		check(dridestatus_it->status == "online"_n, "driver is not online.");
 	}
 
+	// --------------------------------------------------------------------------------------------------------------------
 	static void check_fareamount( const asset& quantity ) {
 		check(quantity.is_valid(), "invalid quantity");
 		check(quantity.amount > 0, "must withdraw positive quantity");

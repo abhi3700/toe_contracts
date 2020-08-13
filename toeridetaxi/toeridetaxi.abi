@@ -98,6 +98,10 @@
                     "type": "checksum256"
                 },
                 {
+                    "name": "ridex_usagestatus_com",
+                    "type": "name"
+                },
+                {
                     "name": "fare_est",
                     "type": "float32"
                 },
@@ -145,6 +149,10 @@
                 },
                 {
                     "name": "pay_mode",
+                    "type": "name"
+                },
+                {
+                    "name": "ridex_usage_status",
                     "type": "name"
                 },
                 {
@@ -308,6 +316,14 @@
                     "type": "uint32"
                 },
                 {
+                    "name": "ridex_usagestatus_com",
+                    "type": "name"
+                },
+                {
+                    "name": "ridex_usagestatus_dri",
+                    "type": "name"
+                },
+                {
                     "name": "fare_est",
                     "type": "float32"
                 },
@@ -381,6 +397,10 @@
             "fields": [
                 {
                     "name": "driver_ac",
+                    "type": "name"
+                },
+                {
+                    "name": "ridex_usagestatus_dri",
                     "type": "name"
                 }
             ]

@@ -447,3 +447,10 @@ check(user_it->type != "driver"_n, "A driver can't request");
 	- via `addridequota` (as an inline action inside `toeridetaxi::finish` action) to `toeridex` contract
 
 * additional `ride_quota` gets increased only if the ride is marked __"complete"__ & the pay_mode chosen is __"crypto"__.
+* Fare disbursement to driver after finished ride:
+	- "fiatdigi": 25% commission
+	- "fiatcash": 25% commission
+	- "crypto": 25% commission
+	- "crypto" with RIDEX: 0% commission
+* Based on `ridex_userstatus_com` == 'y', outside SC, the fare_est would be surge-free.
+* Based on `ridex_userstatus_dri` == 'y', outside SC, the recv_fare_act would be commission-free.

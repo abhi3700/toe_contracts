@@ -59,8 +59,8 @@ void toeridetaxi::create(
 		|| (pay_mode == "fiatcash"_n)
 		, "Sorry! The payment mode is not compatible.");
 
-	check(ridex_usage_status.length() == 1, "RIDEX usage status must be of length 1.");
-	check((ridex_usage_status == "y"_n) || (ridex_usage_status == "n"_n), "RIDEX usage status must be either \'y\' or \'n\'.");
+	check(ridex_usagestatus_com.length() == 1, "RIDEX usage status must be of length 1.");
+	check((ridex_usagestatus_com == "y"_n) || (ridex_usagestatus_com == "n"_n), "RIDEX usage status must be either \'y\' or \'n\'.");
 
 	// check fareamount is valid for all conditions as 'asset'
 	check_fareamount(fare_crypto_est);
@@ -121,7 +121,7 @@ void toeridetaxi::create(
 			row.crypto_paystatus = "paidbycom"_n;
 		});
 
-		// if yes, deduct rides using consume_ride
+		// if yes, deduct rides using consume_ride in "crypto" pay_mode only
 		if(ridex_usagestatus_com == "y"_n) {
 			consume_ride(commuter_ac, "commuter"_n, 1);
 		}
@@ -326,6 +326,9 @@ void toeridetaxi::changedes( const name& commuter_ac,
 		(ride_it->des_lat_hash != des_lat_hash) || 
 		(ride_it->des_lon_hash != des_lon_hash), "Sorry, both modified latitude & longitude are same as its stored counterpart.");
 
+	check(ridex_usagestatus_com.length() == 1, "RIDEX usage status must be of length 1.");
+	check((ridex_usagestatus_com == "y"_n) || (ridex_usagestatus_com == "n"_n), "RIDEX usage status must be either \'y\' or \'n\'.");
+
 	// check fareamount is valid for all conditions as 'asset'
 	check_fareamount(fare_crypto_est);
 
@@ -347,30 +350,33 @@ void toeridetaxi::changedes( const name& commuter_ac,
 
 	check( wallet_it != ridewallet_table.end(), "Sorry! There is no amount transferred by " + commuter_ac.to_string() + "in the ride wallet.");
 
-	// Case-1: if the pay_mode is __"crypto"__ as previous:
-	// if pay_mode is 'crypto', ensure the fare_amount is present in the 'ridewallet' balance.
-	if((ride_it->pay_mode == "crypto"_n) && (pay_mode == "crypto"_n)) {
+	// 3 Cases considered: where, wallet balance check has to be done. Please ensure the fare_amount is present in the 'ridewallet' balance.
+	// Other Cases: Not considered inside Smart contract as the wallet exists outside Blockchain world.
+	if(
+		((ride_it->pay_mode == "crypto"_n) && (pay_mode == "crypto"_n)) ||			// Case-1: from "crypto" to "crypto"
+		((ride_it->pay_mode == "fiatdigi"_n) && (pay_mode == "crypto"_n)) ||		// Case-2: from "fiatdigi" to "crypto"
+		((ride_it->pay_mode == "fiatcash"_n) && (pay_mode == "crypto"_n))			// Case-3: from "fiatcash" to "crypto"
+	  ) 
+	{
 		// ensure that the ride wallet's min. balance has `fare_est` value
-		check( wallet_it->balance >= fare_crypto_est, "Sorry! Low balance in the ride wallet.");
+		check( wallet_it->balance >= fare_crypto_est, "Sorry! Low balance in the ride wallet. Please, transfer \'" + (fare_crypto_est - wallet_it->balance).to_string() + "\'.");
 
 		// if ( (wallet_it->balance) < fare_crypto_est) {
 		// 	send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
 		// 	return;
 		// }
+
+		// if yes, consume/restore rides based on different cases in "crypto" pay_mode only
+		if((ride_it->ridex_usagestatus_com == "y"_n) && (ridex_usagestatus_com == "n"_n)) {				// Case-1: from "y" to "n"
+			restore_ride(commuter_ac, "commuter"_n, 1);
+		} else if((ride_it->ridex_usagestatus_com == "n"_n) && (ridex_usagestatus_com == "y"_n)) {		// Case-2: from "n" to "y"
+			consume_ride(commuter_ac, "commuter"_n, 1);
+		}
+
+		// Case-3: from "y" to "y", Here, the ridex ride has already been deducted from `rexusrwallet` table in 'toeridetaxi::create' action. So, do nothing (consume/restore).
+		// Case-4: from "n" to "n", Here, the ridex ride was not at all deducted from `rexusrwallet` table in 'toeridetaxi::create' action. So, do nothing (consume/restore).
 	}
 
-	// Case-2 & Case-4: Not considered inside Smart contract as the wallet exists outside Blockchain world.
-
-	// Case-3: if the pay_mode is changed from __"fiatdigi"__ to __"crypto"__:
-	if((ride_it->pay_mode == "fiatdigi"_n) && (pay_mode == "crypto"_n)) {
-		// ensure that the ride wallet's min. balance has `fare_est` value
-		check( wallet_it->balance >= fare_crypto_est, "Sorry! Low balance in the ride wallet.");
-
-		// if ( (wallet_it->balance) < fare_crypto_est) {
-		// 	send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
-		// 	return;
-		// }
-	}
 
 	ridetaxi_table.modify(ride_it, commuter_ac, [&](auto& row) {
 		row.des_lat_hash = des_lat_hash;
@@ -386,10 +392,6 @@ void toeridetaxi::changedes( const name& commuter_ac,
 		row.ridex_usagestatus_com = ridex_usagestatus_com;
 	});
 
-	// if yes, deduct rides using consume_ride
-	if(ridex_usagestatus_com == "y"_n) {
-		consume_ride(commuter_ac, "commuter"_n, 1);
-	}
 
 	// On successful execution, an alert is sent
 	send_receipt(commuter_ac, commuter_ac.to_string() + " changes the destination location & the fare is updated to " + std::to_string(fare_est) + " INR & \'" + fare_crypto_est.to_string() + "\'.");
@@ -453,8 +455,8 @@ void toeridetaxi::start( const name& driver_ac,
 
 	});
 
-	// if yes, deduct rides using consume_ride
-	if(ridex_usagestatus_com == "y"_n) {
+	// if yes, consume rides using consume_ride only if pay_mode is "crypto"
+	if((ridex_usagestatus_dri == "y"_n) && (ride_it->pay_mode == "crypto"_n)) {
 		consume_ride(driver_ac, "driver"_n, 1);
 	}
 
@@ -580,12 +582,6 @@ void toeridetaxi::recvfare( const name& driver_ac,
 	// 	return;
 	// }
 
-	if(ride_it->ridex_usagestatus_dri == "y"_n) {
-		
-	} else if(ride_it->ridex_usagestatus_dri == "n"_n) {
-
-	}
-
 	disburse_fare(driver_ac, ride_it->commuter_ac, ride_it->fare_crypto_act, memo);
 
 	// change the crypto pay status to `paid`
@@ -672,7 +668,7 @@ void toeridetaxi::disburse_fare(const name& receiver_ac,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void consume_ride( const name& user,
+void toeridetaxi::consume_ride( const name& user,
 					const name& ride_type,
 					uint64_t ride_qty ) {
 	toeridex::consumeride_action consumeride(ridex_contract_ac, {get_self(), "active"_n});
@@ -681,7 +677,7 @@ void consume_ride( const name& user,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void restore_ride( const name& user,
+void toeridetaxi::restore_ride( const name& user,
 					const name& ride_type,
 					uint64_t ride_qty ) {
 	toeridex::restoreride_action restoreride(ridex_contract_ac, {get_self(), "active"_n});
