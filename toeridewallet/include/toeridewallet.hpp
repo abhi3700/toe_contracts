@@ -34,6 +34,9 @@ private:
 	const name token_contract_ac;
 	const name auth_contract_ac;
 	const name ride_contract_ac;
+	const name rides_fees_ac;
+	const float ride_commission_percent;
+
 
 public:
 	using contract::contract;
@@ -43,7 +46,9 @@ public:
 				ride_token_symbol("TOE", 4),
 				token_contract_ac("toe1111token"_n),
 				auth_contract_ac("toe1userauth"_n),
-				ride_contract_ac("toe1ridetaxi"_n) {}
+				ride_contract_ac("toe1ridetaxi"_n),
+				rides_fees_ac("toeridesfees"_n),
+				ride_commission_percent(0.25) {}
 
 
 	/**
@@ -160,6 +165,48 @@ private:
 						indexed_by<"bytype"_n, const_mem_fun<user, uint64_t, &user::get_secondary_1>>,
 						indexed_by<"bystatus"_n, const_mem_fun<user, uint64_t, &user::get_secondary_2>>
 						>;
+
+	// -----------------------------------------------------------------------------------------------------------------------
+	struct ridetaxi
+	{
+		name commuter_ac;
+		name ride_status;           // /requested/enroute/waiting/ontrip/complete
+		name driver_ac;
+		checksum256 src_lat_hash; 
+		checksum256 src_lon_hash; 
+		checksum256 des_lat_hash; 
+		checksum256 des_lon_hash;
+		name vehicle_type;      // list of taxis - toeauto, toemoto, toego, toegoexec, toepremier, toepremexec, toexl, toegointcity, toexlintcity
+		uint32_t seat_count;        // set for pool, else default is 2
+		name pay_mode;            // crypto or fiatdigi or fiatcash
+		name crypto_paystatus;          // paidbycom or paidtodri for "crypto"
+		name fiat_paystatus;          // paidbycom or paidtodri	for "fiatdigi"
+		uint32_t assign_timestamp;  // at which ride is assigned
+		uint32_t reachsrc_timestamp_est;    // at which driver is estimated to reach source location to pick-up
+		uint32_t reachsrc_timestamp_act;    // at which driver actually reached source location to pick-up
+		uint32_t start_timestamp;       // at which the ride is started
+		uint32_t finish_timestamp_act;      // at which the ride is finished
+		uint32_t finish_timestamp_est;      // at which the ride is estimated to finish
+		name ridex_usagestatus_com;					// "y"_n or "n"_n, only 1 ride is used by default.
+		name ridex_usagestatus_dri;					// "y"_n or "n"_n, only 1 ride is used by default.
+		float fare_est;			// estimated fare (in national curr)
+		float fare_act;			// actual fare (in national curr)
+		float market_price;		// market price during ride request
+		asset fare_crypto_est;			// estimated fare (in national curr) converted (outside blockchain interaction) to fare (in crypto) based on the market rate.
+		asset fare_crypto_act;			// actual fare (in national curr) converted (outside blockchain interaction) to fare (in crypto) based on the market rate.
+
+
+		auto primary_key() const { return commuter_ac.value; }
+		uint64_t get_secondary_1() const { return driver_ac.value; }
+		uint64_t get_secondary_2() const { return ride_status.value; }
+		uint64_t get_secondary_3() const { return vehicle_type.value; }
+	};
+
+	using ridetaxi_index = multi_index<"ridestaxi"_n, ridetaxi, 
+									indexed_by<"bydriver"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_1>>,
+									indexed_by<"byridestatus"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_2>>,
+									indexed_by<"byvehicltype"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_3>>
+									>;
 
 	// -----------------------------------------------------------------------------------------------------------------------
 	// Adding inline action for `sendalert` action in the same contract 

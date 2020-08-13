@@ -143,13 +143,48 @@ void toeridewallet::disburse(const name& receiver_ac,
 	// if the quantity is less than or equal to ride wallet balance
 	check(wallet_it->balance >= quantity, "amount to be disbursed is higher than the ridewallet balance of wallet holder: " + wallet_holder.to_string());
 	
-	// transfer disburse quantity from contract to the receiver account
-	action(
-		permission_level{get_self(), "active"_n},
-		token_contract_ac,
-		"transfer"_n,
-		std::make_tuple(get_self(), receiver_ac, quantity, "ridewallet disburses " + quantity.to_string() + " to \'" + receiver_ac.to_string() + "\'.")
-	).send();
+	// initialized the ride_fees
+	auto ride_fees = asset(0.0000, ride_token_symbol);
+	ride_fees.amount = ride_commission_percent * (quantity.amount);
+
+	// instantiate the ridetaxi table for reading the 'ridex_usagestatus_dri' field
+	ridetaxi_index ridetaxi_table(ride_contract_ac, ride_contract_ac.value);
+	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
+	auto ride_it = driver_idx.find(receiver_ac.value);
+
+	if(ride_it->ridex_usagestatus_dri == "y"_n) {
+		// transfer entire quantity from contract to the receiver account
+		action(
+			permission_level{get_self(), "active"_n},
+			token_contract_ac,
+			"transfer"_n,
+			std::make_tuple(get_self(), receiver_ac, quantity, "ridewallet disburses " + quantity.to_string() + " to \'" + receiver_ac.to_string() + "\'.")
+		).send();
+
+		send_alert( receiver_ac, receiver_ac.to_string() + " recieves " + (quantity-ride_fees).to_string() + " amount for purpose: " + memo );
+
+	} else if(ride_it->ridex_usagestatus_dri == "n"_n) {
+		// transfer remaining quantity from contract to the receiver account
+		action(
+			permission_level{get_self(), "active"_n},
+			token_contract_ac,
+			"transfer"_n,
+			std::make_tuple(get_self(), receiver_ac, quantity-ride_fees, "ridewallet disburses " + (quantity-ride_fees).to_string() + " to \'" + receiver_ac.to_string() + "\'.")
+		).send();
+
+		// transfer commission-fee quantity from contract to the toeridesfee account
+		action(
+			permission_level{get_self(), "active"_n},
+			token_contract_ac,
+			"transfer"_n,
+			std::make_tuple(get_self(), receiver_ac, ride_fees, "ridewallet disburses " + ride_fees.to_string() + " to \'" + rides_fees_ac.to_string() + "\'.")
+		).send();
+
+		send_alert( receiver_ac, receiver_ac.to_string() + " recieves " + (quantity-ride_fees).to_string() + " amount for purpose: " + memo );
+		send_alert( rides_fees_ac, rides_fees_ac.to_string() + " recieves " + ride_fees.to_string() + " amount for purpose: " + memo );
+	}
+
+
 
 	// update the previous balance with new balance after substraction
 	ridewallet_table.modify(wallet_it, get_self(), [&](auto& row) {
@@ -164,7 +199,6 @@ void toeridewallet::disburse(const name& receiver_ac,
 
 	// On execution, a receipt is sent
 	send_alert( wallet_holder, "ridewallet of \'" + wallet_holder.to_string() + "\' is deducted by " + quantity.to_string() + " amount." );
-	send_alert( receiver_ac, receiver_ac.to_string() + " recieves " + quantity.to_string() + " amount for purpose: " + memo );
 
 }
 // --------------------------------------------------------------------------------------------------------------------

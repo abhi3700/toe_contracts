@@ -216,3 +216,4 @@ $ cleost get table toe1111token toecom111111 accounts
 
 ## Notes
 * `disburse` action can be use only using the permission authority of `toeridetaxi` contract account. It is actually created to use as inline action inside `toeridetaxi` contract to make changes in the `toeridewallet`'s `ridewallet` table.
+* inside `disburse` action, in order to decide whether commission is to be deducted, a field called `ridex_usagestatus_dri` is to be read from `ridestaxi` table (of `toeridetaxi` contract).
