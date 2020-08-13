@@ -662,4 +662,5 @@ string country_id = "434731547311";
 2f01723e886ad39bc7cbf330faf131310f82392af082b1b0a0598ce1dd538cf7
 ```
 
-
+## TODO
+* [ ] how to ensure a unique id creation if the validator wants to register as commuter. This is because a validator also wants to use TOE as ride-sharing platform.
