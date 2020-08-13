@@ -40,6 +40,42 @@
             ]
         },
         {
+            "name": "consumeride",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_type",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_qty",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "restoreride",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_type",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_qty",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
             "name": "rexuseraccnt",
             "base": "",
             "fields": [
@@ -165,6 +201,16 @@
         {
             "name": "buyride",
             "type": "buyride",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "consumeride",
+            "type": "consumeride",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "restoreride",
+            "type": "restoreride",
             "ricardian_contract": ""
         },
         {

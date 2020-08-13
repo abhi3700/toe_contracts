@@ -408,7 +408,19 @@ $ cleost get table toe1111ridex toedri111111 rexuseraccnt
 * ride price is regulated by Bancor algorithm, which deduces the price automatically w.r.t to available supply of __TOE__ token, __RIDE__ (in no.)  
 * Here, before any action is requested, the user has to be checked if it is a verified one.
 * Here, `toeridex` contract account is connected via `addridequota` action with `toeridetaxi` contract.
-* For different purposes the tokens are sent to the contract by the
+* For 3 different purposes the tokens are sent to the contract by the
 	- __token_issuer__ (for initializing RIDEX for __"driver"__ ride type)
 	- __token_issuer__ (for initializing RIDEX for __"commuter"__ ride type), 
-	- buyer (for buying ride), 
+	- buyer (for buying ride),
+* Action - `consumeride` for:
+	- Only 1 ride can be consumed.
+	- the ride can only be consumed by __commuter__ or __driver__.
+	- As the fare is calculated outside SC, so the __commuter__ can consume ride at 2 stages:
+		+ before requesting ride,
+		+ before change destination
+	- __driver__ can consume ride before starting ride.
+* Action - `restoreride`:
+	- Only 1 ride can be restored.
+	- the ride can only be restored by __commuter__.
+	- As the fare is calculated outside SC, so the __commuter__ can restore ride at 1 stage:
+		+ before change destination (if happens)

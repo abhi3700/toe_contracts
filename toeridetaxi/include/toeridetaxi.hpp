@@ -59,6 +59,7 @@ public:
 	 * @param des_lon_hash - destination longitude hash
 	 * @param vehicle_type - it has to be among the defined list of taxi names - toex, toexl, toepool, toesuv, toeblack, toeselect, toeexprpool
 	 * @param pay_mode - either crypto/fiatdigi/fiatcash
+	 * @param ridex_usagestatus_com - 'y' or 'n' 
 	 * @param fare_est - estimated fare (in fiat curr) to be calculated from calling API before calling the action
 	 * @param fare_crypto_est - estimated fare (in crypto curr) to be calculated from calling API before calling the action
 	 * @param finish_timestamp_est - estimated finish timestamp to be calculated from calling API before calling the action
@@ -72,6 +73,7 @@ public:
 					checksum256 des_lon_hash,
 					const name& vehicle_type,
 					const name& pay_mode,
+					const name& ridex_usage_status,
 					float fare_est,
 					float market_price,
 					const asset& fare_crypto_est,
@@ -156,6 +158,7 @@ public:
 	 * @param commuter_ac - commuter account
 	 * @param des_lat - destination latitude
 	 * @param des_lon - destination longitude
+	 * @param ridex_usagestatus_com - 'y' or 'n' 
 	 * @param fare_est - estimated fare (in fiat curr)
 	 * @param fare_crypto_est - estimated fare (in crypto curr)
 	 * @param memo - the memo string to change destination
@@ -163,6 +166,7 @@ public:
 	ACTION changedes( const name& commuter_ac,
 						checksum256 des_lat_hash, 
 						checksum256 des_lon_hash,
+						const name& ridex_usagestatus_com,
 						float fare_est,
 						const asset& fare_crypto_est,
 						const name& pay_mode,
@@ -183,8 +187,10 @@ public:
 	 *      - change ride_status (enroute --> ontrip)
 	 * 
 	 * @param driver_ac - driver account
+	 * @param ridex_usagestatus_dri - 'y' or 'n'
 	 */
-	ACTION start( const name& driver_ac );
+	ACTION start( const name& driver_ac, 
+					const name& ridex_usagestatus_dri );
 
 	/**
 	 * @brief - finish ride
@@ -315,6 +321,8 @@ private:
 		uint32_t start_timestamp;       // at which the ride is started
 		uint32_t finish_timestamp_act;      // at which the ride is finished
 		uint32_t finish_timestamp_est;      // at which the ride is estimated to finish
+		name ridex_usagestatus_com;					// "y"_n or "n"_n, only 1 ride is used by default.
+		name ridex_usagestatus_dri;					// "y"_n or "n"_n, only 1 ride is used by default.
 		float fare_est;			// estimated fare (in national curr)
 		float fare_act;			// actual fare (in national curr)
 		float market_price;		// market price during ride request
@@ -396,6 +404,16 @@ private:
 						const name& wallet_holder,
 						const asset& quantity,
 						const string& memo );
+
+	// Adding inline action for `consumeride` action in the ridex contract   
+	void consume_ride( const name& user,
+						const name& ride_type,
+						uint64_t ride_qty );
+
+	// Adding inline action for `restoreride` action in the ridex contract   
+	void restore_ride( const name& user,
+						const name& ride_type,
+						uint64_t ride_qty );
 
 	// Adding inline action for `addridequota` action in the ridex contract   
 	void add_ridequota(const name& type, 

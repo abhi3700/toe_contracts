@@ -426,6 +426,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ```
 
 ## TODO
+* [ ] add commission for driver on disburse payment or else use ridex rides for commission-free. 
 * [ ] check for type - commuter/driver along with user being verified
 ```cpp
 check((user_it->type == "commuter"_n) || (user_it->type == "validator"_n), "Either commuter/validator can request");

@@ -11,6 +11,7 @@ void toeridetaxi::create(
 	checksum256 des_lon_hash,
 	const name& vehicle_type,
 	const name& pay_mode,
+	const name& ridex_usagestatus_com,
 	float fare_est,
 	float market_price,
 	const asset& fare_crypto_est,
@@ -57,6 +58,9 @@ void toeridetaxi::create(
 		|| (pay_mode == "fiatdigi"_n)
 		|| (pay_mode == "fiatcash"_n)
 		, "Sorry! The payment mode is not compatible.");
+
+	check(ridex_usage_status.length() == 1, "RIDEX usage status must be of length 1.");
+	check((ridex_usage_status == "y"_n) || (ridex_usage_status == "n"_n), "RIDEX usage status must be either \'y\' or \'n\'.");
 
 	// check fareamount is valid for all conditions as 'asset'
 	check_fareamount(fare_crypto_est);
@@ -106,7 +110,8 @@ void toeridetaxi::create(
 			row.des_lon_hash = des_lon_hash;
 			row.vehicle_type = vehicle_type;
 			row.seat_count = seat_count;
-			row.pay_mode = pay_mode,
+			row.pay_mode = pay_mode;
+			row.ridex_usagestatus_com = ridex_usagestatus_com;
 			row.fare_est = fare_est;
 			row.market_price = market_price;
 			row.fare_crypto_est = fare_crypto_est;
@@ -115,6 +120,11 @@ void toeridetaxi::create(
 			// set only for __"crypto"__ pay_mode
 			row.crypto_paystatus = "paidbycom"_n;
 		});
+
+		// if yes, deduct rides using consume_ride
+		if(ridex_usagestatus_com == "y"_n) {
+			consume_ride(commuter_ac, "commuter"_n, 1);
+		}
 	 }
 	// add the ride details by commuter for __"non-crypto"__ pay_mode
 	else {
@@ -294,6 +304,7 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 void toeridetaxi::changedes( const name& commuter_ac,
 					checksum256 des_lat_hash, 
 					checksum256 des_lon_hash,
+					const name& ridex_usagestatus_com,
 					float fare_est,
 					const asset& fare_crypto_est,
 					const name& pay_mode,
@@ -371,7 +382,14 @@ void toeridetaxi::changedes( const name& commuter_ac,
 		if (pay_mode == "crypto"_n) {
 			row.crypto_paystatus = "paidbycom"_n;
 		}
+
+		row.ridex_usagestatus_com = ridex_usagestatus_com;
 	});
+
+	// if yes, deduct rides using consume_ride
+	if(ridex_usagestatus_com == "y"_n) {
+		consume_ride(commuter_ac, "commuter"_n, 1);
+	}
 
 	// On successful execution, an alert is sent
 	send_receipt(commuter_ac, commuter_ac.to_string() + " changes the destination location & the fare is updated to " + std::to_string(fare_est) + " INR & \'" + fare_crypto_est.to_string() + "\'.");
@@ -411,7 +429,8 @@ void toeridetaxi::reachsrc( const name& driver_ac ) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::start( const name& driver_ac ) {
+void toeridetaxi::start( const name& driver_ac, 
+						const name& ridex_usagestatus_dri ) {
 	require_auth( driver_ac ); 
 
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
@@ -430,8 +449,14 @@ void toeridetaxi::start( const name& driver_ac ) {
 	driver_idx.modify(ride_it, driver_ac, [&](auto& row) {
 		row.ride_status = "ontrip"_n;
 		row.start_timestamp = now();
+		row.ridex_usagestatus_dri = ridex_usagestatus_dri;
 
 	});
+
+	// if yes, deduct rides using consume_ride
+	if(ridex_usagestatus_com == "y"_n) {
+		consume_ride(driver_ac, "driver"_n, 1);
+	}
 
 	// On successful execution, an alert is sent
 	send_receipt(driver_ac, driver_ac.to_string() + " starts the ride.");
@@ -555,6 +580,12 @@ void toeridetaxi::recvfare( const name& driver_ac,
 	// 	return;
 	// }
 
+	if(ride_it->ridex_usagestatus_dri == "y"_n) {
+		
+	} else if(ride_it->ridex_usagestatus_dri == "n"_n) {
+
+	}
+
 	disburse_fare(driver_ac, ride_it->commuter_ac, ride_it->fare_crypto_act, memo);
 
 	// change the crypto pay status to `paid`
@@ -640,6 +671,24 @@ void toeridetaxi::disburse_fare(const name& receiver_ac,
 	disburse.send(receiver_ac, wallet_holder, quantity, memo);
 }
 
+// --------------------------------------------------------------------------------------------------------------------
+void consume_ride( const name& user,
+					const name& ride_type,
+					uint64_t ride_qty ) {
+	toeridex::consumeride_action consumeride(ridex_contract_ac, {get_self(), "active"_n});
+	consumeride.send(user, ride_type, ride_qty);
+
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+void restore_ride( const name& user,
+					const name& ride_type,
+					uint64_t ride_qty ) {
+	toeridex::restoreride_action restoreride(ridex_contract_ac, {get_self(), "active"_n});
+	restoreride.send(user, ride_type, ride_qty);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::add_ridequota(const name& type, 
 								uint64_t ride_qty ) {
 	toeridex::addridequota_action addridequota(ridex_contract_ac, {get_self(), "active"_n});

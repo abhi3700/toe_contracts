@@ -21,7 +21,7 @@ The main contracts for CabEOS are as follows:
 ### Others
 * `bhubtoeindia`: Block.Hub TOE India (Token issuer)
 * `bhubtoeinval`: Block.Hub TOE India Validator (by Company)
-* `toeridexsupp`: TOE RIDEX Supply
+* ~~`toeridexsupp`: TOE RIDEX Supply~~
 * `toeridexfees`: TOE RIDEX Fees
 * `toe11rreward`: TOE Ride Reward
 
@@ -265,6 +265,10 @@ rides --> no. of available rides (commission-free/surge-free) to the driver/comm
 			- For this, we can use `eos-api` codebase & market API inside the action.
 		+ Q. Should the __fare_crypto_est__/__fare_crypto_est__ converted from __fare_est__/__fare_act__ be at Market price during __ride_request__ or __finish_ride__?
 			- Need to be voted out for this decision. Most probably, we should go with __ride_request__. Or else, it's left with the community.
+* A person can have more than one accounts. E.g. A __"validator"__ if wants to make ride, they can by creating a separate eosio account. But voting will be considered only for one account i.e. corresponding to profile hash.
+* In Govern contract, the user types (driver/commuter/validator) will be eligible for different agenda.
+	- E.g. For agenda-1, the voters eligible are driver/commuter.
+	- E.g. For agenda-2, the voters eligible are commuter/validator. 
 
 * References
 	- [Anonymous Voting on Blockchain by cc32d9](https://github.com/cc32d9/cc32d9_ideas_for_EOSIO/blob/master/Anonymous_Voting_on_Blockchain.md)

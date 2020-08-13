@@ -110,6 +110,49 @@ public:
 					uint64_t ride_qty,
 					const string& memo);
 
+
+	/**
+	 * @brief - use ride
+	 * @details - use ride at 2 stages:
+	 * 				+ create
+	 * 				+ changedes
+	 * 
+	 * @param user - commuter or driver
+	 * @param ride_type - commuter or driver
+	 * @param ride_qty - should be 1
+	 */
+	ACTION consumeride( const name& user,
+						const name& ride_type,
+						uint64_t ride_qty );
+
+	/**
+	 * @brief - restore ride
+	 * @details - use ride at 1 stage:
+	 * 				+ changedes
+	 * 
+	 * @param user - commuter or driver
+	 * @param ride_type - commuter or driver
+	 * @param ride_qty - should be 1
+	 */
+	ACTION restoreride( const name& user,
+						const name& ride_type,
+						uint64_t ride_qty );
+
+	/**
+	 * @brief - transfer RIDEX asset i.e. rides
+	 * @details - transfer RIDEX asset i.e. rides from one account to another. 
+	 * 			- only accessed by validators also holding account as commuter.
+	 * 
+	 * @param sender - sender
+	 * @param receiver - receiver
+	 * @param ride_type - "driver" or "commuter"
+	 * @param ride_qty - can be any no. but <= ride_limit of sender
+	 */
+/*	ACTION transferidex( const name& sender,
+							const name& receiver,
+							const name& ride_type,
+							uint64_t ride_qty);
+*/
 	/**
 	 * @brief - on finishing a ride with __"crypto"__ pay_mode, the ride quota gets added
 	 * @details - the ride quota gets added on finishing a ride from toeridetaxi contract for __"crypto"__ pay_mode
@@ -158,6 +201,7 @@ public:
 	ACTION sendreceipt( const name& user,
 						const string& message);
 
+	// --------------------------------------------------------------------------------
 	static void check_buyer_seller( const name& user, const name& ride_type) {
 		// check the buyer/seller is enlisted in the `toeuserauth` contract table
 		user_index user_table("toe1userauth"_n, user.value);
@@ -191,6 +235,8 @@ public:
 		check(quantity.symbol == symbol("TOE", 4), "symbol precision mismatch");
 	}
 
+	using consumeride_action  = action_wrapper<"consumeride"_n, &toeridex::consumeride>;
+	using restoreride_action  = action_wrapper<"restoreride"_n, &toeridex::restoreride>;
 	using addridequota_action  = action_wrapper<"addridequota"_n, &toeridex::addridequota>;
 
 	// ACTION delruwallet(const name& user)

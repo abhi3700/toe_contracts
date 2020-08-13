@@ -280,6 +280,137 @@ void toeridex::sellride( const name& seller,
 	send_receipt(seller, "You sold " + std::to_string(ride_qty) + " rides for \'" + ride_expenditure.to_string() + "\' amount");
 
 }
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridex::consumeride( const name& user,
+							const name& ride_type,
+							uint64_t ride_qty )
+{
+	// Authority by toeridetaxi
+	require_auth(ride_contract_ac);
+	// has_auth()		// for accessing by other ride contracts - bus, metro,..
+
+	// check user is a verified one
+	user_index user_table(auth_contract_ac, user.value);
+	auto user_it = user_table.find(user.value);
+
+	check(user_it != user_table.end(), "Sorry! The user is not registered with us.");
+	check(user_it->user_status == "verified"_n, "Sorry! The user is not yet verified.");
+
+	// Only accessed by "driver" or "commuter"
+	check((user_it->type == "driver"_n) || (user_it->type == "commuter"_n), "Other types are not allowed for this action");
+
+	// check ride_type
+	check((ride_type == "driver"_n) || (ride_type == "commuter"_n), "Other ride type is not eligible for this action." );
+
+	// check ride quantity == 1
+	check(ride_qty == 1, "Ride quantity must be one.");
+
+	// instantiate the rexuseraccnt table
+	rexuseraccnt_index rexuseraccnt_table(get_self(), user.value);
+	auto rexuseraccnt_it = rexuseraccnt_table.find(ride_type.value);
+
+	// check if the ride_qty exists
+	check(rexuseraccnt_it != rexuseraccnt_table.end(), "Sorry! There is no ride to consume.");
+	check(rexuseraccnt_it->rides_limit >= ride_qty, "The rides_limit must have min. value as ride_qty: " + std::to_string(ride_qty));
+
+	// deduct ride_qty to the ridexaccount table	
+	rexuseraccnt_table.modify(rexuseraccnt_it, user, [&](auto& row){
+		row.rides_limit -= ride_qty;
+	});
+
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridex::restoreride( const name& user,
+							const name& ride_type,
+							uint64_t ride_qty )
+{
+	// Authority by toeridetaxi
+	require_auth(ride_contract_ac);
+	// has_auth()		// for accessing by other ride contracts - bus, metro,..
+
+	// check user is a verified one
+	user_index user_table(auth_contract_ac, user.value);
+	auto user_it = user_table.find(user.value);
+
+	check(user_it != user_table.end(), "Sorry! The user is not registered with us.");
+	check(user_it->user_status == "verified"_n, "Sorry! The user is not yet verified.");
+	
+	// Only accessed by "driver" or "commuter"
+	check(user_it->type == "commuter"_n, "Other types are not allowed for this action");
+
+	// check ride_type is commuter only, if accessed only by commuter
+	check(ride_type == "commuter"_n, "Other ride type is not eligible for this action." );
+
+	// check ride quantity == 1
+	check(ride_qty == 1, "Ride quantity must be one.");
+
+	// instantiate the rexuseraccnt table
+	rexuseraccnt_index rexuseraccnt_table(get_self(), user.value);
+	auto rexuseraccnt_it = rexuseraccnt_table.find(ride_type.value);
+
+	// check if the ride_qty exists
+	check(rexuseraccnt_it != rexuseraccnt_table.end(), "Sorry! There is no ride to consume.");
+
+	// add ride_qty to the ridexaccount table	
+	rexuseraccnt_table.modify(rexuseraccnt_it, user, [&](auto& row){
+		row.rides_limit += ride_qty;
+	});
+
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+// void toeridex::transferidex( const name& sender,
+// 							const name& receiver,
+// 							const name& ride_type,
+// 							uint64_t ride_qty)
+// {
+// 	// Authority by sender of validator type
+// 	require_auth(sender);
+
+// 	// check sender != receiver
+// 	check(sender != receiver, "sender & receiver must be different");
+
+// 	// check sender & receiver is a verified one
+// 	user_index sender_table(auth_contract_ac, sender.value);
+// 	auto sender_it = sender_table.find(sender.value);
+
+// 	check(sender_it != sender_table.end(), "Sorry! The sender is not registered with us.");
+// 	check(sender_it->user_status == "verified"_n, "Sorry! The sender is not yet verified.");
+	
+// 	// Only accessed by "validator"
+// 	check(sender_it->type == "validator"_n, "Sender must be a validator for this action");
+
+// 	// check ride_type is commuter only, if accessed only by validator
+// 	check(ride_type == "commuter"_n, "Other ride type is not eligible for this action." );
+
+// 	// check ride quantity == 1
+// 	check(ride_qty == 1, "Ride quantity must be one.");
+
+// 	// instantiate the rexuseraccnt table
+// 	rexuseraccnt_index rexsenderaccnt_table(get_self(), sender.value);
+// 	auto rexsenderaccnt_it = rexsenderaccnt_table.find(ride_type.value);
+
+// 	// check if the ride_qty exists
+// 	check(rexsenderaccnt_it != rexsenderaccnt_table.end(), "Sorry! There is no ride to transfer.");
+
+// 	// add ride_qty to the ridexaccount table	
+// 	rexsenderaccnt_table.modify(rexsenderaccnt_it, sender, [&](auto& row){
+// 		row.rides_limit -= ride_qty;
+// 	});
+
+// 	// instantiate the rexuseraccnt table
+// 	rexuseraccnt_index rexuseraccnt_table(get_self(), seller.value);
+// 	auto rexuseraccnt_it = rexuseraccnt_table.find(ride_type.value);
+
+// 	// check if the ride_qty < ride_limit of seller
+// 	check(rexuseraccnt_it != rexuseraccnt_table.end(), "Sorry! There is no ride to sell.");
+// 	check(ride_qty <= rexuseraccnt_it->rides_limit, "The ride no. asked, is more than the seller's limit");
+
+// }
+
+
 // --------------------------------------------------------------------------------------------------------------------
 void toeridex::addridequota(const name& ride_type,
 							uint64_t ride_qty )
