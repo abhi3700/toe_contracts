@@ -256,6 +256,10 @@
                     "type": "name"
                 },
                 {
+                    "name": "ride_id",
+                    "type": "checksum256"
+                },
+                {
                     "name": "src_lat_hash",
                     "type": "checksum256"
                 },
@@ -292,6 +296,10 @@
                     "type": "name"
                 },
                 {
+                    "name": "create_timestamp",
+                    "type": "uint32"
+                },
+                {
                     "name": "assign_timestamp",
                     "type": "uint32"
                 },
@@ -304,7 +312,15 @@
                     "type": "uint32"
                 },
                 {
+                    "name": "cancel_timestamp",
+                    "type": "uint32"
+                },
+                {
                     "name": "start_timestamp",
+                    "type": "uint32"
+                },
+                {
+                    "name": "changedes_timestamp",
                     "type": "uint32"
                 },
                 {

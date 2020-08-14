@@ -22,6 +22,7 @@ using eosio::symbol;
 using eosio::require_recipient;
 using eosio::action_wrapper;
 using eosio::checksum256;
+using eosio::sha256;
 
 using std::string;
 
@@ -308,6 +309,7 @@ private:
 		name commuter_ac;
 		name ride_status;           // /requested/enroute/waiting/ontrip/complete
 		name driver_ac;
+		checksum256 ride_id;		// a unique id of the ride. Used for rating in `userauth` table in toeuserauth contract
 		checksum256 src_lat_hash; 
 		checksum256 src_lon_hash; 
 		checksum256 des_lat_hash; 
@@ -317,10 +319,13 @@ private:
 		name pay_mode;            // crypto or fiatdigi or fiatcash
 		name crypto_paystatus;          // paidbycom or paidtodri for "crypto"
 		name fiat_paystatus;          // paidbycom or paidtodri	for "fiatdigi"
-		uint32_t assign_timestamp;  // at which ride is assigned
+		uint32_t create_timestamp;			// at which ride is created
+		uint32_t assign_timestamp;  		// at which ride is assigned
 		uint32_t reachsrc_timestamp_est;    // at which driver is estimated to reach source location to pick-up
 		uint32_t reachsrc_timestamp_act;    // at which driver actually reached source location to pick-up
+		uint32_t cancel_timestamp;
 		uint32_t start_timestamp;       // at which the ride is started
+		uint32_t changedes_timestamp;		// at which commuter changes destination(s). It can be multiple. So, if > 1, then shown timestamp will be the last changedes.
 		uint32_t finish_timestamp_act;      // at which the ride is finished
 		uint32_t finish_timestamp_est;      // at which the ride is estimated to finish
 		name ridex_usagestatus_com;					// "y"_n or "n"_n, only 1 ride is used by default.
@@ -399,6 +404,18 @@ private:
 	// get the current timestamp
 	inline uint32_t now() const {
 		return current_time_point().sec_since_epoch();
+	}
+
+	// get the sha256 hash digest/checksum
+	inline checksum256 hash_digest_256(const name& commuter_ac,
+										uint32_t create_timestamp)
+	{
+		string data_str_cpp = commuter_ac.to_string() + std::to_string(create_timestamp);
+		const char * data_str_c = data_str_cpp.c_str(); 
+
+		auto hash_digest = sha256(data_str_c, strlen(data_str_c));
+
+		return hash_digest;
 	}
 
 	// Adding inline action for `disburse` action in the ridewallet contract   

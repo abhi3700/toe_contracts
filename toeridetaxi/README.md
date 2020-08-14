@@ -454,3 +454,5 @@ check(user_it->type != "driver"_n, "A driver can't request");
 	- "crypto" with RIDEX: 0% commission
 * Based on `ridex_userstatus_com` == 'y', outside SC, the fare_est would be surge-free.
 * Based on `ridex_userstatus_dri` == 'y', outside SC, the recv_fare_act would be commission-free.
+*	Anything stored back into server:
+	- after erase action (called after `cancel` or `addfareact` or `recvfare`)

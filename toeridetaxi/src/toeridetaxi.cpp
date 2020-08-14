@@ -104,6 +104,7 @@ void toeridetaxi::create(
 		ridetaxi_table.emplace(commuter_ac, [&]( auto& row ) {
 			row.commuter_ac = commuter_ac;
 			row.ride_status = "requested"_n;
+			row.ride_id = hash_digest_256(commuter_ac, now());
 			row.src_lat_hash = src_lat_hash;
 			row.src_lon_hash = src_lon_hash;
 			row.des_lat_hash = des_lat_hash;
@@ -116,6 +117,7 @@ void toeridetaxi::create(
 			row.market_price = market_price;
 			row.fare_crypto_est = fare_crypto_est;
 			row.finish_timestamp_est = finish_timestamp_est;
+			row.create_timestamp = now();
 			
 			// set only for __"crypto"__ pay_mode
 			row.crypto_paystatus = "paidbycom"_n;
@@ -135,6 +137,7 @@ void toeridetaxi::create(
 		ridetaxi_table.modify(ride_it, commuter_ac, [&]( auto& row ) {
 			row.commuter_ac = commuter_ac;
 			row.ride_status = "requested"_n;
+			row.ride_id = hash_digest_256(commuter_ac, now());
 			row.src_lat_hash = src_lat_hash;
 			row.src_lon_hash = src_lon_hash;
 			row.des_lat_hash = des_lat_hash;
@@ -146,6 +149,7 @@ void toeridetaxi::create(
 			row.market_price = market_price;
 			row.fare_crypto_est = fare_crypto_est;
 			row.finish_timestamp_est = finish_timestamp_est;
+			row.create_timestamp = now();
 
 			// pay_mode already set during `setfiatpayst` action. So, not needed
 		});
@@ -261,7 +265,10 @@ void toeridetaxi::cancelbycom( const name& commuter_ac,
 		(ride_it->ride_status == "waiting"_n)
 		, "The ride status must be either \'requested\' or \'enroute\' or \'waiting\' in order to cancel ride by commuter.");
 
-	ridetaxi_table.erase(ride_it);
+	ridetaxi_table.modify(ride_it, commuter_ac, [&](auto& row){
+		row.ride_status = "cancelledcom"_n;
+		row.cancel_timestamp = now();
+	});
 
 	// On successful execution, an alert is sent
 	send_receipt(commuter_ac, commuter_ac.to_string() + " cancels the ride.");
@@ -291,7 +298,10 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 		(ride_it->ride_status == "waiting"_n)
 		, "The ride status must be either \'requested\' or \'enroute\' or \'waiting\' in order to cancel ride by driver.");
 
-	driver_idx.erase(ride_it);
+	driver_idx.modify(ride_it, driver_ac, [&](auto& row){
+		row.ride_status = "cancelleddri"_n;
+		row.cancel_timestamp = now();
+	});
 
 	// On successful execution, a receipt is sent
 	send_receipt(driver_ac, driver_ac.to_string() + " cancels the ride.");
