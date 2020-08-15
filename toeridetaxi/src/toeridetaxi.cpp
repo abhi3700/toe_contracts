@@ -5,10 +5,10 @@
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::create(
 	const name& commuter_ac,
-	checksum256 src_lat_hash, 
-	checksum256 src_lon_hash, 
-	checksum256 des_lat_hash, 
-	checksum256 des_lon_hash,
+	string src_lat_hash, 
+	string src_lon_hash, 
+	string des_lat_hash, 
+	string des_lon_hash,
 	const name& vehicle_type,
 	const name& pay_mode,
 	const name& ridex_usagestatus_com,
@@ -104,7 +104,7 @@ void toeridetaxi::create(
 		ridetaxi_table.emplace(commuter_ac, [&]( auto& row ) {
 			row.commuter_ac = commuter_ac;
 			row.ride_status = "requested"_n;
-			row.ride_id = hash_digest_256(commuter_ac, now());
+			row.ride_id = hash_str_256(commuter_ac, now());
 			row.src_lat_hash = src_lat_hash;
 			row.src_lon_hash = src_lon_hash;
 			row.des_lat_hash = des_lat_hash;
@@ -137,7 +137,7 @@ void toeridetaxi::create(
 		ridetaxi_table.modify(ride_it, commuter_ac, [&]( auto& row ) {
 			row.commuter_ac = commuter_ac;
 			row.ride_status = "requested"_n;
-			row.ride_id = hash_digest_256(commuter_ac, now());
+			row.ride_id = hash_str_256(commuter_ac, now());
 			row.src_lat_hash = src_lat_hash;
 			row.src_lon_hash = src_lon_hash;
 			row.des_lat_hash = des_lat_hash;
@@ -218,8 +218,12 @@ void toeridetaxi::assign( const name& driver_ac,
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
 	check_userauth(driver_ac, "driver"_n);
 
-	// check if the driver is online
-	check_dridestatus(driver_ac);
+	//instantiate the `dridestatus` table
+	dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
+	auto dridestatus_it = dridestatus_table.find("online"_n.value);
+
+	// check the driver is online
+	check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present in the table & ofcourse is not \'online\' as well.");
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -236,6 +240,11 @@ void toeridetaxi::assign( const name& driver_ac,
 		row.assign_timestamp = now();
 		row.ride_status = "enroute"_n;
 		row.reachsrc_timestamp_est = reachsrc_timestamp_est;
+	});
+
+	// change the driver status as "assigned"
+	dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
+		row.status = "assigned"_n;
 	});
 
 	// On successful execution, an alert is sent
@@ -284,6 +293,13 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
 	check_userauth(driver_ac, "driver"_n);
 
+	//instantiate the `dridestatus` table
+	dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
+	auto dridestatus_it = dridestatus_table.find("assigned"_n.value);
+
+	// check the driver is "assigned"
+	check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present in the table & ofcourse is not \'assigned\' as well.");
+
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `ride` table
@@ -303,6 +319,12 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 		row.cancel_timestamp = now();
 	});
 
+
+	// change the driver status from "assigned" to "online" back
+	dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
+		row.status = "online"_n;
+	});
+
 	// On successful execution, a receipt is sent
 	send_receipt(driver_ac, driver_ac.to_string() + " cancels the ride.");
 	// On successful execution, an alert is sent
@@ -312,8 +334,8 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::changedes( const name& commuter_ac,
-					checksum256 des_lat_hash, 
-					checksum256 des_lon_hash,
+					string des_lat_hash, 
+					string des_lon_hash,
 					const name& ridex_usagestatus_com,
 					float fare_est,
 					const asset& fare_crypto_est,
@@ -523,7 +545,14 @@ void toeridetaxi::addfareact( const name& driver_ac,
 	// check fareamount is valid for all conditions as 'asset'
 	check_fareamount(fare_crypto_act);
 
-	// instantiate the `ride` table
+/*	//instantiate the `dridestatus` table
+	dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
+	auto dridestatus_it = dridestatus_table.find("assigned"_n.value);
+
+	// check the driver is "assigned"
+	check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present in the table & ofcourse is not \'assigned\' as well.");
+
+*/	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
 	auto ride_it = driver_idx.find(driver_ac.value);
@@ -539,6 +568,11 @@ void toeridetaxi::addfareact( const name& driver_ac,
 		row.fare_crypto_act = fare_crypto_act;
 	});
 
+/*	// change the driver status from "assigned" to "online" back
+	dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
+		row.status = "online"_n;
+	});
+*/
 	// On successful execution, an alert is sent
 	send_receipt(driver_ac, driver_ac.to_string() + " adds the actual fare in INR & TOE");
 	send_alert(ride_it->commuter_ac, 
@@ -601,18 +635,21 @@ void toeridetaxi::recvfare( const name& driver_ac,
 
 }
 
+// void toeridetaxi::addratingdri()
+
+// --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::addristatus( const name& driver_ac,
 								const name& status )
 {
 	require_auth(driver_ac);
 
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
-	// check whether the `driver_ac` is a verified driver by reading the `auth` table
 	check_userauth(driver_ac, "driver"_n);
 
-	// check the status is either online/offline
-	check( (status == "online"_n) || (status == "offline"_n), "status must be either online/offline.");
+	// check the status is either online/offline/assigned
+	check( (status == "online"_n) || (status == "offline"_n) || (status == "assigned"_n), "status must be either online/offline.");
 
+	// instantiate the `dridestatus` table
 	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
 	auto dridestatus_it = dridestatus_table.find(status.value);
 
@@ -627,6 +664,102 @@ void toeridetaxi::addristatus( const name& driver_ac,
 	}
 }
 
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::setrtststamp( const name& action, 
+								uint32_t wait_time )
+{
+	// authority by the contract
+	require_auth(get_self());
+
+	// instantiate the fuelprice table
+	rtststamp_index rtststamp_table(get_self(), action.value); 
+	auto rtststamp_it = rtststamp_table.find(action.value);
+
+	if(rtststamp_it == rtststamp_table.end()) {
+		rtststamp_table.emplace(get_self(), [&](auto& row){
+			row.action = action;
+			row.wait_time = wait_time;
+		});
+	} else {
+		rtststamp_table.modify(rtststamp_it, get_self(), [&](auto& row){
+			row.wait_time = wait_time;
+		});
+	}
+}	
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::setrtsfuelpr( const name& fiat_currency,
+									const name& fuel_unit, 
+									float fuel_price_petrol,
+									float fuel_price_diesel )
+{
+	// authority by the contract
+	require_auth(get_self());
+
+	// instantiate the fuelprice table
+	rtsfuelprice_index rtsfuelprice_table(get_self(), fiat_currency.value); 
+	auto rtsfuelprice_it = rtsfuelprice_table.find(fiat_currency.value);
+
+	if(rtsfuelprice_it == rtsfuelprice_table.end()) {
+		rtsfuelprice_table.emplace(get_self(), [&](auto& row){
+			row.fiat_currency = fiat_currency;
+			row.fuel_unit = fuel_unit;
+			row.fuel_price_petrol = fuel_price_petrol;
+			row.fuel_price_diesel = fuel_price_diesel;
+		});
+	} else {
+		rtsfuelprice_table.modify(rtsfuelprice_it, get_self(), [&](auto& row){
+			row.fuel_unit = fuel_unit;
+			row.fuel_price_petrol = fuel_price_petrol;
+			row.fuel_price_diesel = fuel_price_diesel;
+		});
+	}
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::erase( const name& commuter_ac,
+								const string& memo ) {
+	require_auth( get_self() );
+
+	check(memo.size() <= 256, "memo has more than 256 bytes");
+
+	// instantiate the `ride` table
+	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
+	auto ride_it = ridetaxi_table.find(commuter_ac.value);
+
+	// ensure there is a ride by commuter_ac
+	check( ride_it != ridetaxi_table.end(), "Sorry! there is no ride created by commuter_ac.");
+
+	auto driver_ac = ride_it->driver_ac;		// store the `driver_ac` var to use in `send_alert()` inline action.
+	auto ride_id = ride_it->ride_id;			// store the `ride_id` var to use in `send_alert()` inline action.
+
+	// instantiate the fuelprice table
+	rtststamp_index rtststamp_table(get_self(), "erase"_n.value); 
+	auto rtststamp_it = rtststamp_table.find("erase"_n.value);
+
+	// check wait duration is set in the `rtststamp` table
+	check(rtststamp_it != rtststamp_table.end(), "There is no wait duration set. Please set using \'setrtststamp\' action.");
+
+	// if the commuter's rating is done, then erase immediately
+	if(ride_it->rating_status_com == "done"_n) {
+		// erase the ride
+		ridetaxi_table.erase( ride_it );
+	}
+	// else erase only after wait_duration passed
+	else {
+		auto time_elapsed = now() - ride_it->addfareact_timestamp;
+		check( time_elapsed >= rtststamp_it->wait_time, "The time elapsed: \'" + std::to_string(time_elapsed) + " \' is stil less than the set wait_time erase the ride record.");
+		
+		// erase the ride
+		ridetaxi_table.erase( ride_it );
+	}
+
+	// On successful execution above, this inline actions will be triggered.
+	send_alert(driver_ac, "the ride_id \'" + ride_id + "\' is deleted from table record.");
+	send_alert(commuter_ac, "the ride_id \'" + ride_id + "\' is deleted from table record.");
+
+}
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::sendalert(const name& user,
@@ -699,21 +832,4 @@ void toeridetaxi::add_ridequota(const name& type,
 								uint64_t ride_qty ) {
 	toeridex::addridequota_action addridequota(ridex_contract_ac, {get_self(), "active"_n});
 	addridequota.send(type, ride_qty);
-}
-// --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::eraseride( const name& commuter_ac,
-								const string& memo ) {
-	require_auth( get_self() );
-
-	check(memo.size() <= 256, "memo has more than 256 bytes");
-
-	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
-	auto ride_it = ridetaxi_table.find(commuter_ac.value);
-
-	// ensure there is a ride by commuter_ac
-	check( ride_it != ridetaxi_table.end(), "Sorry! there is no ride created by commuter_ac.");
-
-	// erase the ride
-	ridetaxi_table.erase( ride_it );
 }

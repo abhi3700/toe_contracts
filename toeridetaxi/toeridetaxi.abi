@@ -91,11 +91,11 @@
                 },
                 {
                     "name": "des_lat_hash",
-                    "type": "checksum256"
+                    "type": "string"
                 },
                 {
                     "name": "des_lon_hash",
-                    "type": "checksum256"
+                    "type": "string"
                 },
                 {
                     "name": "ridex_usagestatus_com",
@@ -129,19 +129,19 @@
                 },
                 {
                     "name": "src_lat_hash",
-                    "type": "checksum256"
+                    "type": "string"
                 },
                 {
                     "name": "src_lon_hash",
-                    "type": "checksum256"
+                    "type": "string"
                 },
                 {
                     "name": "des_lat_hash",
-                    "type": "checksum256"
+                    "type": "string"
                 },
                 {
                     "name": "des_lon_hash",
-                    "type": "checksum256"
+                    "type": "string"
                 },
                 {
                     "name": "vehicle_type",
@@ -192,7 +192,7 @@
             ]
         },
         {
-            "name": "eraseride",
+            "name": "erase",
             "base": "",
             "fields": [
                 {
@@ -257,23 +257,23 @@
                 },
                 {
                     "name": "ride_id",
-                    "type": "checksum256"
+                    "type": "string"
                 },
                 {
                     "name": "src_lat_hash",
-                    "type": "checksum256"
+                    "type": "string"
                 },
                 {
                     "name": "src_lon_hash",
-                    "type": "checksum256"
+                    "type": "string"
                 },
                 {
                     "name": "des_lat_hash",
-                    "type": "checksum256"
+                    "type": "string"
                 },
                 {
                     "name": "des_lon_hash",
-                    "type": "checksum256"
+                    "type": "string"
                 },
                 {
                     "name": "vehicle_type",
@@ -332,6 +332,10 @@
                     "type": "uint32"
                 },
                 {
+                    "name": "addfareact_timestamp",
+                    "type": "uint32"
+                },
+                {
                     "name": "ridex_usagestatus_com",
                     "type": "name"
                 },
@@ -358,6 +362,58 @@
                 {
                     "name": "fare_crypto_act",
                     "type": "asset"
+                },
+                {
+                    "name": "rating_status_dri",
+                    "type": "name"
+                },
+                {
+                    "name": "rating_dri",
+                    "type": "float32"
+                },
+                {
+                    "name": "rating_status_com",
+                    "type": "name"
+                },
+                {
+                    "name": "rating_com",
+                    "type": "float32"
+                }
+            ]
+        },
+        {
+            "name": "rtsfuelprice",
+            "base": "",
+            "fields": [
+                {
+                    "name": "fiat_currency",
+                    "type": "name"
+                },
+                {
+                    "name": "fuel_unit",
+                    "type": "name"
+                },
+                {
+                    "name": "fuel_price_petrol",
+                    "type": "float32"
+                },
+                {
+                    "name": "fuel_price_diesel",
+                    "type": "float32"
+                }
+            ]
+        },
+        {
+            "name": "rtststamp",
+            "base": "",
+            "fields": [
+                {
+                    "name": "action",
+                    "type": "name"
+                },
+                {
+                    "name": "wait_time",
+                    "type": "uint32"
                 }
             ]
         },
@@ -404,6 +460,42 @@
                 {
                     "name": "memo",
                     "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "setrtsfuelpr",
+            "base": "",
+            "fields": [
+                {
+                    "name": "currency",
+                    "type": "name"
+                },
+                {
+                    "name": "fuel_unit",
+                    "type": "name"
+                },
+                {
+                    "name": "fuel_price_petrol",
+                    "type": "float32"
+                },
+                {
+                    "name": "fuel_price_diesel",
+                    "type": "float32"
+                }
+            ]
+        },
+        {
+            "name": "setrtststamp",
+            "base": "",
+            "fields": [
+                {
+                    "name": "action",
+                    "type": "name"
+                },
+                {
+                    "name": "wait_time",
+                    "type": "uint32"
                 }
             ]
         },
@@ -459,8 +551,8 @@
             "ricardian_contract": ""
         },
         {
-            "name": "eraseride",
-            "type": "eraseride",
+            "name": "erase",
+            "type": "erase",
             "ricardian_contract": ""
         },
         {
@@ -494,6 +586,16 @@
             "ricardian_contract": ""
         },
         {
+            "name": "setrtsfuelpr",
+            "type": "setrtsfuelpr",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setrtststamp",
+            "type": "setrtststamp",
+            "ricardian_contract": ""
+        },
+        {
             "name": "start",
             "type": "start",
             "ricardian_contract": ""
@@ -510,6 +612,20 @@
         {
             "name": "ridestaxi",
             "type": "ridetaxi",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "rtsfuelprice",
+            "type": "rtsfuelprice",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "rtststamp",
+            "type": "rtststamp",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

@@ -20,39 +20,33 @@
 * contract's account name - `toe1ridetaxi`
 
 ## Action
-- `create`
-- `setfipaymost`
-- `assign`
-- `cancelbycom`
-- `cancelbydri`
-- `changedes`
-- `reachsrc`
-- `start`
-- `finish`
-- `addfareact`
-- `recvfare`
-- `addristatus`
-- `sendalert`
-- `sendreceipt`
+* `create`
+* `setfipaymost`
+* `assign`
+* `cancelbycom`
+* `cancelbydri`
+* `changedes`
+* `reachsrc`
+* `start`
+* `finish`
+* `addfareact`
+* `recvfare`
+* `addristatus`
+* `sendalert`
+* `sendreceipt`
 
 ## Table
 * `ridetaxi`
-* Notes:
-	- For each row, `ram_payer` would be users (driver/commuter) for their piece of data. TODO: 
-		+ if the ride is costing too much for their use, then additional amount of CPU, NET will be added to their account during account creation.
+	- For each row, `ram_payer` could be:
+		+ M-1: driver, commuters, contract for their part of data as per their action. 
+		+ M-2: contract only for all the ride data.
+would be users (driver/commuter) for their piece of data. TODO: 
+	- if the ride is costing too much for their use, then additional amount of CPU, NET will be added to their account during account creation.
 	- Here, the scope of the `ridestaxi` table is chosen as __contract name__ (i.e.`get_self().value` syntactically), because there are 2 parties (driver, commuter) involved. So, if either of the user is used as scope, then the other portion of the other user will not be shown. E.g. In other applications where the table row consists of more than 1 party, then it is always better to use __contract name__ as the table's scope.
-
-
-
-
-Ride actions
---------------------
-- Here, if the table is created automatically once contract is deployed, then 'create' action not needed.
-- add a security layer i.e. check for loc data  when the ride is booked & the action is repeatedly pushed with the same data, it should not consume RAM, CPU, NET. It could be a technical glitch.
-- To decide whether 'bookify' or 'book' & 'modify', check whether default values in argument can be parsed like in 'ride_status' If yes, then make 2 actions - 'book' & 'modify'
-- [ ] create (to create the table)
-- book or bookify
-- [ ] modify
+	- the scope can be a country as well.... in order to separate the rides of different countries.
+* `dristatus`
+* `rtststamp`
+* `rtsfuelprltr`
 
 ## Compile
 ```console
@@ -426,18 +420,8 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ```
 
 ## TODO
-* [ ] add commission for driver on disburse payment or else use ridex rides for commission-free. 
-* [ ] check for type - commuter/driver along with user being verified
-```cpp
-check((user_it->type == "commuter"_n) || (user_it->type == "validator"_n), "Either commuter/validator can request");
-
-// OR
-// Apply this into every action of `toeridetaxi`
-check(user_it->type != "driver"_n, "A driver can't request");
-```
 * [ ] addrating action
-* [ ] testing of increase `rides_limit` when a ride is finished & the corresponding pay_mode is `crypto`
-* [ ] revisit `addfareact` action after creating fare calculator, whether to add as inline action inside `finish` action
+* [ ] Can `finish`, `addfareact`, `recvfare` be merged into one action by automatically transferring the money after adding the actual fare.  
 
 ### NOTES
 * All the actions are ensured to process sequentially based on checking the `ride_status` field of the table, so that an action can't be accessed before using the previous required action. E.g. `cancelbycom` can only be accessed in __"requested"__, __"enroute"__, __"waiting"__ ride status.
@@ -456,3 +440,21 @@ check(user_it->type != "driver"_n, "A driver can't request");
 * Based on `ridex_userstatus_dri` == 'y', outside SC, the recv_fare_act would be commission-free.
 *	Anything stored back into server:
 	- after erase action (called after `cancel` or `addfareact` or `recvfare`)
+* `ride_id` created by hashing these 2 params:
+	- commuter_ac
+	- timestamp at ride creation
+* ride rating will be done via `toeridetaxi` contract.
+*	Ride rating:
+	- M-1: if rating for a ride is not done within 'x' hours, then the person don't get chance to rate later & gets his own `ride_rating_todo` decreased by 1.
+		+ cons: what would be the opponent's rating then.
+	- M-2: rating done via `toeuserauth` contract. At any point of time, the rating is done for a past ride.
+```cpp
+	ACTION addrating( const name& user,
+						checksum256 ride_id,
+						uint32_t 
+						uint32_t addfareact_timestamp,
+						float rating)
+
+```
+		+ cons: if accessed from CLI, then how to check if the ride_id is legit. bcoz the ride data is no more available in the contract table, but rather moved to storage DB.
+

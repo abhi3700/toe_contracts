@@ -68,10 +68,10 @@ public:
 	 * @param memo - the memo string to create a ride
 	 */
 	ACTION create( const name& commuter_ac,
-					checksum256 src_lat_hash, 
-					checksum256 src_lon_hash, 
-					checksum256 des_lat_hash, 
-					checksum256 des_lon_hash,
+					string src_lat_hash, 
+					string src_lon_hash, 
+					string des_lat_hash, 
+					string des_lon_hash,
 					const name& vehicle_type,
 					const name& pay_mode,
 					const name& ridex_usage_status,
@@ -165,8 +165,8 @@ public:
 	 * @param memo - the memo string to change destination
 	 */
 	ACTION changedes( const name& commuter_ac,
-						checksum256 des_lat_hash, 
-						checksum256 des_lon_hash,
+						string des_lat_hash, 
+						string des_lon_hash,
 						const name& ridex_usagestatus_com,
 						float fare_est,
 						const asset& fare_crypto_est,
@@ -238,6 +238,38 @@ public:
 	ACTION addristatus( const name& driver_ac, const name& status );
 
 	/**
+	 * @brief - set ridetaxi specs wait timestamp for erase action
+	 * @details - set ridetaxi specs wait timestamp for erase action
+	 * 
+	 * @param action - action
+	 * @param wait_time - wait timestamp
+	 * 
+	 */
+	ACTION setrtststamp( const name& action, 
+						uint32_t wait_time );
+
+	/**
+	 * @brief - set fuel price of petrol & diesel
+	 * @details - set fuel price of petrol & diesel in fiat currency
+	 * 
+	 * @param currency - currency e.g. "inr"
+	 * @param fuel_price_petrol - fuel price of petrol
+	 * @param fuel_price_diesel - fuel price of diesel
+	 */
+	ACTION setrtsfuelpr( const name& currency, 
+						const name& fuel_unit, 
+						float fuel_price_petrol,
+						float fuel_price_diesel );
+	/**
+	 * @brief - An external methods to erase ride
+	 * @details - erase after the ride is finished & payment is done. 
+	 * 
+	 * @param commuter_ac erasing by searching commuter_ac
+	 * @param memo - the memo string to erase a ride
+	 */
+	ACTION erase( const name& commuter_ac,
+						const string& memo);
+	/**
 	 * @brief - send alert
 	 * @details - send alert after the action is successfully done. e.g. driver alerting commuter that the vehicle has arrived
 	 * 
@@ -257,15 +289,6 @@ public:
 	ACTION sendreceipt( const name& user,
 						const string& message);
 
-	/**
-	 * @brief - An external methods to erase ride
-	 * @details - erase after the ride is finished & payment is done. 
-	 * 
-	 * @param commuter_ac erasing by searching commuter_ac
-	 * @param memo - the memo string to erase a ride
-	 */
-	ACTION eraseride( const name& commuter_ac,
-						const string& memo);
 
 	// --------------------------------------------------------------------------------------------------------------------
 	static void check_userauth( const name& user, const name& type) {
@@ -285,17 +308,6 @@ public:
 	}
 
 	// --------------------------------------------------------------------------------------------------------------------
-	static void check_dridestatus( const name& driver_ac ) {
-		//instantiate the `dridestatus` table
-		dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
-		auto dridestatus_it = dridestatus_table.find("online"_n.value);
-
-		// check the driver is online
-		check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present in the table.");
-		check(dridestatus_it->status == "online"_n, "driver is not online.");
-	}
-
-	// --------------------------------------------------------------------------------------------------------------------
 	static void check_fareamount( const asset& quantity ) {
 		check(quantity.is_valid(), "invalid quantity");
 		check(quantity.amount > 0, "must withdraw positive quantity");
@@ -309,11 +321,11 @@ private:
 		name commuter_ac;
 		name ride_status;           // /requested/enroute/waiting/ontrip/complete
 		name driver_ac;
-		checksum256 ride_id;		// a unique id of the ride. Used for rating in `userauth` table in toeuserauth contract
-		checksum256 src_lat_hash; 
-		checksum256 src_lon_hash; 
-		checksum256 des_lat_hash; 
-		checksum256 des_lon_hash;
+		string ride_id;		// a unique id of the ride. Used for rating in `userauth` table in toeuserauth contract
+		string src_lat_hash; 
+		string src_lon_hash; 
+		string des_lat_hash; 
+		string des_lon_hash;
 		name vehicle_type;      // list of taxis - toeauto, toemoto, toego, toegoexec, toepremier, toepremexec, toexl, toegointcity, toexlintcity
 		uint32_t seat_count;        // set for pool, else default is 2
 		name pay_mode;            // crypto or fiatdigi or fiatcash
@@ -328,6 +340,7 @@ private:
 		uint32_t changedes_timestamp;		// at which commuter changes destination(s). It can be multiple. So, if > 1, then shown timestamp will be the last changedes.
 		uint32_t finish_timestamp_act;      // at which the ride is finished
 		uint32_t finish_timestamp_est;      // at which the ride is estimated to finish
+		uint32_t addfareact_timestamp;		// at which the fare_act is added
 		name ridex_usagestatus_com;					// "y"_n or "n"_n, only 1 ride is used by default.
 		name ridex_usagestatus_dri;					// "y"_n or "n"_n, only 1 ride is used by default.
 		float fare_est;			// estimated fare (in national curr)
@@ -335,7 +348,10 @@ private:
 		float market_price;		// market price during ride request
 		asset fare_crypto_est;			// estimated fare (in national curr) converted (outside blockchain interaction) to fare (in crypto) based on the market rate.
 		asset fare_crypto_act;			// actual fare (in national curr) converted (outside blockchain interaction) to fare (in crypto) based on the market rate.
-
+		name rating_status_dri;			// rating status of doer - driver | "done"
+		float rating_dri;				// rating of driver set by commuter | < 5.0
+		name rating_status_com;			// rating status of doer - commuter | "done"
+		float rating_com;				// rating of commuter set by driver | < 5.0
 
 		auto primary_key() const { return commuter_ac.value; }
 		uint64_t get_secondary_1() const { return driver_ac.value; }
@@ -352,12 +368,38 @@ private:
 // -----------------------------------------------------------------------------------------------------------------------
 	TABLE dridestatus
 	{
-		name status;	// online or offline
+		name status;	// online or offline or assigned
 
 		auto primary_key() const { return status.value; };
 	};
 
 	using dridestatus_index = multi_index<"dridestatus"_n, dridestatus>;
+
+// -----------------------------------------------------------------------------------------------------------------------
+	// RideTaxiSpecs timestamp 
+	TABLE rtststamp
+	{
+		name action;	// "erase"
+		uint32_t wait_time;	// wait time (in secs) to erase the ride, when no rating done by commuter.
+
+		auto primary_key() const { return action.value; };
+	};
+
+	using rtststamp_index = multi_index<"rtststamp"_n, rtststamp>;
+
+// -----------------------------------------------------------------------------------------------------------------------
+	// RideTaxiSpecs fuel price
+	TABLE rtsfuelprice
+	{
+		name fiat_currency;				// e.g. "INR"
+		name fuel_unit;				// e.g. litre, gallon
+		float fuel_price_petrol;	// fuel_price of petrol
+		float fuel_price_diesel;	// fuel_price of diesel
+
+		auto primary_key() const { return fiat_currency.value; };
+	};
+
+	using rtsfuelprice_index = multi_index<"rtsfuelprice"_n, rtsfuelprice>;
 
 // -----------------------------------------------------------------------------------------------------------------------
 	struct ridewallet
@@ -406,16 +448,28 @@ private:
 		return current_time_point().sec_since_epoch();
 	}
 
-	// get the sha256 hash digest/checksum
-	inline checksum256 hash_digest_256(const name& commuter_ac,
-										uint32_t create_timestamp)
-	{
+	template<typename CharT>
+	static std::string to_hex(const CharT* d, uint32_t s) {
+	  std::string r;
+	  const char* to_hex="0123456789abcdef";
+	  uint8_t* c = (uint8_t*)d;
+	  for( uint32_t i = 0; i < s; ++i ) {
+	    (r += to_hex[(c[i] >> 4)]) += to_hex[(c[i] & 0x0f)];
+	  }
+	  return r;
+	}
+
+	// get the sha256 hash digest/checksum in string
+	inline string hash_str_256(const name& commuter_ac,
+										uint32_t create_timestamp) const {
 		string data_str_cpp = commuter_ac.to_string() + std::to_string(create_timestamp);
 		const char * data_str_c = data_str_cpp.c_str(); 
 
 		auto hash_digest = sha256(data_str_c, strlen(data_str_c));
 
-		return hash_digest;
+		string hash_digest_str = to_hex(&hash_digest, sizeof(hash_digest));
+
+		return hash_digest_str;
 	}
 
 	// Adding inline action for `disburse` action in the ridewallet contract   
