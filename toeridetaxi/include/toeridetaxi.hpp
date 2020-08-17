@@ -237,6 +237,9 @@ public:
 	 */
 	ACTION addristatus( const name& driver_ac, const name& status );
 
+	ACTION addratingdri( const name& driver_ac,
+							float rating_com)
+
 	/**
 	 * @brief - set ridetaxi specs wait timestamp for erase action
 	 * @details - set ridetaxi specs wait timestamp for erase action
@@ -470,6 +473,26 @@ private:
 		string hash_digest_str = to_hex(&hash_digest, sizeof(hash_digest));
 
 		return hash_digest_str;
+	}
+
+	// extract integers from string
+	inline uint256_t ext_int_string(const string& s ) const {
+	    // string input = "1ee5ad0d074cfffbaa1598f0d236c09537d9c28b3b85aff206e20398f5e032dd";//I added some more extra characters to prove my point.
+	    string numbers = "0123456789";
+	    std::size_t found = s.find_first_of(numbers.c_str());
+	    string output_str = "";
+
+	    while (found != string::npos) {
+	        output_str += s[found];
+	        found = s.find_first_of(numbers.c_str(), found+1);
+	    }
+
+	    // std::cout << output_str << "\n";
+	    // std::cout << "length" << output_str.size() << "\n";
+	    uint256_t output_int = = (uint256_t)output_str;
+	    // std::cout << output_int << "\n";
+
+	    return output_int;
 	}
 
 	// Adding inline action for `disburse` action in the ridewallet contract   

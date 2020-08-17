@@ -4,8 +4,10 @@
   + token
   + ridewallet
   + ridetaxi
-  - ridex
+  + ridex
 - Test of all contracts using Java for Android
+
+https://github.com/ckormanyos/wide-integer
 
 # Phase-2
 - modify contract for `pool`
