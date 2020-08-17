@@ -421,6 +421,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 
 ## TODO
 * [ ] addrating action
+	- here, the `dristatus` would be changed from "assigned" to "online"
 * [ ] Can `finish`, `addfareact`, `recvfare` be merged into one action by automatically transferring the money after adding the actual fare.  
 
 ### NOTES
@@ -457,4 +458,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 
 ```
 		+ cons: if accessed from CLI, then how to check if the ride_id is legit. bcoz the ride data is no more available in the contract table, but rather moved to storage DB.
-
+* Commuter shall always have 1 row in the table. Because, it can't book another ride until the rating_wait_time is over after finishing the current ride.
+* But driver can have many rides in 2 cases:
+	- pool ride
+	- the finished ride waiting for commuter to rate & then it will be erased. Or the time elapsed (since `addfareact` action) is >= rating_wait_time & then the ride gets deleted.

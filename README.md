@@ -320,3 +320,36 @@ n = no. of Rides needed (in no.)
 	- relatively higher on __"enroute"__ ride status
 	- relatively more higher on __"waiting"__ ride status
 * For commuter, all the incentives/rewards disbursed post-ride, will not be compared to a country's economy. But for driver, the incentive especially in case of ensuring ride during surge condition has to be sufficient enough, bcoz it will be compared w.r.t total value in fiat. After all, fiat currency is going to be used mostly within a nation to buy/sell commodities. 
+* incentive on timely rating for commuter. This can be controlled via
+	- <u>Driver</u> will give rating or else, their status will continue showing __"assign"__ & not be able to take any ride request (only assigned in case of __"online"__). 
+	- <u>Commuter</u> may or may not give rating. But in order to make them rate, they have got 'x' hrs of wait_time (calculated from `addfareact_timestamp`) before it gets deleted from `ridestaxi` table. So, the faster the rating is done, the more will be incentives. 
+
+### Driver status
+* The ride status of drivers are listed in the `dridestatus` table.
+* The accepted status: __"online"__, __"offline"__, __"assigned"__.
+* During the ride, the status is changed at this action steps:
+	- `addristatus`: after successful login, the status is could be changed to __"online"__/__"offline"__.
+	- `assign`: status changed from __"online"__ to __"assigned"__.
+	- `cancelbydri`: status changed from __"assigned"__ to __"online"__.
+	- `addratebydri`: status changed from __"assigned"__ to __"online"__.
+
+### Rating
+* Rating is important to view a party's (driver/commuter/validator) performance in the platform.
+* Bad rating & review is always done by a person. But, if the ride is good, then nobody cares to rate. Because may be, they expect some benefits from the platform. It's like working for the platform in order to run efficiently.
+* So, for doing ratings they always expect something.
+* But then, do they get something for making good reviews to each other (driver/commuter)?
+  - NO
+
+> NOTE: even if they mutually give good ratings to each other, they are __not incentivized__ for giving good ratings, but just for giving rating (good or bad) or doing the task.
+
+* Having good ratings wouldn't help much in economic earning, but rather gaining opportunities like better & more rides.
+	- for driver, having good rating is always a priority for ride-assign in same location range.
+	- for a commuter, having good rating would get more offers (notification) like discounts (related to services by platform)...etc.
+ This can be controlled via
+	- <u>Driver</u> will give rating or else, their status will continue showing __"assign"__ & not be able to take any ride request (only assigned in case of __"online"__). 
+	- <u>Commuter</u> may or may not give rating. But in order to make them rate, they have got 'x' hrs of wait_time (calculated from `addfareact_timestamp`) before it gets deleted from `ridestaxi` table. So, the faster the rating is done, the more will be incentives. 
+
+### Scalability
+* The set of contracts are scalable to any no. of countries.
+* For instance, `ridestaxi` table can have different scope like "india", "usa", ...
+* And if the scope is already taken by a necessary parameter, then there can be another contract or table like in `toeuserauth` contract. The users info. w.r.t countries can be maintained in different tables.

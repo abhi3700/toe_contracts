@@ -77,6 +77,12 @@ public:
 						const name& validator_user_status,
 						const string& memo);
 
+	ACTION addrating( const name& user,
+						checksum256 ride_id,
+						uint32_t 
+						uint32_t addfareact_timestamp,
+						float rating)
+
 	/**
 	 * @brief - delete user
 	 * @details - delete user from the `user` table
