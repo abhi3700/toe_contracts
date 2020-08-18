@@ -173,6 +173,10 @@ Public key: EOS4yCYGzJAo5sTGPtL8mGS2TgfLagykrodBWGaDApNRY8KWfHJ75
 cabeos1user4
 Private key: 5J31vZbs12MfdDws8LaxTXmSTiwQ5hbiZMtudjMGv26T4ctQfjB
 Public key: EOS6myXcveRhUsvoYLARRc3JYRhT3wfofUMjHwVBgroGMeu2ghB41
+-----------------------------------------------
+cabeos1user5
+Private key: 5JGqNkksS6gQmY4kM71NwRrcegqmKKgJUnkKW5qZS1xm4cSGB61
+Public key: EOS6Syb9qp8LKKEYP9WpGCvxwL6vb5dTkZ7SJDqcBfRUJjXyWaWKR
 #######################################################################
 
 
