@@ -422,7 +422,8 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ## TODO
 * [ ] addrating action
 	- here, the `dristatus` would be changed from "assigned" to "online"
-* [ ] Can `finish`, `addfareact`, `recvfare` be merged into one action by automatically transferring the money after adding the actual fare.  
+* [ ] Can `finish`, `addfareact`, `recvfare` be merged into one action by automatically transferring the money after adding the actual fare. 
+* [ ] Implement pool ride. Ensure that the `dridestatus` table is only modified when the ride is not pool type. This is because, when in pool, the "online" to "assigned" is not true for the next commuter to be picked-up. For the next commuter also, the driver's status should be "online", but not "assgined".
 
 ### NOTES
 * All the actions are ensured to process sequentially based on checking the `ride_status` field of the table, so that an action can't be accessed before using the previous required action. E.g. `cancelbycom` can only be accessed in __"requested"__, __"enroute"__, __"waiting"__ ride status.

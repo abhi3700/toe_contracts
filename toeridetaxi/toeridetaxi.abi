@@ -12,6 +12,10 @@
                     "type": "name"
                 },
                 {
+                    "name": "ride_id",
+                    "type": "checksum256"
+                },
+                {
                     "name": "fare_act",
                     "type": "float32"
                 },
@@ -44,8 +48,8 @@
                     "type": "name"
                 },
                 {
-                    "name": "commuter_ac",
-                    "type": "name"
+                    "name": "ride_id",
+                    "type": "checksum256"
                 },
                 {
                     "name": "reachsrc_timestamp_est",
@@ -76,6 +80,10 @@
                     "type": "name"
                 },
                 {
+                    "name": "ride_id",
+                    "type": "checksum256"
+                },
+                {
                     "name": "memo",
                     "type": "string"
                 }
@@ -91,11 +99,11 @@
                 },
                 {
                     "name": "des_lat_hash",
-                    "type": "string"
+                    "type": "checksum256"
                 },
                 {
                     "name": "des_lon_hash",
-                    "type": "string"
+                    "type": "checksum256"
                 },
                 {
                     "name": "ridex_usagestatus_com",
@@ -120,6 +128,24 @@
             ]
         },
         {
+            "name": "comaddrating",
+            "base": "",
+            "fields": [
+                {
+                    "name": "commuter_ac",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_id",
+                    "type": "checksum256"
+                },
+                {
+                    "name": "rating_dri",
+                    "type": "float32"
+                }
+            ]
+        },
+        {
             "name": "create",
             "base": "",
             "fields": [
@@ -129,19 +155,19 @@
                 },
                 {
                     "name": "src_lat_hash",
-                    "type": "string"
+                    "type": "checksum256"
                 },
                 {
                     "name": "src_lon_hash",
-                    "type": "string"
+                    "type": "checksum256"
                 },
                 {
                     "name": "des_lat_hash",
-                    "type": "string"
+                    "type": "checksum256"
                 },
                 {
                     "name": "des_lon_hash",
-                    "type": "string"
+                    "type": "checksum256"
                 },
                 {
                     "name": "vehicle_type",
@@ -182,9 +208,31 @@
             ]
         },
         {
+            "name": "driaddrating",
+            "base": "",
+            "fields": [
+                {
+                    "name": "driver_ac",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_id",
+                    "type": "checksum256"
+                },
+                {
+                    "name": "rating_com",
+                    "type": "float32"
+                }
+            ]
+        },
+        {
             "name": "dridestatus",
             "base": "",
             "fields": [
+                {
+                    "name": "user_type",
+                    "type": "name"
+                },
                 {
                     "name": "status",
                     "type": "name"
@@ -212,6 +260,10 @@
                 {
                     "name": "driver_ac",
                     "type": "name"
+                },
+                {
+                    "name": "ride_id",
+                    "type": "checksum256"
                 }
             ]
         },
@@ -222,6 +274,10 @@
                 {
                     "name": "driver_ac",
                     "type": "name"
+                },
+                {
+                    "name": "ride_id",
+                    "type": "checksum256"
                 }
             ]
         },
@@ -232,6 +288,10 @@
                 {
                     "name": "driver_ac",
                     "type": "name"
+                },
+                {
+                    "name": "ride_id",
+                    "type": "checksum256"
                 },
                 {
                     "name": "memo",
@@ -257,23 +317,23 @@
                 },
                 {
                     "name": "ride_id",
-                    "type": "string"
+                    "type": "checksum256"
                 },
                 {
                     "name": "src_lat_hash",
-                    "type": "string"
+                    "type": "checksum256"
                 },
                 {
                     "name": "src_lon_hash",
-                    "type": "string"
+                    "type": "checksum256"
                 },
                 {
                     "name": "des_lat_hash",
-                    "type": "string"
+                    "type": "checksum256"
                 },
                 {
                     "name": "des_lon_hash",
-                    "type": "string"
+                    "type": "checksum256"
                 },
                 {
                     "name": "vehicle_type",
@@ -508,6 +568,10 @@
                     "type": "name"
                 },
                 {
+                    "name": "ride_id",
+                    "type": "checksum256"
+                },
+                {
                     "name": "ridex_usagestatus_dri",
                     "type": "name"
                 }
@@ -546,8 +610,18 @@
             "ricardian_contract": ""
         },
         {
+            "name": "comaddrating",
+            "type": "comaddrating",
+            "ricardian_contract": ""
+        },
+        {
             "name": "create",
             "type": "create",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "driaddrating",
+            "type": "driaddrating",
             "ricardian_contract": ""
         },
         {

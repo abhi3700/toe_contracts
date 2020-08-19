@@ -68,10 +68,10 @@ public:
 	 * @param memo - the memo string to create a ride
 	 */
 	ACTION create( const name& commuter_ac,
-					string src_lat_hash, 
-					string src_lon_hash, 
-					string des_lat_hash, 
-					string des_lon_hash,
+					checksum256 src_lat_hash, 
+					checksum256 src_lon_hash, 
+					checksum256 des_lat_hash, 
+					checksum256 des_lon_hash,
 					const name& vehicle_type,
 					const name& pay_mode,
 					const name& ridex_usage_status,
@@ -103,7 +103,7 @@ public:
 	 * @details - ride assigned automatically using Ride sharing algorithm
 	 * 
 	 * @param driver_ac - driver eosio account name
-	 * @param commuter_ac - commuter eosio account name
+	 * @param ride_id - ride_id
 	 * @param reachsrc_timestamp_est - estimated time to reach the pick-up point
 	 * 
 	 * @pre driver must be a verified user
@@ -111,7 +111,8 @@ public:
 	 * 
 	 */
 	ACTION assign( const name& driver_ac, 
-					const name& commuter_ac,
+					// const name& commuter_ac,
+					const checksum256& ride_id,
 					uint32_t reachsrc_timestamp_est);
 
 	/**
@@ -119,7 +120,7 @@ public:
 	 * @details - cancel ride (if any created) by commuter
 	 * 
 	 * @param commuter_ac - commmuter account
-	 * @param memo - the memo string to cancel a ride
+	 * @param memo - reason to cancel a ride
 	 */
 	ACTION cancelbycom( const name& commuter_ac,
 						const string& memo );
@@ -129,9 +130,11 @@ public:
 	 * @details - cancel ride (if any created) by driver
 	 * 
 	 * @param driver_ac - commmuter account
-	 * @param memo - the memo string to cancel a ride
+	 * @param ride_id - ride_id
+	 * @param memo - reason to cancel a ride
 	 */
 	ACTION cancelbydri( const name& driver_ac,
+						const checksum256& ride_id,
 						const string& memo );
 
 	/**
@@ -165,8 +168,8 @@ public:
 	 * @param memo - the memo string to change destination
 	 */
 	ACTION changedes( const name& commuter_ac,
-						string des_lat_hash, 
-						string des_lon_hash,
+						checksum256 des_lat_hash, 
+						checksum256 des_lon_hash,
 						const name& ridex_usagestatus_com,
 						float fare_est,
 						const asset& fare_crypto_est,
@@ -178,8 +181,10 @@ public:
 	 * @details - action to timestamp pickup point
 	 * 
 	 * @param driver_ac - driver account
+	 * @param ride_id - ride_id
 	*/	 
-	ACTION reachsrc( const name& driver_ac );
+	ACTION reachsrc( const name& driver_ac,
+						const checksum256& ride_id);
 
 	/**
 	 * @brief start ride
@@ -188,9 +193,11 @@ public:
 	 *      - change ride_status (enroute --> ontrip)
 	 * 
 	 * @param driver_ac - driver account
+	 * @param ride_id - ride_id
 	 * @param ridex_usagestatus_dri - 'y' or 'n'
 	 */
 	ACTION start( const name& driver_ac, 
+					const checksum256& ride_id,
 					const name& ridex_usagestatus_dri );
 
 	/**
@@ -200,18 +207,22 @@ public:
 	 *      - change ride_status (ontrip --> completed)
 	 * 
 	 * @param driver_ac - driver account
+	 * @param ride_id - ride_id
 	 */
-	ACTION finish( const name& driver_ac );
+	ACTION finish( const name& driver_ac,
+					const checksum256& ride_id );
 
 	/**
 	 * @brief - Add actual fare
 	 * @details - Add actual fare after the ride is completed
 	 * 
 	 * @param driver_ac - driver account
+	 * @param ride_id - ride_id
 	 * @param fare_act - actual fare (in fiat curr)
 	 * @param fare_crypto_act - actual fare (in crypto curr)
 	 */
 	ACTION addfareact(const name& driver_ac, 
+						const checksum256& ride_id,
 						float fare_act,
 						const asset& fare_crypto_act);
 
@@ -221,10 +232,48 @@ public:
 	 * @details - a driver receives fare after ride is completed, only when the pay_mode chosen as `crypto`
 	 * 
 	 * @param driver_ac - driver account
+	 * @param ride_id - ride_id
 	 * @memo - note for receiving fare to driver
 	 */
 	ACTION recvfare( const name& driver_ac,
+					const checksum256& ride_id,
 					const string& memo);
+
+	/**
+	 * @brief - driver add rating to commuter
+	 * @details - driver add rating to commuter corresponding to ride_id
+	 * 
+	 * @param driver_ac - driver
+	 * @param ride_id - ride_id
+	 * @param rating_com - rating of commuter
+	 * 
+	 * @pre - check the `ride_id->driver_ac == driver_ac`
+	 * @pre - check the `ride_id->ride_status == "complete"`
+	 * @pre - check the `ride_id->crypto_paystatus == "paytodri"`, if the `ride_it->pay_mode =="crypto"`
+	 * @pre - check the `ride_id->rating_status_dri != "done"` i.e. not done previously
+	 * 
+	 */
+	ACTION driaddrating( const name& driver_ac,
+							const checksum256& ride_id,
+							float rating_com );
+
+	/**
+	 * @brief - driver add rating to commuter
+	 * @details - driver add rating to commuter corresponding to ride_id
+	 * 
+	 * @param driver_ac - driver
+	 * @param ride_id - ride_id
+	 * @param rating_com - rating of commuter
+	 * 
+	 * @pre - check the `ride_id->driver_ac == driver_ac`
+	 * @pre - check the `ride_id->ride_status == "complete"`
+	 * @pre - check the `ride_id->crypto_paystatus == "paytodri"`, if the `ride_it->pay_mode =="crypto"`
+	 * @pre - check the `ride_id->rating_status_com != "done"` i.e. not done previously
+	 * 
+	 */
+	ACTION comaddrating( const name& commuter_ac,
+							const checksum256& ride_id,
+							float rating_dri );
 
 	/**
 	 * @brief - driver add status - online/offline
@@ -237,8 +286,6 @@ public:
 	 */
 	ACTION addristatus( const name& driver_ac, const name& status );
 
-	ACTION addratingdri( const name& driver_ac,
-							float rating_com)
 
 	/**
 	 * @brief - set ridetaxi specs wait timestamp for erase action
@@ -324,11 +371,11 @@ private:
 		name commuter_ac;
 		name ride_status;           // /requested/enroute/waiting/ontrip/complete
 		name driver_ac;
-		string ride_id;		// a unique id of the ride. Used for rating in `userauth` table in toeuserauth contract
-		string src_lat_hash; 
-		string src_lon_hash; 
-		string des_lat_hash; 
-		string des_lon_hash;
+		checksum256 ride_id;		// a unique id of the ride. Used for rating in `userauth` table in toeuserauth contract
+		checksum256 src_lat_hash; 
+		checksum256 src_lon_hash; 
+		checksum256 des_lat_hash; 
+		checksum256 des_lon_hash;
 		name vehicle_type;      // list of taxis - toeauto, toemoto, toego, toegoexec, toepremier, toepremexec, toexl, toegointcity, toexlintcity
 		uint32_t seat_count;        // set for pool, else default is 2
 		name pay_mode;            // crypto or fiatdigi or fiatcash
@@ -358,22 +405,28 @@ private:
 
 		auto primary_key() const { return commuter_ac.value; }
 		uint64_t get_secondary_1() const { return driver_ac.value; }
-		uint64_t get_secondary_2() const { return ride_status.value; }
-		uint64_t get_secondary_3() const { return vehicle_type.value; }
+		checksum256 get_secondary_2() const { return ride_id; }
+		uint64_t get_secondary_3() const { return ride_status.value; }
+		uint64_t get_secondary_4() const { return vehicle_type.value; }
+		// uint128_t get_secondary_5_driver_ridestatus() const { return combine_ids(driver_ac.value, ride_status.value); }
+
 	};
 
 	using ridetaxi_index = multi_index<"ridestaxi"_n, ridetaxi, 
 									indexed_by<"bydriver"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_1>>,
-									indexed_by<"byridestatus"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_2>>,
-									indexed_by<"byvehicltype"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_3>>
+									indexed_by<"byrideid"_n, const_mem_fun<ridetaxi, checksum256, &ridetaxi::get_secondary_2>>,
+									indexed_by<"byridestatus"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_3>>,
+									indexed_by<"byvehicltype"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_4>>
+									// indexed_by<"bydrirstatus"_n, const_mem_fun<ridetaxi, uint128_t, &ridetaxi::get_secondary_5_driver_ridestatus>>
 									>;
 
 // -----------------------------------------------------------------------------------------------------------------------
 	TABLE dridestatus
 	{
+		name user_type;		// driver
 		name status;	// online or offline or assigned
 
-		auto primary_key() const { return status.value; };
+		auto primary_key() const { return user_type.value; };
 	};
 
 	using dridestatus_index = multi_index<"dridestatus"_n, dridestatus>;
@@ -462,38 +515,21 @@ private:
 	  return r;
 	}
 
-	// get the sha256 hash digest/checksum in string
-	inline string hash_str_256(const name& commuter_ac,
+	// get the sha256 hash digest/checksum
+	inline checksum256 hash_digest_256(const name& commuter_ac,
 										uint32_t create_timestamp) const {
 		string data_str_cpp = commuter_ac.to_string() + std::to_string(create_timestamp);
 		const char * data_str_c = data_str_cpp.c_str(); 
 
 		auto hash_digest = sha256(data_str_c, strlen(data_str_c));
 
-		string hash_digest_str = to_hex(&hash_digest, sizeof(hash_digest));
-
-		return hash_digest_str;
+		return hash_digest;
 	}
 
-	// extract integers from string
-	inline uint256_t ext_int_string(const string& s ) const {
-	    // string input = "1ee5ad0d074cfffbaa1598f0d236c09537d9c28b3b85aff206e20398f5e032dd";//I added some more extra characters to prove my point.
-	    string numbers = "0123456789";
-	    std::size_t found = s.find_first_of(numbers.c_str());
-	    string output_str = "";
-
-	    while (found != string::npos) {
-	        output_str += s[found];
-	        found = s.find_first_of(numbers.c_str(), found+1);
-	    }
-
-	    // std::cout << output_str << "\n";
-	    // std::cout << "length" << output_str.size() << "\n";
-	    uint256_t output_int = = (uint256_t)output_str;
-	    // std::cout << output_int << "\n";
-
-	    return output_int;
-	}
+	// concatenation of ids
+	// static uint128_t combine_ids(const uint64_t &x, const uint64_t &y) {
+	//     return (uint128_t{x} << 64) | y;
+	// }
 
 	// Adding inline action for `disburse` action in the ridewallet contract   
 	void disburse_fare(const name& receiver_ac,
