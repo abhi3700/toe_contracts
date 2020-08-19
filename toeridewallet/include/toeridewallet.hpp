@@ -172,11 +172,11 @@ private:
 		name commuter_ac;
 		name ride_status;           // /requested/enroute/waiting/ontrip/complete
 		name driver_ac;
-		string ride_id;		// a unique id of the ride. Used for rating in `userauth` table in toeuserauth contract
-		string src_lat_hash; 
-		string src_lon_hash; 
-		string des_lat_hash; 
-		string des_lon_hash;
+		checksum256 ride_id;		// a unique id of the ride. Used for rating in `userauth` table in toeuserauth contract
+		checksum256 src_lat_hash; 
+		checksum256 src_lon_hash; 
+		checksum256 des_lat_hash; 
+		checksum256 des_lon_hash;
 		name vehicle_type;      // list of taxis - toeauto, toemoto, toego, toegoexec, toepremier, toepremexec, toexl, toegointcity, toexlintcity
 		uint32_t seat_count;        // set for pool, else default is 2
 		name pay_mode;            // crypto or fiatdigi or fiatcash
@@ -206,14 +206,19 @@ private:
 
 		auto primary_key() const { return commuter_ac.value; }
 		uint64_t get_secondary_1() const { return driver_ac.value; }
-		uint64_t get_secondary_2() const { return ride_status.value; }
-		uint64_t get_secondary_3() const { return vehicle_type.value; }
+		checksum256 get_secondary_2() const { return ride_id; }
+		uint64_t get_secondary_3() const { return ride_status.value; }
+		uint64_t get_secondary_4() const { return vehicle_type.value; }
+		// uint128_t get_secondary_5_driver_ridestatus() const { return combine_ids(driver_ac.value, ride_status.value); }
+
 	};
 
 	using ridetaxi_index = multi_index<"ridestaxi"_n, ridetaxi, 
 									indexed_by<"bydriver"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_1>>,
-									indexed_by<"byridestatus"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_2>>,
-									indexed_by<"byvehicltype"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_3>>
+									indexed_by<"byrideid"_n, const_mem_fun<ridetaxi, checksum256, &ridetaxi::get_secondary_2>>,
+									indexed_by<"byridestatus"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_3>>,
+									indexed_by<"byvehicltype"_n, const_mem_fun<ridetaxi, uint64_t, &ridetaxi::get_secondary_4>>
+									// indexed_by<"bydrirstatus"_n, const_mem_fun<ridetaxi, uint128_t, &ridetaxi::get_secondary_5_driver_ridestatus>>
 									>;
 
 	// -----------------------------------------------------------------------------------------------------------------------
