@@ -38,13 +38,15 @@ public:
 	 * 
 	 * @param user - driver/commuter name
 	 * @param type - driver/commuter
+	 * @param national_id_hash - add sha256 hash of  ID proof
 	 * @param profile_hash - add sha256 hash of user identity details - ID proof, address, etc.(more strict for drivers)
 	 * @param memo - notes like "add info" "update info"
 	 * 
 	 * @pre ensure that the name is not in `blacklist` table
 	 */
-	ACTION creatifyuser( const name& user,
+	ACTION signup( const name& user,
 					const name& type,
+					const checksum256& national_id_hash,
 					const checksum256& profile_hash,
 					const string& memo);
 
@@ -54,12 +56,14 @@ public:
 	 * 
 	 * @param validator_user - validator account name
 	 * @param dricom_user - driver/commuter account name
+	 * @param dricom_user_type - user type for scope
 	 * @param dricom_user_status - to be verified/blacklisted by TOE CARES validators
 	 * @param memo - a note (reason) for the corresponding status, visible 
 	 * 					in the user's action via send_receipt() or send_alert() inline actions
 	 */
 	ACTION vbdricom( const name& validator_user,
 						const name& dricom_user,
+						const name& dricom_user_type,
 						const name& dricom_user_status,
 						const string& memo );
 
@@ -77,11 +81,48 @@ public:
 						const name& validator_user_status,
 						const string& memo);
 
-	ACTION addrating( const name& user,
-						checksum256 ride_id,
-						uint32_t 
-						uint32_t addfareact_timestamp,
-						float rating)
+	/**
+	 * @brief - used as inline action to set ride_total in table.
+	 * @details - used as inline action inside `finish` action of toeridetaxi contract
+	 * 
+	 * @param user - user
+	 * @param user_type - driver/commuter
+	 * @param ride_total - total rides till date
+	 * 
+	 * @pre authority - only by toeridetaxi contract or ride contracts - bus, train...
+	 */
+	ACTION setridetotal(const name& user,
+						const name& user_type,
+						float ride_total);
+
+
+	/**
+	 * @brief - used as inline action to set ride_rated in table.
+	 * @details - used as inline action inside `finish` action of toeridetaxi contract
+	 * 
+	 * @param user - user
+	 * @param user_type - driver/commuter
+	 * @param ride_total - rated rides till date
+	 * 
+	 * @pre authority - only by toeridetaxi contract or ride contracts - bus, train...
+	 */
+	ACTION setriderated(const name& user,
+						const name& user_type,
+						uint64_t ride_rated);
+
+	/**
+	 * @brief - used as inline action to set rating_avg in table.
+	 * @details - used as inline action inside `driaddrating` & `comaddrating` actions of toeridetaxi contract
+	 * 
+	 * @param user - user
+	 * @param user_type - driver/commuter
+	 * @param rating_avg - average rating
+	 * 
+	 * @pre authority - only by toeridetaxi contract or ride contracts - bus, train...
+	 */
+	ACTION setratingavg(const name& user,
+						const name& user_type,
+						float rating_avg);
 
 	/**
 	 * @brief - delete user
@@ -116,10 +157,11 @@ public:
 
 private:
 	// ------------------------------------------------------------------------------------------------
+	// scope: type - driver/commuter/validator
 	TABLE user {
 		name user;
-		name type;						// driver/commuter/validator
-		checksum256 profile_hash;
+		checksum256 national_id_hash;	// hash of (Country's ID proof) e.g. Aadhaar Card no.'s hash
+		checksum256 profile_hash;		// hash of (full name, address)
 		name user_status;				// added/updated/verified/blacklisted
 		uint32_t add_timestamp;			// timestamp at which the user details is added
 		uint32_t update_timestamp;		// timestamp at which the user details is updated
@@ -127,18 +169,18 @@ private:
 		uint32_t blist_timestamp;		// timestamp at which the user is blacklisted
 		name validator_verify;			// validator who verifies the user
 		name validator_blacklist;		// validator who blacklist the user
-		float rating;
 		uint64_t ride_total;
 		uint64_t ride_rated;
+		float rating_avg;
 
 		auto primary_key() const { return user.value; }
-		uint64_t get_secondary_1() const { return type.value; }
-		uint64_t get_secondary_2() const { return user_status.value; }
+		uint64_t get_secondary_1() const { return user_status.value; }
+		checksum256 get_secondary_2() const { return national_id_hash; }
 	};
 
 	using user_index = multi_index<"users"_n, user,
-						indexed_by<"bytype"_n, const_mem_fun<user, uint64_t, &user::get_secondary_1>>,
-						indexed_by<"bystatus"_n, const_mem_fun<user, uint64_t, &user::get_secondary_2>>
+						indexed_by<"bystatus"_n, const_mem_fun<user, uint64_t, &user::get_secondary_1>>,
+						indexed_by<"bynationalid"_n, const_mem_fun<user, checksum256, &user::get_secondary_2>>
 						>;
 
 	// =======Functions========================================================================================================

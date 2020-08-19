@@ -382,10 +382,13 @@ n = no. of Rides needed (in no.)
 * People will face camera & get their photo uploaded into server.
 * People will give their fingerprint details.
 * people will give the digital copy of national_id. Correspondingly the national id no. will be scanned. Or manually entered in case of issue. This will be matched by Validators during verification process.
-* All the customer shall have national_id linked to multiple accounts creation. 
+* All the customer shall have national_id linked to multiple eosio accounts creation. 
 * The initial account creation by Company for a unique person shall be once either as Driver/Commuter/Validator.
 * All the different params  will pass through Blockchain in form of image_hash, fingerprint_hash, national_id_hash. This will ensure user privacy in public chain.
 * The validators are responsible for verifying/blacklisting registered user. And corresponding update the status as "verified" or "blacklisted" on-chain.
+* A user (say, validator) if wants to register as commuter, then the company won't create eosio account for that person. Person would be prompted to create eosio account & then signup for dApp. 
+* Signup is possible only with owning eosio account.
+* This above procedure is to ensure that company creates eosio account only for those, who are first time user of dApp. E.g. A validator if wants to register as commuter, then in this case, it has to create an eosio account on its own. 
 
 ### Validator
 * Validators are the member of TOE CARES, which is officially the customer care service provider built-in within the DApp.

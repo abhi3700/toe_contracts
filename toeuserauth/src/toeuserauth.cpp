@@ -1,10 +1,11 @@
 #include "../include/toeuserauth.hpp"
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeuserauth::creatifyuser( const name& user,
-								const name& type,
-								const checksum256& profile_hash,
-								const string& memo) {
+void toeuserauth::signup( const name& user,
+							const name& type,
+							const checksum256& national_id_hash,
+							const checksum256& profile_hash,
+							const string& memo) {
 	require_auth(user);
 
 	check( (type == "driver"_n) 
@@ -12,13 +13,25 @@ void toeuserauth::creatifyuser( const name& user,
 		|| (type == "validator"_n), "invalid user type");
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
-	user_index user_table(get_self(), user.value);
+	/*
+		NOTE: For scope, 3 choices
+				- M-1: contract [No, as the load will increase due to all users in single table.]
+				- M-2: type [Yes]
+				- M-3: user [No, as finding for accounts held by same person, will not be possible] 
+		Here, the scope is chosen as the `type` i.e. "driver", "commuter", "validator", to reduce the load (in case of contract as scope.)
+				So, if a validator registers as commuter, where in both cases they shall have a common `national_id_hash`,
+				then, in order to check if a person has more than 1 account, it can be done by searching in all 3 tables,
+				corresponding to a `national_id_hash` param.
+
+	*/
+	// Instantiate the user table
+	user_index user_table(get_self(), type.value);
 	auto user_it = user_table.find(user.value);
 
 	if (user_it == user_table.end()) {		// not found
 		user_table.emplace( user, [&](auto& row){
 			row.user = user;
-			row.type = type;
+			row.national_id_hash = national_id_hash;
 			row.profile_hash = profile_hash;
 			row.user_status = "added"_n;
 			row.add_timestamp = now();
@@ -28,9 +41,8 @@ void toeuserauth::creatifyuser( const name& user,
 		send_receipt(user, "the user registers by adding as a " + type.to_string());
 
 	} else {								// found
-		check( user_it->type == type, "user's type doesn't match with the stored one.");
-
 		user_table.modify( user_it, user, [&](auto& row) {
+			row.national_id_hash = national_id_hash;
 			row.profile_hash = profile_hash;
 			row.user_status = "updated"_n;
 			row.update_timestamp = now();
@@ -43,9 +55,11 @@ void toeuserauth::creatifyuser( const name& user,
 
 }
 
+
 // --------------------------------------------------------------------------------------------------------------------
 void toeuserauth::vbdricom( const name& validator_user,
 								const name& dricom_user,
+								const name& dricom_user_type,
 								const name& dricom_user_status,
 								const string& memo ) {
 	// this action is done by validator => So, it's authority.
@@ -54,11 +68,13 @@ void toeuserauth::vbdricom( const name& validator_user,
 	// check if dricom_user account name is valid
 	check(is_account(dricom_user), "invalid user account name");
 	check( validator_user != dricom_user, "validator can't self-validate.");
+	check( (type == "driver"_n) 
+		|| (type == "commuter"_n), "invalid user type for this action.");
 	check( (dricom_user_status == "verified"_n) || (dricom_user_status == "blacklisted"_n), "user status has to be either verified or blacklisted" );
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `users` table for validator_user
-	user_index user_validator_table(get_self(), validator_user.value);
+	user_index user_validator_table(get_self(), "validator".value);
 	auto user_validator_it = user_validator_table.find(validator_user.value);
 
 	check( user_validator_it != user_validator_table.end(), "validator doesn't exist in the table."); 
@@ -66,7 +82,7 @@ void toeuserauth::vbdricom( const name& validator_user,
 	check( user_validator_it->user_status == "verified"_n, "validator is not verified");
 
 	// instantiate the `users` table for driver/commuter
-	user_index user_dricom_table(get_self(), dricom_user.value);
+	user_index user_dricom_table(get_self(), dricom_user_type.value);
 	auto user_dricom_it = user_dricom_table.find(dricom_user.value);
 
 	// ensure that the dricom user is found in the table
@@ -108,13 +124,7 @@ void toeuserauth::compvbvdator( const name& validator_user,
 	require_auth(company_validator_ac);
 
 	check(is_account(company_validator_ac), "invalid company validator's account name");
-
-	// instantiate the `users` table for validator_user
-	user_index user_compvalidator_table(get_self(), company_validator_ac.value);
-	auto user_compvalidator_it = user_compvalidator_table.find(company_validator_ac.value);
-	check(user_compvalidator_it != user_compvalidator_table.end(), "the company validator exists in the table.");
-	check(user_compvalidator_it->user_status == "verified"_n, "the company validator is not yet verified. Please self-verify.");
-
+	check(validator_user != company_validator_ac, "validator_user passed can't be company_validator_ac.");
 
 	check(is_account(validator_user), "invalid validator user account name");
 	check( (validator_user_status == "verified"_n) 
@@ -122,11 +132,10 @@ void toeuserauth::compvbvdator( const name& validator_user,
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `users` table for validator_user
-	user_index user_validator_table(get_self(), validator_user.value);
+	user_index user_validator_table(get_self(), "validator".value);
 	auto user_validator_it = user_validator_table.find(validator_user.value);
 
 	check( user_validator_it != user_validator_table.end(), "validator doesn't exist in the table."); 
-	check( user_validator_it->type == "validator"_n, "the given validator account name is not a validator");
 	check( (user_validator_it->user_status == "added"_n) 
 		|| (user_validator_it->user_status == "updated"_n), "validator is either already verified or blacklisted");
 
