@@ -146,7 +146,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 	- if __"crypto"__ pay_mode, then fare_crypto_est should be transferred beforehand
 * <u>Low balance in crypto wallet:</u>
 ```console
-$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "79.00", "5.00", "17.8000 TOE", "1596732638", "2", "request a ride from home to office"]' -p toecom111111@active
+$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "n", "79.00", 5.00", "17.8000 TOE", "1596732638", "2", "request a ride from home to office"]' -p toecom111111@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
 assertion failure with message: Sorry! Low balance in the ride wallet.
@@ -154,7 +154,7 @@ pending console output:
 ```
 * create ride by `toecom111111` in __crypto__ mode
 ```console
-$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "79.00", "5.00", "15.8000 TOE", "1596931238", "2", "request a ride from home to office"]' -p toecom111111@active
+$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "n", "79.00", "5.00", "15.8000 TOE", "1597834838", "2", "request a ride from home to office"]' -p toecom111111@active
 executed transaction: 582d0b419877030dd1e7b7af3ffc821debc632e051ccc3f96357e2c9d0875656  312 bytes  412 us
 #  toe1ridetaxi <= toe1ridetaxi::create         {"commuter_ac":"toecom111111","src_lat_hash":"d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f1...
 #  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toecom111111","message":"toecom111111 requested a ride."}
@@ -171,7 +171,7 @@ d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2
 
 - "Preet City ,Sector 86,Mohali, Sector 86, Sahibzada Ajit Singh Nagar, Punjab": "30.6715713,76.701094"
 - "Semi-conductor Laboratory, Department of Space, Govt. of India, Phase 8, Industrial Area, Sector 73, Phase 8, Industrial Area, Sahibzada Ajit Singh Nagar, Punjab": "30.703957,76.6999052"
-- "finish_timestamp_est": "Sun, 09 Aug 2020 05:30:38 IST" i.e. 1596931238
+- "finish_timestamp_est": "Wed, 19 Aug 2020 16:30:38 IST" i.e. 1597834838
 ```
 	- For details of vehicle type with fare, please refer this [img](../images/fare/preet_city_to_scl_ride_request.png) [Link](https://www.uber.com/in/en/price-estimate/)
 	- For conversion of INR to TOE: 5 Rs. --> 1.0000 TOE
