@@ -348,8 +348,78 @@ n = no. of Rides needed (in no.)
  This can be controlled via
 	- <u>Driver</u> will give rating or else, their status will continue showing __"assign"__ & not be able to take any ride request (only assigned in case of __"online"__). 
 	- <u>Commuter</u> may or may not give rating. But in order to make them rate, they have got 'x' hrs of wait_time (calculated from `addfareact_timestamp`) before it gets deleted from `ridestaxi` table. So, the faster the rating is done, the more will be incentives. 
+* Initially, the rating_wait_time for commuter is set to 4 hrs (say). Then, the incentives will be broken into 4 pieces (say)
+	- `incentive_1st hr` > `incentive_2nd hr` > `incentive_3rd hr` > `incentive_4th hr`
+	- In this way, most commuters will probably start rating in may be 2 hrs.
+	- Then, again the staggered incentives will be introduced, & then in this way. people will start rating just after the rides or at the earliest so as to not miss the highest possible incentives.
 
 ### Scalability
 * The set of contracts are scalable to any no. of countries.
 * For instance, `ridestaxi` table can have different scope like "india", "usa", ...
 * And if the scope is already taken by a necessary parameter, then there can be another contract or table like in `toeuserauth` contract. The users info. w.r.t countries can be maintained in different tables.
+
+
+### Ride
+* A driver can have multiple rides (present in eosio table) in 2 cases:
+	- pool ride
+	- ride waiting for commuter to rate. Max. wait_time: 'x' hrs set in `rtststamp` table of `toeridetaxi` contract.
+* A commuter shall always have only 1 ride (present in eosio table).
+* The status of ride is continuously maintained by `ride_status` param in eosio table.
+* A driver requires more (than commuter) EOSIO resources - RAM, CPU, NET in order to make a min. no. of ride for livelihood.
+
+### Driver
+* Consumes RAM in user auth table.
+* Consumes RAM, CPU, NET in a ride.
+* A driver has to wait for the finished ride to get erased & free the occupied space. Commuter gets some 'x' hrs to rate.
+* A driver also has to store status info in form of eosio RAM.
+* A driver consumes some RIDEX ride if opted.
+
+### Commuter
+* Consumes RAM in user auth table.
+* Consumes RAM, CPU, NET in a ride.
+
+### User Auth
+* People will face camera & get their photo uploaded into server.
+* People will give their fingerprint details.
+* people will give the digital copy of national_id. Correspondingly the national id no. will be scanned. Or manually entered in case of issue. This will be matched by Validators during verification process.
+* All the customer shall have national_id linked to multiple accounts creation. 
+* The initial account creation by Company for a unique person shall be once either as Driver/Commuter/Validator.
+* All the different params  will pass through Blockchain in form of image_hash, fingerprint_hash, national_id_hash. This will ensure user privacy in public chain.
+* The validators are responsible for verifying/blacklisting registered user. And corresponding update the status as "verified" or "blacklisted" on-chain.
+
+### Validator
+* Validators are the member of TOE CARES, which is officially the customer care service provider built-in within the DApp.
+* Their major works are as follows:
+   - Verify/Blacklist user (driver/commuter)
+   - Organize chat room for discussion regarding issues faced in community.
+   - Schedule Voting related to decision-making.
+   - Organize driver/commuter meetups for get-together, exposure.
+
+* A validator loses its spot based on rating, no. of ratings. E.g. if a validator has less rating 4 (say), then the no. of ratings will be considered for staying or not staying in Top  Validators. And they will be given lesser priority in assigning customer-related issues. Then, they shall have the opportunity to earn back the top spots when the rating is good enough.
+* In this way, the validators ensure in maintaining decentralized governance.
+
+### Whitepaper
+- Abstract
+- Introduction
+- Decentralization
+  + Governance
+  + Economics
+  + Technology
+- Blockchain Platform
+- User Ecosystem
+  + Driver
+  + Commuter
+  + Validator
+- Features
+- Tokenomics
+   + distribution (in pie chart)
+   + earnings
+- Platform Workflow
+  + Users sign-up
+  + Company accounts creation (only if national_id is not available in DB) or else create on your own & supply
+  + 
+- MVP Demo
+- Future
+- References
+- Glossary
+- FAQ

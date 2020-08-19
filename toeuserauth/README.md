@@ -667,3 +667,8 @@ string country_id = "434731547311";
 * [ ] how to ensure a unique id creation if the validator wants to register as commuter. This is because a validator also wants to use TOE as ride-sharing platform.
 	- M-1: can be done by secondary user type i.e. `sec_user_type`
 	- M-2: registering separately as commuter
+- @param "national_id_hash" linked to different types of accounts (driver, commuter, validator) of same person.
+  + 'national_id_hash' as sec key.
+- accounts if not created, then also the user should be able to sign up in the table.
+  + signupwoacnt( national_id_hash )
+  + signupwacnt
