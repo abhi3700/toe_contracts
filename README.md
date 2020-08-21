@@ -352,6 +352,21 @@ n = no. of Rides needed (in no.)
 	- `incentive_1st hr` > `incentive_2nd hr` > `incentive_3rd hr` > `incentive_4th hr`
 	- In this way, most commuters will probably start rating in may be 2 hrs.
 	- Then, again the staggered incentives will be introduced, & then in this way. people will start rating just after the rides or at the earliest so as to not miss the highest possible incentives.
+* Lastly how average rating is calculated:
+	- Suppose, this is the table, find out the ? i.e. rating_avg now
+```md
+| rating_avg | 4.86 | ?  |
+| ride_total | 10   | 11 |
+| ride_rated | 5    | 6  |
+```
+	- Follow this:
+```
+( (last_rating_avg * last_ride_rated) + current_rating ) / (last_ride_rated + 1)
+
+(4.86 * 5 + 4.5) / (5 + 1)
+= 4.78
+```
+	- This calc is done inside `driaddrating` & `comaddrating` actions of `toeridetaxi` contract.
 
 ### Scalability
 * The set of contracts are scalable to any no. of countries.
