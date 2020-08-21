@@ -33,7 +33,7 @@ private:
 	const symbol ride_token_symbol;
 	const name token_contract_ac;
 	const name auth_contract_ac;
-	const name ride_contract_ac;
+	const name ridetaxi_contract_ac;
 	const name rides_fees_ac;
 	const float ride_commission_percent;
 
@@ -46,7 +46,7 @@ public:
 				ride_token_symbol("TOE", 4),
 				token_contract_ac("toe1111token"_n),
 				auth_contract_ac("toe1userauth"_n),
-				ride_contract_ac("toe1ridetaxi"_n),
+				ridetaxi_contract_ac("toe1ridetaxi"_n),
 				rides_fees_ac("toeridesfees"_n),
 				ride_commission_percent(0.25) {}
 
@@ -143,8 +143,8 @@ private:
 	// -----------------------------------------------------------------------------------------------------------------------
 	struct user {
 		name user;
-		name type;						// driver/commuter/validator
-		checksum256 profile_hash;
+		checksum256 national_id_hash;	// hash of (Country's ID proof) e.g. Aadhaar Card no.'s hash
+		checksum256 profile_hash;		// hash of (full name, address)
 		name user_status;				// added/updated/verified/blacklisted
 		uint32_t add_timestamp;			// timestamp at which the user details is added
 		uint32_t update_timestamp;		// timestamp at which the user details is updated
@@ -152,18 +152,18 @@ private:
 		uint32_t blist_timestamp;		// timestamp at which the user is blacklisted
 		name validator_verify;			// validator who verifies the user
 		name validator_blacklist;		// validator who blacklist the user
-		float rating;
 		uint64_t ride_total;
 		uint64_t ride_rated;
+		float rating_avg;
 
 		auto primary_key() const { return user.value; }
-		uint64_t get_secondary_1() const { return type.value; }
-		uint64_t get_secondary_2() const { return user_status.value; }
+		uint64_t get_secondary_1() const { return user_status.value; }
+		checksum256 get_secondary_2() const { return national_id_hash; }
 	};
 
 	using user_index = multi_index<"users"_n, user,
-						indexed_by<"bytype"_n, const_mem_fun<user, uint64_t, &user::get_secondary_1>>,
-						indexed_by<"bystatus"_n, const_mem_fun<user, uint64_t, &user::get_secondary_2>>
+						indexed_by<"bystatus"_n, const_mem_fun<user, uint64_t, &user::get_secondary_1>>,
+						indexed_by<"bynationalid"_n, const_mem_fun<user, checksum256, &user::get_secondary_2>>
 						>;
 
 	// -----------------------------------------------------------------------------------------------------------------------

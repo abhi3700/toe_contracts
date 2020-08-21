@@ -15,11 +15,10 @@ void toeridewallet::sendfare(
 	}
 
 	// check whether the `commuter_ac` is a verified commuter by reading the `auth` table
-	user_index user_table(auth_contract_ac, commuter_ac.value);
+	user_index user_table(auth_contract_ac, "commuter"_n.value);
 	auto user_it = user_table.find(commuter_ac.value);
 
 	check( user_it != user_table.end(), "The commuter is not added in the Auth Table.");
-	check( user_it->type == "commuter"_n, "The given user is not a commuter");
 	check( user_it->user_status == "verified"_n, "The commuter is not verified yet.");
 
 	// Although this is checked in "toetoken::transfer" action, but ride_token_symbol check is pending. 
@@ -120,7 +119,7 @@ void toeridewallet::disburse(const name& receiver_ac,
 								const asset& quantity,
 								const string& memo )
 {
-	require_auth(ride_contract_ac);		// for single ride contract account - taxi (for now)
+	require_auth(ridetaxi_contract_ac);		// for single ride contract account - taxi (for now)
 	// has_auth()		// for multiple ride contract accounts -taxi, bus, metro, ...
 
 	check(is_account(receiver_ac), "receiver account doesn't exist");
@@ -148,7 +147,7 @@ void toeridewallet::disburse(const name& receiver_ac,
 	ride_fees.amount = ride_commission_percent * (quantity.amount);
 
 	// instantiate the ridetaxi table for reading the 'ridex_usagestatus_dri' field
-	ridetaxi_index ridetaxi_table(ride_contract_ac, ride_contract_ac.value);
+	ridetaxi_index ridetaxi_table(ridetaxi_contract_ac, ridetaxi_contract_ac.value);
 	auto driver_idx = ridetaxi_table.get_index<"bydriver"_n>();
 	auto ride_it = driver_idx.find(receiver_ac.value);
 
