@@ -126,9 +126,10 @@ void toeridex::sendridex(
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridex::buyride( const name& buyer,
-				const name& ride_type,
-				uint64_t ride_qty,
-				const string& memo )
+						const name& buyer_type,
+						const name& ride_type,
+						uint64_t ride_qty,
+						const string& memo )
 {
 	require_auth( buyer );
 
@@ -136,7 +137,7 @@ void toeridex::buyride( const name& buyer,
 	check( (ride_type == "driver"_n) || (ride_type == "commuter"_n), "invalid ride type");
 
 	// check if the buyer is verified & is eligible to buy asked 'ride_type' rides
-	check_buyer_seller( buyer, ride_type );
+	check_buyer_seller( buyer, buyer_type, ride_type );
 
 	// check the ride_qty is non-zero
 	check(ride_qty != 0, "Ride quantity can't be zero");
@@ -208,6 +209,7 @@ void toeridex::buyride( const name& buyer,
 }
 // --------------------------------------------------------------------------------------------------------------------
 void toeridex::sellride( const name& seller,
+						const name& seller_type,
 						const name& ride_type,
 						uint64_t ride_qty,
 						const string& memo)
@@ -218,7 +220,7 @@ void toeridex::sellride( const name& seller,
 	check( (ride_type == "driver"_n) || (ride_type == "commuter"_n), "invalid type");
 
 	// check if the seller is verified & is eligible to sell asked 'ride_type' rides
-	check_buyer_seller( seller, ride_type );
+	check_buyer_seller( seller, seller_type, ride_type );
 
 	check(ride_qty != 0, "Ride quantity can't be zero");
 
@@ -283,22 +285,23 @@ void toeridex::sellride( const name& seller,
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridex::consumeride( const name& user,
+							const name& user_type,
 							const name& ride_type,
 							uint64_t ride_qty )
 {
 	// Authority by toeridetaxi
-	require_auth(ride_contract_ac);
+	require_auth(ridetaxi_contract_ac);
 	// has_auth()		// for accessing by other ride contracts - bus, metro,..
 
+	// Only accessed by "driver" or "commuter"
+	check((user_type == "driver"_n) || (user_type == "commuter"_n), "Other types are not allowed for this action");
+
 	// check user is a verified one
-	user_index user_table(auth_contract_ac, user.value);
+	user_index user_table(auth_contract_ac, user_type.value);
 	auto user_it = user_table.find(user.value);
 
 	check(user_it != user_table.end(), "Sorry! The user is not registered with us.");
 	check(user_it->user_status == "verified"_n, "Sorry! The user is not yet verified.");
-
-	// Only accessed by "driver" or "commuter"
-	check((user_it->type == "driver"_n) || (user_it->type == "commuter"_n), "Other types are not allowed for this action");
 
 	// check ride_type
 	check((ride_type == "driver"_n) || (ride_type == "commuter"_n), "Other ride type is not eligible for this action." );
@@ -323,23 +326,24 @@ void toeridex::consumeride( const name& user,
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridex::restoreride( const name& user,
+							const name& user_type,
 							const name& ride_type,
 							uint64_t ride_qty )
 {
 	// Authority by toeridetaxi
-	require_auth(ride_contract_ac);
+	require_auth(ridetaxi_contract_ac);
 	// has_auth()		// for accessing by other ride contracts - bus, metro,..
 
+	// Only accessed by "commuter"
+	check(user_type == "commuter"_n, "Other types are not allowed for this action");
+
 	// check user is a verified one
-	user_index user_table(auth_contract_ac, user.value);
+	user_index user_table(auth_contract_ac, user_type.value);
 	auto user_it = user_table.find(user.value);
 
 	check(user_it != user_table.end(), "Sorry! The user is not registered with us.");
 	check(user_it->user_status == "verified"_n, "Sorry! The user is not yet verified.");
 	
-	// Only accessed by "driver" or "commuter"
-	check(user_it->type == "commuter"_n, "Other types are not allowed for this action");
-
 	// check ride_type is commuter only, if accessed only by commuter
 	check(ride_type == "commuter"_n, "Other ride type is not eligible for this action." );
 
@@ -417,7 +421,7 @@ void toeridex::addridequota(const name& ride_type,
 {
 	// explicitly given permission to only ride contract ac for this action
 	// for more linkage to other contracts - 'bus', 'metro', 'trains' use `has_auth()`
-	require_auth(ride_contract_ac);
+	require_auth(ridetaxi_contract_ac);
 
 	// check the ride_type is "driver" or "commuter"
 	check( (ride_type == "driver"_n) || (ride_type == "commuter"_n), "invalid ride_type");

@@ -34,7 +34,7 @@ private:
 	const symbol ride_token_symbol;
 	// const float supply_factor;
 	const float fees_factor;
-	const name ride_contract_ac;
+	const name ridetaxi_contract_ac;
 	const name token_contract_ac;
 	const name ridex_supply_ac;
 	const name ridex_fees_ac;
@@ -51,7 +51,7 @@ public:
 				ride_token_symbol("TOE", 4),
 				// supply_factor(0.99),	// 99%
 				fees_factor(0.01),		// 1%
-				ride_contract_ac("toe1ridetaxi"_n),
+				ridetaxi_contract_ac("toe1ridetaxi"_n),
 				token_contract_ac("toe1111token"_n),
 				ridex_supply_ac("toeridexsupp"_n),
 				ridex_fees_ac("toeridexfees"_n),
@@ -87,11 +87,13 @@ public:
 	 * @details - buy rides from RIDEX
 	 * 
 	 * @param buyer - any registered user (driver/commuter/validator)
-	 * @ride_type - driver/commuter
+	 * @param buyer_type - buyer type (driver/commuter/validator)
+	 * @param ride_type - driver/commuter
 	 * @param ride_qty - no. of rides to be bought
 	 * @param memo - note for buying ride
 	 */	
 	ACTION buyride( const name& buyer,
+					const name& buyer_type,
 					const name& ride_type,
 					uint64_t ride_qty,
 					const string& memo );
@@ -100,12 +102,14 @@ public:
 	 * @brief - sell rides from RIDEX
 	 * @details - sell rides from RIDEX
 	 * 
-	 * @param buyer - any registered user (driver/commuter/validator)
+	 * @param seller - any registered user (driver/commuter/validator)
+	 * @param seller_type - buyer type (driver/commuter/validator)
 	 * @ride_type - driver/commuter
 	 * @param ride_qty - no. of rides to be sold
 	 * @param memo - note for selling ride
 	 */	
 	ACTION sellride( const name& seller,
+					const name& seller_type,
 					const name& ride_type,
 					uint64_t ride_qty,
 					const string& memo);
@@ -117,11 +121,13 @@ public:
 	 * 				+ create
 	 * 				+ changedes
 	 * 
-	 * @param user - commuter or driver
+	 * @param user - account
+	 * @param user_type - commuter or driver
 	 * @param ride_type - commuter or driver
 	 * @param ride_qty - should be 1
 	 */
 	ACTION consumeride( const name& user,
+						const name& user_type,
 						const name& ride_type,
 						uint64_t ride_qty );
 
@@ -130,11 +136,13 @@ public:
 	 * @details - use ride at 1 stage:
 	 * 				+ changedes
 	 * 
-	 * @param user - commuter or driver
+	 * @param user - account
+	 * @param user_type - commuter
 	 * @param ride_type - commuter or driver
 	 * @param ride_qty - should be 1
 	 */
 	ACTION restoreride( const name& user,
+						const name& user_type,
 						const name& ride_type,
 						uint64_t ride_qty );
 
@@ -156,7 +164,7 @@ public:
 	/**
 	 * @brief - on finishing a ride with __"crypto"__ pay_mode, the ride quota gets added
 	 * @details - the ride quota gets added on finishing a ride from toeridetaxi contract for __"crypto"__ pay_mode
-	 * 			- only accessed by 'ride_contract_ac'
+	 * 			- only accessed by 'ridetaxi_contract_ac'
 	 * 
 	 * @param ride_type - driver/commuter
 	 * @param ride_qty - increase ride_quota by ride_qty
@@ -202,27 +210,29 @@ public:
 						const string& message);
 
 	// --------------------------------------------------------------------------------
-	static void check_buyer_seller( const name& user, const name& ride_type) {
+	static void check_buyer_seller( const name& user, const name& user_type, const name& ride_type) {
+		check((user_type == "driver"_n) || 
+			(user_type == "commuter"_n) || 
+			(user_type == "validator"_n)
+			, "Other types are not allowed for this action");
+
+
 		// check the buyer/seller is enlisted in the `toeuserauth` contract table
-		user_index user_table("toe1userauth"_n, user.value);
+		user_index user_table("toe1userauth"_n, user_type.value);
 		auto user_it = user_table.find(user.value);
 
 		check(user_it != user_table.end(), "Sorry! The user is not registered with us.");
 		check(user_it->user_status == "verified"_n, "Sorry! The user is not yet verified.");
-		check((user_it->type == "driver"_n) || 
-			(user_it->type == "commuter"_n) || 
-			(user_it->type == "validator"_n)
-			, "Other types are not allowed for this action");
 
 		// check for validator can buy/sell only "commuter" type ride
-		if(user_it->type == "validator"_n) {
+		if(user_type == "validator"_n) {
 			check(ride_type == "commuter"_n, "Sorry! A validator can't buy \'driver\' type rides.");
 		} 
 		// check for commuter can buy/sell only "commuter" type ride
-		else if(user_it->type == "commuter"_n) {
+		else if(user_type == "commuter"_n) {
 			check(ride_type == "commuter"_n, "Sorry! A commuter can't buy \'driver\' type rides.");
 		} 
-		// check for driver can buy/sell only "commuter" type ride
+		// check for driver can buy/sell only "driver" type ride
 		else {
 			check(ride_type == "driver"_n, "Sorry! A driver can't buy \'commuter\' type rides.");
 		}
@@ -286,8 +296,8 @@ private:
 	// --------------------------------------------------------------------------------
 	struct user {
 		name user;
-		name type;						// driver/commuter/validator
-		checksum256 profile_hash;
+		checksum256 national_id_hash;	// hash of (Country's ID proof) e.g. Aadhaar Card no.'s hash
+		checksum256 profile_hash;		// hash of (full name, address)
 		name user_status;				// added/updated/verified/blacklisted
 		uint32_t add_timestamp;			// timestamp at which the user details is added
 		uint32_t update_timestamp;		// timestamp at which the user details is updated
@@ -295,18 +305,18 @@ private:
 		uint32_t blist_timestamp;		// timestamp at which the user is blacklisted
 		name validator_verify;			// validator who verifies the user
 		name validator_blacklist;		// validator who blacklist the user
-		float rating;
 		uint64_t ride_total;
 		uint64_t ride_rated;
+		float rating_avg;
 
 		auto primary_key() const { return user.value; }
-		uint64_t get_secondary_1() const { return type.value; }
-		uint64_t get_secondary_2() const { return user_status.value; }
+		uint64_t get_secondary_1() const { return user_status.value; }
+		checksum256 get_secondary_2() const { return national_id_hash; }
 	};
 
 	using user_index = multi_index<"users"_n, user,
-						indexed_by<"bytype"_n, const_mem_fun<user, uint64_t, &user::get_secondary_1>>,
-						indexed_by<"bystatus"_n, const_mem_fun<user, uint64_t, &user::get_secondary_2>>
+						indexed_by<"bystatus"_n, const_mem_fun<user, uint64_t, &user::get_secondary_1>>,
+						indexed_by<"bynationalid"_n, const_mem_fun<user, checksum256, &user::get_secondary_2>>
 						>;
 	
 	// ------------------------------------------------------------------

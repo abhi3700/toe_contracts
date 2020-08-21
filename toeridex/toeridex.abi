@@ -26,6 +26,10 @@
                     "type": "name"
                 },
                 {
+                    "name": "buyer_type",
+                    "type": "name"
+                },
+                {
                     "name": "ride_type",
                     "type": "name"
                 },
@@ -48,6 +52,10 @@
                     "type": "name"
                 },
                 {
+                    "name": "user_type",
+                    "type": "name"
+                },
+                {
                     "name": "ride_type",
                     "type": "name"
                 },
@@ -63,6 +71,10 @@
             "fields": [
                 {
                     "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "user_type",
                     "type": "name"
                 },
                 {
@@ -123,6 +135,10 @@
             "fields": [
                 {
                     "name": "seller",
+                    "type": "name"
+                },
+                {
+                    "name": "seller_type",
                     "type": "name"
                 },
                 {
