@@ -18,18 +18,21 @@ using eosio::same_payer;
 using eosio::action;
 using eosio::permission_level;
 using eosio::datastream;
+using eosio::action_wrapper;
 
 using std::string;
 
 CONTRACT toeuserauth : public contract {
 private:
 	const name company_validator_ac;
+	const name ridetaxi_contract_ac;
 public:
 	using contract::contract;
 
 	toeuserauth(name receiver, name code, datastream<const char*> ds) : 
 				contract(receiver, code, ds), 
-				company_validator_ac("bhubtoeinval"_n) {}
+				company_validator_ac("bhubtoeinval"_n),
+				ridetaxi_contract_ac("toe1ridetaxi") {}
 	
 
 	/**
@@ -84,7 +87,7 @@ public:
 	/**
 	 * @brief - used as inline action to set ride_total in table.
 	 * @details - used as inline action inside `finish` action of toeridetaxi contract
-	 * 
+	 * 			- - E.g driver sets the ride_total of both driver & commuter 
 	 * @param user - user
 	 * @param user_type - driver/commuter
 	 * @param ride_total - total rides till date
@@ -93,13 +96,13 @@ public:
 	 */
 	ACTION setridetotal(const name& user,
 						const name& user_type,
-						float ride_total);
+						uint64_t ride_total);
 
 
 	/**
 	 * @brief - used as inline action to set ride_rated in table.
-	 * @details - used as inline action inside `finish` action of toeridetaxi contract
-	 * 
+	 * @details - used as inline action inside `driaddrating` & `comaddrating` actions of toeridetaxi contract
+	 * 			- E.g driver sets the ride_rated of commuter
 	 * @param user - user
 	 * @param user_type - driver/commuter
 	 * @param ride_total - rated rides till date
@@ -113,7 +116,7 @@ public:
 	/**
 	 * @brief - used as inline action to set rating_avg in table.
 	 * @details - used as inline action inside `driaddrating` & `comaddrating` actions of toeridetaxi contract
-	 * 
+	 * 			- E.g driver sets the rating_avg of commuter
 	 * @param user - user
 	 * @param user_type - driver/commuter
 	 * @param rating_avg - average rating
@@ -154,6 +157,10 @@ public:
 	 */
 	ACTION sendreceipt( const name& user,
 						const string& message);
+
+	using setridetotal_action  = action_wrapper<"setridetotal"_n, &toeuserauth::setridetotal>;
+	using setriderated_action  = action_wrapper<"setriderated"_n, &toeuserauth::setriderated>;
+	using setratingavg_action  = action_wrapper<"setratingavg"_n, &toeuserauth::setratingavg>;
 
 private:
 	// ------------------------------------------------------------------------------------------------

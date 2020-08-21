@@ -68,17 +68,16 @@ void toeuserauth::vbdricom( const name& validator_user,
 	// check if dricom_user account name is valid
 	check(is_account(dricom_user), "invalid user account name");
 	check( validator_user != dricom_user, "validator can't self-validate.");
-	check( (type == "driver"_n) 
-		|| (type == "commuter"_n), "invalid user type for this action.");
+	check( (dricom_user_type == "driver"_n) 
+		|| (dricom_user_type == "commuter"_n), "invalid user type for this action.");
 	check( (dricom_user_status == "verified"_n) || (dricom_user_status == "blacklisted"_n), "user status has to be either verified or blacklisted" );
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `users` table for validator_user
-	user_index user_validator_table(get_self(), "validator".value);
+	user_index user_validator_table(get_self(), "validator"_n.value);
 	auto user_validator_it = user_validator_table.find(validator_user.value);
 
 	check( user_validator_it != user_validator_table.end(), "validator doesn't exist in the table."); 
-	check( user_validator_it->type == "validator"_n, "the given validator account name is not a validator");
 	check( user_validator_it->user_status == "verified"_n, "validator is not verified");
 
 	// instantiate the `users` table for driver/commuter
@@ -132,7 +131,7 @@ void toeuserauth::compvbvdator( const name& validator_user,
 	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `users` table for validator_user
-	user_index user_validator_table(get_self(), "validator".value);
+	user_index user_validator_table(get_self(), "validator"_n.value);
 	auto user_validator_it = user_validator_table.find(validator_user.value);
 
 	check( user_validator_it != user_validator_table.end(), "validator doesn't exist in the table."); 
@@ -161,6 +160,71 @@ void toeuserauth::compvbvdator( const name& validator_user,
 
 }
 
+// --------------------------------------------------------------------------------------------------------------------
+void toeuserauth::setridetotal( const name& user,
+								const name& user_type,
+								uint64_t ride_total ) {
+	// authority by ride contracts
+	require_auth(ridetaxi_contract_ac);
+	// has_auth(ride_contract_ac || , );
+
+	// Instantiate the user table
+	user_index user_table(get_self(), user_type.value);
+	auto user_it = user_table.find(user.value);
+
+	check(user_it != user_table.end(), "the user account: \'" + user.to_string() + "' doesn't exist in the userauth table.");
+
+	user_table.modify(user_it, same_payer, [&](auto& row) {
+		row.ride_total += ride_total;
+	});
+
+	// alert is sent
+	send_alert(user, "the ride_total is updated to: " + std::to_string(user_it->ride_total));
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeuserauth::setriderated( const name& user,
+								const name& user_type,
+								uint64_t ride_rated ) {
+	// authority by ride contracts
+	require_auth(ridetaxi_contract_ac);
+	// has_auth(ride_contract_ac || , );
+
+	// Instantiate the user table
+	user_index user_table(get_self(), user_type.value);
+	auto user_it = user_table.find(user.value);
+
+	check(user_it != user_table.end(), "the user account: \'" + user.to_string() + "' doesn't exist in the userauth table.");
+
+	user_table.modify(user_it, same_payer, [&](auto& row) {
+		row.ride_rated += ride_rated;
+	});
+
+	// alert is sent
+	send_alert(user, "the ride_rated is updated to: " + std::to_string(user_it->ride_rated));
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeuserauth::setratingavg( const name& user,
+								const name& user_type,
+								float rating_avg ) {
+	// authority by ride contracts
+	require_auth(ridetaxi_contract_ac);
+	// has_auth(ride_contract_ac || , );
+
+	// Instantiate the user table
+	user_index user_table(get_self(), user_type.value);
+	auto user_it = user_table.find(user.value);
+
+	check(user_it != user_table.end(), "the user account: \'" + user.to_string() + "' doesn't exist in the userauth table.");
+
+	user_table.modify(user_it, same_payer, [&](auto& row) {
+		row.rating_avg = rating_avg;
+	});
+
+	// alert is sent
+	send_alert(user, "the average rating is updated to: " + std::to_string(rating_avg));
+}
 // --------------------------------------------------------------------------------------------------------------------
 void toeuserauth::deluser( const name& user,
 							const string& memo ) {

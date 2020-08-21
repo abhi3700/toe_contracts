@@ -22,28 +22,6 @@
             ]
         },
         {
-            "name": "creatifyuser",
-            "base": "",
-            "fields": [
-                {
-                    "name": "user",
-                    "type": "name"
-                },
-                {
-                    "name": "type",
-                    "type": "name"
-                },
-                {
-                    "name": "profile_hash",
-                    "type": "checksum256"
-                },
-                {
-                    "name": "memo",
-                    "type": "string"
-                }
-            ]
-        },
-        {
             "name": "deluser",
             "base": "",
             "fields": [
@@ -86,7 +64,61 @@
             ]
         },
         {
-            "name": "user",
+            "name": "setratingavg",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "user_type",
+                    "type": "name"
+                },
+                {
+                    "name": "rating_avg",
+                    "type": "float32"
+                }
+            ]
+        },
+        {
+            "name": "setriderated",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "user_type",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_rated",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "setridetotal",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "user_type",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_total",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "signup",
             "base": "",
             "fields": [
                 {
@@ -96,6 +128,32 @@
                 {
                     "name": "type",
                     "type": "name"
+                },
+                {
+                    "name": "national_id_hash",
+                    "type": "checksum256"
+                },
+                {
+                    "name": "profile_hash",
+                    "type": "checksum256"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "user",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "national_id_hash",
+                    "type": "checksum256"
                 },
                 {
                     "name": "profile_hash",
@@ -130,16 +188,16 @@
                     "type": "name"
                 },
                 {
-                    "name": "rating",
-                    "type": "float32"
-                },
-                {
                     "name": "ride_total",
                     "type": "uint64"
                 },
                 {
                     "name": "ride_rated",
                     "type": "uint64"
+                },
+                {
+                    "name": "rating_avg",
+                    "type": "float32"
                 }
             ]
         },
@@ -153,6 +211,10 @@
                 },
                 {
                     "name": "dricom_user",
+                    "type": "name"
+                },
+                {
+                    "name": "dricom_user_type",
                     "type": "name"
                 },
                 {
@@ -173,11 +235,6 @@
             "ricardian_contract": ""
         },
         {
-            "name": "creatifyuser",
-            "type": "creatifyuser",
-            "ricardian_contract": ""
-        },
-        {
             "name": "deluser",
             "type": "deluser",
             "ricardian_contract": ""
@@ -190,6 +247,26 @@
         {
             "name": "sendreceipt",
             "type": "sendreceipt",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setratingavg",
+            "type": "setratingavg",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setriderated",
+            "type": "setriderated",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setridetotal",
+            "type": "setridetotal",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "signup",
+            "type": "signup",
             "ricardian_contract": ""
         },
         {

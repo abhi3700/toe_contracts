@@ -677,6 +677,4 @@ f3637590254f281419698dc62e9058eaaff04bc1e0fba1fe0c5899239509821c
 ```
 
 ## TODO
-- accounts if not created, then also the user should be able to sign up in the table.
-  + signupwoacnt( national_id_hash )
-  + signupwacnt
+* [ ] in the userauth table, check if `get_self()` needed in modifying for params: `ride_total`, `ride_rated`, `rating_avg`
