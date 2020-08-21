@@ -34,6 +34,7 @@ private:
 	const name wallet_contract_ac;
 	const name token_contract_ac;
 	const name ridex_contract_ac;
+	const name auth_contract_ac;
 
 public:
 	using contract::contract;
@@ -43,7 +44,8 @@ public:
 				ride_token_symbol("TOE", 4),
 				wallet_contract_ac("toe14rwallet"_n),
 				token_contract_ac("toe1111token"_n),
-				ridex_contract_ac("toe1111ridex"_n) {}
+				ridex_contract_ac("toe1111ridex"_n),
+				auth_contract_ac("toe1userauth"_n) {}
 	
 
 	/**
@@ -342,17 +344,19 @@ public:
 
 	// --------------------------------------------------------------------------------------------------------------------
 	static void check_userauth( const name& user, const name& type) {
-		// check whether the `user` is a verified driver by reading the `auth` table
-		user_index user_table("toe1userauth"_n, user.value);
-		auto user_it = user_table.find(user.value);
-
 		if(type == "driver"_n) {
+			// check whether the `user` is a verified driver by reading the `auth` table
+			user_index user_table("toe1userauth"_n, "driver"_n.value);
+			auto user_it = user_table.find(user.value);
+
 			check( user_it != user_table.end(), "The driver is not added in the Auth Table.");
-			check( user_it->type == "driver"_n, "The given user is not a driver");
 			check( user_it->user_status == "verified"_n, "The driver is not verified yet.");
 		} else if (type == "commuter"_n) {
+			// check whether the `user` is a verified commuter by reading the `auth` table
+			user_index user_table("toe1userauth"_n, "commuter"_n.value);
+			auto user_it = user_table.find(user.value);
+
 			check( user_it != user_table.end(), "The commuter is not added in the Auth Table.");
-			check( user_it->type == "commuter"_n, "The given user is not a commuter");
 			check( user_it->user_status == "verified"_n, "The commuter is not verified yet.");
 		}
 	}
@@ -470,8 +474,8 @@ private:
 // -----------------------------------------------------------------------------------------------------------------------
 	struct user {
 		name user;
-		name type;						// driver/commuter/validator
-		checksum256 profile_hash;
+		checksum256 national_id_hash;	// hash of (Country's ID proof) e.g. Aadhaar Card no.'s hash
+		checksum256 profile_hash;		// hash of (full name, address)
 		name user_status;				// added/updated/verified/blacklisted
 		uint32_t add_timestamp;			// timestamp at which the user details is added
 		uint32_t update_timestamp;		// timestamp at which the user details is updated
@@ -479,18 +483,18 @@ private:
 		uint32_t blist_timestamp;		// timestamp at which the user is blacklisted
 		name validator_verify;			// validator who verifies the user
 		name validator_blacklist;		// validator who blacklist the user
-		float rating;
 		uint64_t ride_total;
 		uint64_t ride_rated;
+		float rating_avg;
 
 		auto primary_key() const { return user.value; }
-		uint64_t get_secondary_1() const { return type.value; }
-		uint64_t get_secondary_2() const { return user_status.value; }
+		uint64_t get_secondary_1() const { return user_status.value; }
+		checksum256 get_secondary_2() const { return national_id_hash; }
 	};
 
 	using user_index = multi_index<"users"_n, user,
-						indexed_by<"bytype"_n, const_mem_fun<user, uint64_t, &user::get_secondary_1>>,
-						indexed_by<"bystatus"_n, const_mem_fun<user, uint64_t, &user::get_secondary_2>>
+						indexed_by<"bystatus"_n, const_mem_fun<user, uint64_t, &user::get_secondary_1>>,
+						indexed_by<"bynationalid"_n, const_mem_fun<user, checksum256, &user::get_secondary_2>>
 						>;
 // ========Functions========================================================================================================
 	// Adding inline action for `sendalert` action in the same contract 
@@ -531,6 +535,13 @@ private:
 	//     return (uint128_t{x} << 64) | y;
 	// }
 
+	// calculate the current_rating_avg
+	inline float current_rating_avg( float last_rating_avg,
+										float current_rating,
+										uint64_t last_ride_rated ) const {
+		return ( (last_rating_avg * last_ride_rated) + current_rating ) / (last_ride_rated + 1);
+	} 
+
 	// Adding inline action for `disburse` action in the ridewallet contract   
 	void disburse_fare(const name& receiver_ac,
 						const name& wallet_holder,
@@ -539,16 +550,34 @@ private:
 
 	// Adding inline action for `consumeride` action in the ridex contract   
 	void consume_ride( const name& user,
+						const name& user_type,
 						const name& ride_type,
 						uint64_t ride_qty );
 
 	// Adding inline action for `restoreride` action in the ridex contract   
 	void restore_ride( const name& user,
+						const name& user_type,
 						const name& ride_type,
 						uint64_t ride_qty );
 
 	// Adding inline action for `addridequota` action in the ridex contract   
 	void add_ridequota(const name& type, 
 						uint64_t ride_qty );
+
+	// Adding inline action for `setridetotal` action in the user auth contract   
+	void set_ride_total(const name& user,
+						const name& user_type,
+						uint64_t ride_total);
+
+	// Adding inline action for `setriderated` action in the user auth contract   
+	void set_ride_rated(const name& user,
+						const name& user_type,
+						uint64_t ride_rated);
+
+	// Adding inline action for `setratingavg` action in the user auth contract   
+	void set_rating_avg(const name& user,
+						const name& user_type,
+						float rating_avg);
+
 
 };

@@ -1,6 +1,7 @@
 #include "../include/toeridetaxi.hpp"
 #include "../../toeridewallet/include/toeridewallet.hpp"
 #include "../../toeridex/include/toeridex.hpp"
+#include "../../toeuserauth/include/toeuserauth.hpp"
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::create(
@@ -125,7 +126,7 @@ void toeridetaxi::create(
 
 		// if yes, deduct rides using consume_ride in "crypto" pay_mode only
 		if(ridex_usagestatus_com == "y"_n) {
-			consume_ride(commuter_ac, "commuter"_n, 1);
+			consume_ride(commuter_ac, "commuter"_n, "commuter"_n, 1);
 		}
 	 }
 	// add the ride details by commuter for __"non-crypto"__ pay_mode
@@ -406,9 +407,9 @@ void toeridetaxi::changedes( const name& commuter_ac,
 
 		// if yes, consume/restore rides based on different cases in "crypto" pay_mode only
 		if((ride_it->ridex_usagestatus_com == "y"_n) && (ridex_usagestatus_com == "n"_n)) {				// Case-1: from "y" to "n"
-			restore_ride(commuter_ac, "commuter"_n, 1);
+			restore_ride(commuter_ac, "commuter"_n, "commuter"_n, 1);
 		} else if((ride_it->ridex_usagestatus_com == "n"_n) && (ridex_usagestatus_com == "y"_n)) {		// Case-2: from "n" to "y"
-			consume_ride(commuter_ac, "commuter"_n, 1);
+			consume_ride(commuter_ac, "commuter"_n, "commuter"_n, 1);
 		}
 
 		// Case-3: from "y" to "y", Here, the ridex ride has already been deducted from `rexusrwallet` table in 'toeridetaxi::create' action. So, do nothing (consume/restore).
@@ -497,7 +498,7 @@ void toeridetaxi::start( const name& driver_ac,
 
 	// if yes, consume rides using consume_ride only if pay_mode is "crypto"
 	if((ridex_usagestatus_dri == "y"_n) && (ride_it->pay_mode == "crypto"_n)) {
-		consume_ride(driver_ac, "driver"_n, 1);
+		consume_ride(driver_ac, "driver"_n, "driver"_n, 1);
 	}
 
 	// On successful execution, an alert is sent
@@ -539,6 +540,24 @@ void toeridetaxi::finish( const name& driver_ac,
 		// add '1' ride to ridex ride_quota for "commuter" type
 		add_ridequota("commuter"_n, 1);
 	}
+
+	// increase the total ride of driver by 1
+	// Instantiate the user driver table
+	user_index user_driver_table(auth_contract_ac, "driver"_n.value);
+	auto user_driver_it = user_driver_table.find(driver_ac.value);
+
+	check(user_driver_it != user_driver_table.end(), "the user: \'" + driver_ac.to_string() + "\' doesn't exist in the userauth table.");
+
+	set_ride_total(driver_ac, "driver"_n, user_driver_it->ride_total + 1);
+
+	// increase the total ride of commuter by 1
+	// Instantiate the user commuter table
+	user_index user_commuter_table(auth_contract_ac, "commuter"_n.value);
+	auto user_commuter_it = user_commuter_table.find(ride_it->commuter_ac.value);
+
+	check(user_commuter_it != user_commuter_table.end(), "the user: \'" + ride_it->commuter_ac.to_string() + "\' doesn't exist in the userauth table.");
+
+	set_ride_total(ride_it->commuter_ac, "commuter"_n, user_commuter_it->ride_total + 1);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -680,6 +699,18 @@ void toeridetaxi::driaddrating( const name& driver_ac,
 	send_receipt(driver_ac, driver_ac.to_string() + " rates the ride with ride_id \'" 
 								+ to_hex(&ride_id, sizeof(ride_id)) + "\' as \'" + std::to_string(rating_com) + "\'.");
 
+	// set the current rating_avg for commuter in `userauth` table
+	// Instantiate the user commuter table
+	user_index user_commuter_table(auth_contract_ac, "commuter"_n.value);
+	auto user_commuter_it = user_commuter_table.find(ride_it->commuter_ac.value);
+
+	check(user_commuter_it != user_commuter_table.end(), "the user: \'" + ride_it->commuter_ac.to_string() + "\' doesn't exist in the userauth table.");
+
+	set_rating_avg(ride_it->commuter_ac, "commuter"_n, current_rating_avg(user_commuter_it->rating_avg, rating_com, user_commuter_it->ride_rated));
+
+	// increase the rated ride of commuter by 1
+	set_ride_rated(ride_it->commuter_ac, "commuter"_n, user_commuter_it->ride_rated + 1);
+
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -718,6 +749,17 @@ void toeridetaxi::comaddrating( const name& commuter_ac,
 	send_receipt(commuter_ac, commuter_ac.to_string() + " rates the ride with ride_id \'" 
 								+ to_hex(&ride_id, sizeof(ride_id)) + "\' as \'" + std::to_string(rating_dri) + "\'.");
 
+	// set the current rating_avg for driver in `userauth` table
+	// Instantiate the user driver table
+	user_index user_driver_table(auth_contract_ac, "driver"_n.value);
+	auto user_driver_it = user_driver_table.find(ride_it->driver_ac.value);
+
+	check(user_driver_it != user_driver_table.end(), "the user: \'" + ride_it->driver_ac.to_string() + "\' doesn't exist in the userauth table.");
+
+	set_rating_avg(ride_it->driver_ac, "driver"_n, current_rating_avg(user_driver_it->rating_avg, rating_dri, user_driver_it->ride_rated));
+
+	// increase the rated ride of commuter by 1
+	set_ride_rated(ride_it->driver_ac, "driver"_n, user_driver_it->ride_rated + 1);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -899,19 +941,21 @@ void toeridetaxi::disburse_fare(const name& receiver_ac,
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::consume_ride( const name& user,
+					const name& user_type,
 					const name& ride_type,
 					uint64_t ride_qty ) {
 	toeridex::consumeride_action consumeride(ridex_contract_ac, {get_self(), "active"_n});
-	consumeride.send(user, ride_type, ride_qty);
+	consumeride.send(user, user_type, ride_type, ride_qty);
 
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::restore_ride( const name& user,
+					const name& user_type,
 					const name& ride_type,
 					uint64_t ride_qty ) {
 	toeridex::restoreride_action restoreride(ridex_contract_ac, {get_self(), "active"_n});
-	restoreride.send(user, ride_type, ride_qty);
+	restoreride.send(user, user_type, ride_type, ride_qty);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -920,3 +964,29 @@ void toeridetaxi::add_ridequota(const name& type,
 	toeridex::addridequota_action addridequota(ridex_contract_ac, {get_self(), "active"_n});
 	addridequota.send(type, ride_qty);
 }
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::set_ride_total(const name& user,
+									const name& user_type,
+									uint64_t ride_total) {
+	toeuserauth::setridetotal_action set_ridetotal(auth_contract_ac, {get_self(), "active"_n});
+	set_ridetotal.send(user, user_type, ride_total);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::set_ride_rated(const name& user,
+									const name& user_type,
+									uint64_t ride_rated) {
+	toeuserauth::setriderated_action set_riderated(auth_contract_ac, {get_self(), "active"_n});
+	set_riderated.send(user, user_type, ride_rated);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::set_rating_avg(const name& user,
+									const name& user_type,
+									float rating_avg) {
+	toeuserauth::setratingavg_action set_ratingavg(auth_contract_ac, {get_self(), "active"_n});
+	set_ratingavg.send(user, user_type, rating_avg);
+}
+
+
