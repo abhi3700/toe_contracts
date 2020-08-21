@@ -41,6 +41,8 @@ void toeuserauth::signup( const name& user,
 		send_receipt(user, "the user registers by adding as a " + type.to_string());
 
 	} else {								// found
+		check((national_id_hash != user_it->national_id_hash) || (profile_hash != user_it->profile_hash), "at least profile or national id hash should be different." );
+		
 		user_table.modify( user_it, user, [&](auto& row) {
 			row.national_id_hash = national_id_hash;
 			row.profile_hash = profile_hash;

@@ -68,32 +68,31 @@ warning: transaction executed locally, but may not be confirmed by the network y
 #### 1. Driver - `toedri111111`
 * `toedri111111` uses `signup` action to register as a driver
 ```console
-$ cleost push action toe1userauth signup '["toedri111111", "driver", "e5deda7cafa7b8c861b352e34d6741461ee17a7c2385a0f86763e9ab3298c385", "register by adding info as a driver" ]' -p toedri111111@active
-executed transaction: 60429714ae4dc6cdbb771aabefcc404985a9f1765bb683b7bb527cfae1499cf3  168 bytes  999 us
-#  toe1userauth <= toe1userauth::signup   {"user":"toedri111111","type":"driver","profile_hash":"e5deda7cafa7b8c861b352e34d6741461ee17a7c2385a...
-#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111111","message":"the user details is added."}
-#  toedri111111 <= toe1userauth::sendreceipt    {"user":"toedri111111","message":"the user details is added."}
+$ cleost push action toe1userauth signup '["toedri111111", "driver", "205dab1950a8c8f7e011f72f1cec4e4c23351b99cdb9705a3f84d64661d1c704", "f69b120a2e7c9c97edec7fb99e85ca8f7dd8afdbe534a39f4adf89add9df9271", "register by adding info as a driver" ]' -p toedri111111@active
+executed transaction: 676e368f40eddc82a0eb9ecb6dfc6799945d02492dd90fe9c6cd5f86459bfbbc  208 bytes  304 us
+#  toe1userauth <= toe1userauth::signup         {"user":"toedri111111","type":"driver","national_id_hash":"205dab1950a8c8f7e011f72f1cec4e4c23351b99c...
+#  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111111","message":"the user registers by adding as a driver"}
+#  toedri111111 <= toe1userauth::sendreceipt    {"user":"toedri111111","message":"the user registers by adding as a driver"}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
-
-* view the table after `toedri111111` registers as a __driver__
+	- view the table after `toedri111111` registers as a __driver__
 ```console
-$ cleost get table toe1userauth toedri111111 users
+$ cleost get table toe1userauth driver users
 {
   "rows": [{
       "user": "toedri111111",
-      "type": "driver",
-      "profile_hash": "e5deda7cafa7b8c861b352e34d6741461ee17a7c2385a0f86763e9ab3298c385",
+      "national_id_hash": "205dab1950a8c8f7e011f72f1cec4e4c23351b99cdb9705a3f84d64661d1c704",
+      "profile_hash": "f69b120a2e7c9c97edec7fb99e85ca8f7dd8afdbe534a39f4adf89add9df9271",
       "user_status": "added",
-      "add_timestamp": 1596366825,
+      "add_timestamp": 1598040647,
       "update_timestamp": 0,
       "verify_timestamp": 0,
       "blist_timestamp": 0,
       "validator_verify": "",
       "validator_blacklist": "",
-      "rating": "0.00000000000000000",
       "ride_total": 0,
-      "ride_rated": 0
+      "ride_rated": 0,
+      "rating_avg": "0.00000000000000000"
     }
   ],
   "more": false,
@@ -101,7 +100,7 @@ $ cleost get table toe1userauth toedri111111 users
 }
 ```
 
-* You can check that the `toedri111111` driver is notified, by clicking the [link](https://junglehistory.cryptolions.io/v2/history/get_actions?account=toedri111111) in the browser:
+* You can check that the `toedri111111` driver is notified, by clicking the [link](https://jungle.eosn.io/v2/history/get_actions?account=toedri111111) for Jungle 3 Testnet in the browser. Also, view on [Block explorer](https://jungle3.bloks.io/account/toedri111111):
 ```json
 {
 	"query_time_ms":6.909,"cached":false,"lib":0,"total":{"value":2,"relation":"eq"},
@@ -131,6 +130,7 @@ $ cleost get table toe1userauth toedri111111 users
 				"data":{
 					"user":"toedri111111",
 					"type":"driver",
+					"national_id_hash": "205DAB1950A8C8F7E011F72F1CEC4E4C23351B99CDB9705A3F84D64661D1C704",
 					"profile_hash":"E5DEDA7CAFA7B8C861B352E34D6741461EE17A7C2385A0F86763E9AB3298C385",
 					"memo":"register for being driver"
 				}
@@ -144,14 +144,23 @@ $ cleost get table toe1userauth toedri111111 users
 }
 ```
 	- NOTES:
-		+ For main action `signup`, only the contract (`toe1userauth`) account is notified.
-		+ For inline action `sendreceipt`, both the contract (`toe1userauth`) & user (`toedri111111`) accounts are notified.
-		+ both the actions are stored in same block no. __104842897__ with same txn_id __60429714ae4dc6cdbb771aabefcc404985a9f1765bb683b7bb527cfae1499cf3__
+		+ The main action `signup` is shown in both the contract account - `toe1userauth` & driver account - `toedri111111` .
+		+ The inline action `sendreceipt` is shown in both the contract (`toe1userauth`) & user (`toedri111111`) accounts.
+		+ both the actions are stored in same block no. __31,775,245__ with same txn_id __676e368f40eddc82a0eb9ecb6dfc6799945d02492dd90fe9c6cd5f86459bfbbc__
 		+ for this action, resources used:
-			- RAM: __0.684 KB__ of `toedri111111` (mentioned in `emplace`, `modify` methods of table) 
-			- NET: __176 bytes__ of `toedri111111` (mentioned in `require_auth()`)
-			- CPU: __879 us__ of `toedri111111` (mentioned in `require_auth()`)
+			- RAM: __0.739 KB__ of `toedri111111` (mentioned in `emplace`, `modify` methods of table) 
+			- NET: __208 bytes__ of `toedri111111` (mentioned in `require_auth()`)
+			- CPU: __304 us__ of `toedri111111` (mentioned in `require_auth()`)
 		+ <u>Observation:</u> The __RAM__, __NET__ are constant for different execution of the `signup` action. But, the __CPU__ is different i.e. range: __326-991 us__
+
+* driver tries to send same info again, & get error:
+```console
+$ cleost push action toe1userauth signup '["toedri111111", "driver", "205dab1950a8c8f7e011f72f1cec4e4c23351b99cdb9705a3f84d64661d1c704", "f69b120a2e7c9c97edec7fb99e85ca8f7dd8afdbe534a39f4adf89add9df9271", "register by adding info as a driver" ]' -p toedri111111@active
+Error 3050003: eosio_assert_message assertion failure
+Error Details:
+assertion failure with message: at least profile or national id hash should be different.
+pending console output:
+```
 
 #### 2. Driver - `toedri111112`
 Just like driver - `toedri111111` add & check the info.
@@ -169,7 +178,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 Just like driver - `toedri111111` add & check the info.
 * `toedri111113` uses `signup` action to register as a driver
 ```console
-$ cleost push action toe1userauth signup '["toedri111113", "driver", "847081360ffb58362154d0b7e328d18d9bfec74809a1035f8eb0a9c0907549b6", "register by adding info as a driver" ]' -p toedri111113@active
+$ cleost push action toe1userauth signup '["toedri111113", "driver", "847081360ffb58362154d0b7e328d18d9bfec74809a1035f8eb0a9c0907549b6", "signup by adding info as a driver" ]' -p toedri111113@active
 executed transaction: 13b9689eb356464901aa441a1ce15f5be929b110bfb7f82337a060b4f8342ac1  176 bytes  879 us
 #  toe1userauth <= toe1userauth::signup   {"user":"toedri111113","type":"driver","profile_hash":"847081360ffb58362154d0b7e328d18d9bfec74809a10...
 #  toe1userauth <= toe1userauth::sendreceipt    {"user":"toedri111113","message":"the user details is added."}
@@ -285,36 +294,69 @@ executed transaction: 663079caaf1f5e71e2cd83df629918f0f702e05234768c95784f475f28
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
 
-#### 1. Company Validator - `bhubtoeinval`
-Just like driver - `toedri111111` add & check the info.
-* `bhubtoeinval` uses `signup` action to register as a validator
-```console
-$ cleost push action toe1userauth signup '["bhubtoeinval", "validator", "77c219ee156e40ffb3e05c4084ab3268c07e1658c8c5da48d38546f330a720ac", "register by adding info as a company validator" ]' -p bhubtoeinval@active
-executed transaction: d4f822ebef14dc0cb654fb9de4e3a170759746ccc45a204703249b7a077400a5  192 bytes  306 us
-#  toe1userauth <= toe1userauth::signup   {"user":"bhubtoeinval","type":"validator","profile_hash":"77c219ee156e40ffb3e05c4084ab3268c07e1658c8...
-#  toe1userauth <= toe1userauth::sendreceipt    {"user":"bhubtoeinval","message":"the user registers by adding as a validator"}
-#  bhubtoeinval <= toe1userauth::sendreceipt    {"user":"bhubtoeinval","message":"the user registers by adding as a validator"}
-warning: transaction executed locally, but may not be confirmed by the network yet         ]
-```
-
 #### 1. Validator - `toepar111111`
-Just like driver - `toedri111111` add & check the info.
 * `toepar111111` uses `signup` action to register as a validator
 ```console
-$ cleost push action toe1userauth signup '["toepar111111", "validator", "2f01723e886ad39bc7cbf330faf131310f82392af082b1b0a0598ce1dd538cf7", "register by adding info as a validator" ]' -p toepar111111@active
-executed transaction: 9e1e2a7096d33e753a7202fd450621881c4a0dc9094fa11a2f08e7fc41edeb7f  184 bytes  290 us
-#  toe1userauth <= toe1userauth::signup   {"user":"toepar111111","type":"validator","profile_hash":"2f01723e886ad39bc7cbf330faf131310f82392af0...
+$ cleost push action toe1userauth signup '["toepar111111", "validator", "f3637590254f281419698dc62e9058eaaff04bc1e0fba1fe0c5899239509821c", "c0460fbe31d3e24b6b119869791d04ab1b6ed752c994d4e4b01793d32e8d6f6b", "register by adding info as a validator" ]' -p toepar111111@active
+executed transaction: efcf9be2d36d8f095475fa1f3d243c672155db3fcc6e3f4eb33498f1c7a73e89  216 bytes  381 us
+#  toe1userauth <= toe1userauth::signup         {"user":"toepar111111","type":"validator","national_id_hash":"f3637590254f281419698dc62e9058eaaff04b...
 #  toe1userauth <= toe1userauth::sendreceipt    {"user":"toepar111111","message":"the user registers by adding as a validator"}
 #  toepar111111 <= toe1userauth::sendreceipt    {"user":"toepar111111","message":"the user registers by adding as a validator"}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
 
+### Action - `compvbvdator`
+* `bhubtoeinval` verifies `toepar111111` validator
+```console
+$ cleost push action toe1userauth compvbvdator '["toepar111111", "verified", "verify validator"]' -p bhubtoeinval@active
+executed transaction: b9bdfc0b975488dc427f25106f9880f2462e52db70758098310811fb975abed8  128 bytes  279 us
+#  toe1userauth <= toe1userauth::compvbvdator   {"validator_user":"toepar111111","validator_user_status":"verified","memo":"verify validator"}
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toepar111111","message":"the user status is updated to verified by bhubtoeinval. Note for t...
+#  toepar111111 <= toe1userauth::sendalert      {"user":"toepar111111","message":"the user status is updated to verified by bhubtoeinval. Note for t...
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+	- View the table after this operation
+```console
+$ cleost get table toe1userauth validator users --show-payer
+{
+  "rows": [{
+      "data": {
+        "user": "toepar111111",
+        "national_id_hash": "f3637590254f281419698dc62e9058eaaff04bc1e0fba1fe0c5899239509821c",
+        "profile_hash": "c0460fbe31d3e24b6b119869791d04ab1b6ed752c994d4e4b01793d32e8d6f6b",
+        "user_status": "verified",
+        "add_timestamp": 1598042527,
+        "update_timestamp": 0,
+        "verify_timestamp": 1598042927,
+        "blist_timestamp": 0,
+        "validator_verify": "bhubtoeinval",
+        "validator_blacklist": "",
+        "ride_total": 0,
+        "ride_rated": 0,
+        "rating_avg": "0.00000000000000000"
+      },
+      "payer": "toepar111111"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
+
 ### Action - `vbdricom`
+* `toepar111111` tries to verify driver, but gets error:
+```console
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111111", "driver", "verified", "verify user"]' -p toepar111111@active
+Error 3050003: eosio_assert_message assertion failure
+Error Details:
+assertion failure with message: validator is not verified
+pending console output:
+``` 
 * `toepar111111` verifies driver - `toedri111111`
 ```console
-$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111111", "verified", "verify user"]' -p toepar111111@active
-executed transaction: 172797738cf436b25d5eb776c1f66afd8965d48912565c41f18733ad0a431e1e  128 bytes  869 us
-#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toedri111111","dricom_user_status":"verified","memo"...
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toedri111111", "driver", "verified", "verify user"]' -p toepar111111@active
+executed transaction: ee18dfc344aaaae2f5c608d3d25608de899c3aac84eb837748cfbf435a64a02d  136 bytes  205 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toedri111111","dricom_user_type":"driver","dricom_us...
 #  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111111","message":"the user status is updated to verified by toepar111111. Note for t...
 #  toedri111111 <= toe1userauth::sendalert      {"user":"toedri111111","message":"the user status is updated to verified by toepar111111. Note for t...
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
@@ -431,10 +473,9 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ```
 * `toepar111111` verifies commuter - `toecom111111`
 ```console
-$ cleost push action toe1userauth vbdricom '["toepar111111", "toecom111111", "verified", "verify user"]
-' -p toepar111111@active
-executed transaction: cd3e6c0adba7cd80b9280314b188c5856b9f451269b7f79d43b831b166556d2c  128 bytes  723 us
-#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toecom111111","dricom_user_status":"verified","memo"...
+$ cleost push action toe1userauth vbdricom '["toepar111111", "toecom111111", "commuter", "verified", "verify user as commuter"]' -p toepar111111@active
+executed transaction: 5163bc01d6a44d3ac590a39bfcd1d302ecbabf8d4f6ddab026e6f925b036a946  152 bytes  280 us
+#  toe1userauth <= toe1userauth::vbdricom       {"validator_user":"toepar111111","dricom_user":"toecom111111","dricom_user_type":"commuter","dricom_...
 #  toe1userauth <= toe1userauth::sendalert      {"user":"toecom111111","message":"the user status is updated to verified by toepar111111. Note for t...
 #  toecom111111 <= toe1userauth::sendalert      {"user":"toecom111111","message":"the user status is updated to verified by toepar111111. Note for t...
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
