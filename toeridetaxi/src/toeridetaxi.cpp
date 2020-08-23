@@ -307,12 +307,12 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 
 	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
 
-	// cancel possible at 3 ride stages only
+	// cancel possible at 2 ride stages only
 	check( 
-		(ride_it->ride_status == "requested"_n) || 
+		// (ride_it->ride_status == "requested"_n) || 		// ride has to be assigned to driver, only then they can cancel the ride.
 		(ride_it->ride_status == "enroute"_n) || 
 		(ride_it->ride_status == "waiting"_n)
-		, "The ride status must be either \'requested\' or \'enroute\' or \'waiting\' in order to cancel ride by driver.");
+		, "The ride status must be either \'enroute\' or \'waiting\' in order to cancel ride by driver.");
 
 	rideid_idx.modify(ride_it, driver_ac, [&](auto& row){
 		row.ride_status = "cancelleddri"_n;
