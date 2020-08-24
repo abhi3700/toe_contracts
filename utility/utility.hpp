@@ -58,3 +58,16 @@ inline uint256_t ext_int_string(const string& s ) const {
 
     return output_int;
 }
+
+/**
+ * @brief - get transaction id. Also, possible in string by using `to_hex()` function
+ * 
+ */
+inline checksum256 get_trxid()
+{
+  auto trxsize = transaction_size();
+  char trxbuf[trxsize];
+  uint32_t trxread = read_transaction( trxbuf, trxsize );
+  check( trxsize == trxread, "read_transaction failed");
+  return sha256(trxbuf, trxsize);
+}
