@@ -268,6 +268,20 @@
             ]
         },
         {
+            "name": "pair_name_checksum256",
+            "base": "",
+            "fields": [
+                {
+                    "name": "first",
+                    "type": "name"
+                },
+                {
+                    "name": "second",
+                    "type": "checksum256"
+                }
+            ]
+        },
+        {
             "name": "reachsrc",
             "base": "",
             "fields": [
@@ -354,6 +368,10 @@
                 {
                     "name": "fiat_paystatus",
                     "type": "name"
+                },
+                {
+                    "name": "action_txnid_vector",
+                    "type": "pair_name_checksum256[]"
                 },
                 {
                     "name": "create_timestamp",

@@ -3,6 +3,9 @@
 #include <eosio/asset.hpp>
 #include <eosio/system.hpp>
 #include <eosio/crypto.hpp>
+#include <eosio/transaction.hpp>
+#include <algorithm>
+#include <vector>
 #include <string>
 
 using eosio::contract;
@@ -23,8 +26,14 @@ using eosio::require_recipient;
 using eosio::action_wrapper;
 using eosio::checksum256;
 using eosio::sha256;
+using eosio::transaction_size;
+using eosio::read_transaction;
+
 
 using std::string;
+using std::vector;
+using std::pair;
+using std::make_pair;
 
 CONTRACT toeridetaxi : public contract
 {
@@ -368,6 +377,23 @@ public:
 		check(quantity.symbol == symbol("TOE", 4), "symbol precision mismatch");
 	}
 
+	// --------------------------------------------------------------------------------------------------------------------
+	// inline void read_vector_pair( const vector<pair<name, checksum256>>& v, const name& s ) {
+	// 	auto s_it = std::find_if(v.begin(), v.end(), [&](auto& vs){ return vs.first == s; });
+
+	// 	if(s_it != v.end()) {			// key found
+	// 		print("The value(s): ");
+
+	// 		while(s_it != v.end()) {
+	// 			print(s_it->second, " | ");
+	// 			++s_it;
+	// 		}
+	// 	} else {						// key NOT found
+	// 		print("No item found with this key");
+	// 	}
+	// }
+
+
 private:
 // ========TABLES========================================================================================================
 	TABLE ridetaxi
@@ -385,6 +411,7 @@ private:
 		name pay_mode;            // crypto or fiatdigi or fiatcash
 		name crypto_paystatus;          // paidbycom or paidtodri for "crypto"
 		name fiat_paystatus;          // paidbycom or paidtodri	for "fiatdigi"
+		vector<pair<name, checksum256>> action_txnid_vector;		// vector of pairs (action_name, txn_id)
 		uint32_t create_timestamp;			// at which ride is created
 		uint32_t assign_timestamp;  		// at which ride is assigned
 		uint32_t reachsrc_timestamp_est;    // at which driver is estimated to reach source location to pick-up
@@ -541,6 +568,16 @@ private:
 										uint64_t last_ride_rated ) const {
 		return ( (last_rating_avg * last_ride_rated) + current_rating ) / (last_ride_rated + 1);
 	} 
+
+	// get the transaction id
+	inline checksum256 get_trxid()
+	{
+	  auto trxsize = transaction_size();
+	  char trxbuf[trxsize];
+	  uint32_t trxread = read_transaction( trxbuf, trxsize );
+	  check( trxsize == trxread, "read_transaction failed");
+	  return sha256(trxbuf, trxsize);
+	}
 
 	// Adding inline action for `disburse` action in the ridewallet contract   
 	void disburse_fare(const name& receiver_ac,
