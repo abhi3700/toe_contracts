@@ -72,7 +72,7 @@ void toeridetaxi::create(
 	ridewallet_index ridewallet_table(wallet_contract_ac, commuter_ac.value);
 	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
 
-	check( wallet_it != ridewallet_table.end(), "Sorry! There is no amount transferred by " + commuter_ac.to_string() + "in the ride wallet.");
+	check( wallet_it != ridewallet_table.end(), "Sorry! There is no amount transferred by " + commuter_ac.to_string() + " in the ride wallet.");
 
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
 	if(pay_mode == "crypto"_n) {
@@ -246,7 +246,7 @@ void toeridetaxi::assign( const name& driver_ac,
 	});
 
 	//instantiate the `dridestatus` table
-	dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
+	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
 	auto dridestatus_it = dridestatus_table.find("driver"_n.value);
 
 	// check the driver's row is present
@@ -329,7 +329,7 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 
 
 	//instantiate the `dridestatus` table
-	dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
+	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
 	auto dridestatus_it = dridestatus_table.find("driver"_n.value);
 
 	// check the driver's row is present
@@ -600,18 +600,6 @@ void toeridetaxi::addfareact( const name& driver_ac,
 		row.action_txnid_vector.emplace_back(make_pair("addfareact"_n, get_trxid()));
 	});
 
-	//instantiate the `dridestatus` table
-	dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
-	auto dridestatus_it = dridestatus_table.find("driver"_n.value);
-
-	// check the driver's row is present
-	check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present. Please, add using \'addristatus\' action.");
-
-	// change the driver status from "assigned" to "online" back
-	dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
-		row.status = "online"_n;
-	});
-
 	// On successful execution, an alert is sent
 	send_receipt(driver_ac, driver_ac.to_string() + " adds the actual fare in INR & TOE");
 	send_alert(ride_it->commuter_ac, 
@@ -724,6 +712,19 @@ void toeridetaxi::driaddrating( const name& driver_ac,
 	// increase the rated ride of commuter by 1
 	set_ride_rated(ride_it->commuter_ac, "commuter"_n, user_commuter_it->ride_rated + 1);
 
+	//instantiate the `dridestatus` table
+	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
+	auto dridestatus_it = dridestatus_table.find("driver"_n.value);
+
+	// check the driver's row is present
+	check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present. Please, add using \'addristatus\' action.");
+
+	// change the driver status from "assigned" to "online" back
+	dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
+		row.status = "online"_n;
+	});
+
+
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -789,7 +790,7 @@ void toeridetaxi::addristatus( const name& driver_ac,
 	check( (status == "online"_n) || (status == "offline"_n), "status must be either online/offline.");
 
 	// instantiate the `dridestatus` table
-	dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
+	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
 	auto dridestatus_it = dridestatus_table.find("driver"_n.value);
 
 	if(dridestatus_it == dridestatus_table.end()) {
