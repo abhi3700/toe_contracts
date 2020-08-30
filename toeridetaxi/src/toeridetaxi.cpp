@@ -290,6 +290,11 @@ void toeridetaxi::cancelbycom( const name& commuter_ac,
 		row.action_txnid_vector.emplace_back(make_pair("cancelbycom"_n, get_trxid()));
 	});
 
+	// if yes, restore rides
+	if((ride_it->ridex_usagestatus_com == "y"_n)) {
+		restore_ride(commuter_ac, "commuter"_n, "commuter"_n, 1);
+	}
+
 	// On successful execution, an alert is sent
 	send_receipt(commuter_ac, commuter_ac.to_string() + " cancels the ride.");
 	send_alert(ride_it->driver_ac, commuter_ac.to_string() + " cancels the ride.");
@@ -339,6 +344,11 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 	dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
 		row.status = "online"_n;
 	});
+
+	// if yes, restore rides
+	if((ride_it->ridex_usagestatus_com == "y"_n)) {
+		restore_ride(driver_ac, "driver"_n, "driver"_n, 1);
+	}
 
 	// On successful execution, a receipt is sent
 	send_receipt(driver_ac, driver_ac.to_string() + " cancels the ride.");
