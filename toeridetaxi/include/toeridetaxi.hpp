@@ -350,7 +350,8 @@ public:
 	ACTION sendreceipt( const name& user,
 						const string& message);
 
-
+	// [OPTIONAL] for testing purpose
+	ACTION testerase(const checksum256& ride_id);
 	// --------------------------------------------------------------------------------------------------------------------
 	static void check_userauth( const name& user, const name& type) {
 		if(type == "driver"_n) {

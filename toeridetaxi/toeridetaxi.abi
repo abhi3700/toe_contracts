@@ -594,6 +594,16 @@
                     "type": "name"
                 }
             ]
+        },
+        {
+            "name": "testerase",
+            "base": "",
+            "fields": [
+                {
+                    "name": "ride_id",
+                    "type": "checksum256"
+                }
+            ]
         }
     ],
     "actions": [
@@ -690,6 +700,11 @@
         {
             "name": "start",
             "type": "start",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "testerase",
+            "type": "testerase",
             "ricardian_contract": ""
         }
     ],

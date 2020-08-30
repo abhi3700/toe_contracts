@@ -152,7 +152,17 @@ Error Details:
 assertion failure with message: Sorry! Low balance in the ride wallet.
 pending console output:
 ```
-* create ride by `toecom111111` in __crypto__ mode
+* `toecom111111` requesting ride with no RIDEX rides bought, gets error:
+```console
+$ cleos wallet unlock -n cabeos --password PW5KE5hRLHL4zHwFdokgiEn588GtJGuis4yvVZKsLPZxjXwSDRBJt
+Unlocked: cabeos
+abhi3700@Abhijit:/mnt/f/Coding/github_repos/toe_contracts/toeridetaxi$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "y", "79.00", "5.00", "15.8000 TOE", "1597834838", "2", "request a ride from home to office"]' -p toecom111111@active
+Error 3050003: eosio_assert_message assertion failure
+Error Details:
+assertion failure with message: Sorry! There is no ride to consume.
+pending console output:
+```
+* create ride by `toecom111111` in __crypto__ mode with no i.e. __"n"__ ridex usage
 ```console
 $ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "n", "79.00", "5.00", "15.8000 TOE", "1597834838", "2", "request a ride from home to office"]' -p toecom111111@active
 executed transaction: e5b67064795f194327aa1a682f9ff412c8816f9e82b1247fac605c0c59a34f63  320 bytes  365 us
@@ -419,6 +429,12 @@ $ cleost push action toe1ridetaxi eraseride '["toecom111111", "erase ride after 
 executed transaction: 350112062f1ff1af78c9015b43f2c55eadcf931762cfc0f730474f99f12d0231  144 bytes  932 us
 #  toe1ridetaxi <= toe1ridetaxi::eraseride      {"commuter_ac":"toecom111111","memo":"erase ride after the fare is transferred"}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### Action - `cancelbycom`
+* commuter cancels ride
+```console
+cleost push action toe1ridetaxi cancelbycom '["toecom111111", "cancel ride"]' -p toecom111111@active
 ```
 
 ## TODO

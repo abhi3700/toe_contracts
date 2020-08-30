@@ -916,6 +916,18 @@ void toeridetaxi::erase( const name& commuter_ac,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::testerase(const checksum256& ride_id) {
+	require_auth(get_self());
+
+	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
+	auto rideid_idx = ridetaxi_table.get_index<"byrideid"_n>();
+	auto ride_it = rideid_idx.find(ride_id);
+
+	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
+	rideid_idx.erase(ride_it);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::sendalert(const name& user,
 							const string& message) {
 	require_auth(get_self());
