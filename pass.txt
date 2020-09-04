@@ -198,11 +198,11 @@ bhub1111hodl	- used("hodl")
 Private key: 5JQGnfTwNtEKoGMDnc4w7ACFeHiY4Hu27EvKsBVfbKC6YzKPeXv
 Public key: EOS5Ziff5uPpNYy5zJgLXozP97YpceNa9tSS4a2pg5LSBn8LjYwG1
 -----------------------------------------------
-bhubtabtes11
+bhubtabtes11	- used("tabletest1")
 Private key: 5Je7XmfK8jKNFU8FLSYZBwyap4oEEW76BoousaAnjfd3iTWb89p
 Public key: EOS5UfynbSATtTDtjirc7j8os6kVcNGboEW7gukTTgg3PNDpZ5LHx
 -----------------------------------------------
-bhubtabtes12
+bhubtabtes12	- used("tabletest2")
 Private key: 5K9ibWQYHuKcANNNDY597UT3CpzEtZ7d6QmW7yfZe8sGBaQhVSW
 Public key: EOS64uyiFuUiuodogbCfjcPMTKSyYMMhibAfYGL5rvozgegXP1VQu
 -----------------------------------------------
