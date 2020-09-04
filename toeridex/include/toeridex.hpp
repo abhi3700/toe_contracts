@@ -117,10 +117,12 @@ public:
 
 	/**
 	 * @brief - use ride
-	 * @details - use ride at 2 stages:
+	 * @details - commuter use ride at 2 stages:
 	 * 				+ create
 	 * 				+ changedes
-	 * 
+	 * 			- driver use ride at 1 stage:
+	 * 				+ start
+	 * 				
 	 * @param user - account
 	 * @param user_type - commuter or driver
 	 * @param ride_type - commuter or driver
@@ -133,9 +135,11 @@ public:
 
 	/**
 	 * @brief - restore ride
-	 * @details - use ride at 1 stage:
+	 * @details - commuter use ride at 1 stage:
 	 * 				+ changedes
-	 * 
+	 * 				+ cancelbycom
+	 * 			- driver use ride at 1 stage:
+	 * 				+ cancelbycom
 	 * @param user - account
 	 * @param user_type - commuter
 	 * @param ride_type - commuter or driver

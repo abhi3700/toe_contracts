@@ -115,7 +115,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 
 
 ## Testing
-* Test cases of different rides
+* Test cases of different rides - create -> changedes
 	- [ ] Case-1: crypto pay_mode
 	- [ ] Case-2: fiatdigi pay_mode
 	- [ ] Case-3: fiatcash pay_mode
@@ -152,10 +152,20 @@ Error Details:
 assertion failure with message: Sorry! Low balance in the ride wallet.
 pending console output:
 ```
-* create ride by `toecom111111` in __crypto__ mode
+* `toecom111111` requesting ride with no RIDEX rides bought, gets error:
+```console
+$ cleos wallet unlock -n cabeos --password PW5KE5hRLHL4zHwFdokgiEn588GtJGuis4yvVZKsLPZxjXwSDRBJt
+Unlocked: cabeos
+abhi3700@Abhijit:/mnt/f/Coding/github_repos/toe_contracts/toeridetaxi$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "y", "79.00", "5.00", "15.8000 TOE", "1597834838", "2", "request a ride from home to office"]' -p toecom111111@active
+Error 3050003: eosio_assert_message assertion failure
+Error Details:
+assertion failure with message: Sorry! There is no ride to consume.
+pending console output:
+```
+* create ride by `toecom111111` in __crypto__ mode with no i.e. __"n"__ ridex usage
 ```console
 $ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "n", "79.00", "5.00", "15.8000 TOE", "1597834838", "2", "request a ride from home to office"]' -p toecom111111@active
-executed transaction: 582d0b419877030dd1e7b7af3ffc821debc632e051ccc3f96357e2c9d0875656  312 bytes  412 us
+executed transaction: e5b67064795f194327aa1a682f9ff412c8816f9e82b1247fac605c0c59a34f63  320 bytes  365 us
 #  toe1ridetaxi <= toe1ridetaxi::create         {"commuter_ac":"toecom111111","src_lat_hash":"d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f1...
 #  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toecom111111","message":"toecom111111 requested a ride."}
 #  toecom111111 <= toe1ridetaxi::sendreceipt    {"user":"toecom111111","message":"toecom111111 requested a ride."}
@@ -180,7 +190,7 @@ d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2
 
 * `toecom111111` requested a ride again (with already previous ride ongoing) & gets error
 ```console
-$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "79.00", "5.00", "15.8000 TOE", "1596931238", "2", "request a ride from home to office"]' -p toecom111111@active
+$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "n", "79.00", "5.00", "15.8000 TOE", "1597834838", "2", "request a ride from home to office"]' -p toecom111111@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
 assertion failure with message: The ride looks like already set by 'toecom111111' using 'crypto'.
@@ -192,25 +202,27 @@ pending console output:
 * Set online status for driver
 ```console
 $ cleost push action toe1ridetaxi addristatus '["toedri111111", "online"]' -p toedri111111@active
-executed transaction: f8e6294256ead52a9f762c3e743615f11fffdac77f55bfbae092d152348a6d2f  112 bytes  315 us
+executed transaction: 412359b4b725a6ca5d185a1b8692872dcfb07537c5f7bdda2636fd8769fa2965  112 bytes  213 us
 #  toe1ridetaxi <= toe1ridetaxi::addristatus    {"driver_ac":"toedri111111","status":"online"}
+#  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"Your ride_status is updated to: 'online'."}
+#  toedri111111 <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"Your ride_status is updated to: 'online'."}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
 
 #### Action - `assign`
-* assign ride to driver if the status is not present in the table
+* assign ride to driver: Facing an error, if the status is not present in the table
 ```console
-$ cleost push action toe1ridetaxi assign '['toedri111111', 'toecom111111', '1596930158']' -p toe1ridetaxi@active
+$ cleost push action toe1ridetaxi assign '['toedri111111', 'ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7', '1596930158']' -p toe1ridetaxi@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
-assertion failure with message: driver's status row is not present in the table.
+assertion failure with message: driver's status row is not present. Please, add using 'addristatus' action.
 pending console output:
 ```
 * assign ride to driver if the status is present in the table & the driver is online
 ```console
-$ cleost push action toe1ridetaxi assign '['toedri111111', 'toecom111111', '1596930158']' -p toe1ridetaxi@active
-executed transaction: 39ec9ca5e5ce7a6cba4cf01ff63966ca69b76f9bcda8ec792d08600ea9476071  112 bytes  308 us
-#  toe1ridetaxi <= toe1ridetaxi::assign         {"driver_ac":"toedri111111","commuter_ac":"toecom111111","reachsrc_timestamp_est":1596930158}
+$ cleost push action toe1ridetaxi assign '['toedri111111', 'ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7', '1596930158']' -p toe1ridetaxi@active
+executed transaction: 9f2e7dd219b57ef18344450fa8d34509e700c1bca248fa4a878c2e260a038caa  136 bytes  203 us
+#  toe1ridetaxi <= toe1ridetaxi::assign         {"driver_ac":"toedri111111","ride_id":"ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b...
 #  toe1ridetaxi <= toe1ridetaxi::sendalert      {"user":"toedri111111","message":"toedri111111 is assigned with a ride."}
 #  toe1ridetaxi <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"toecom111111 is assigned with a driver: toedri111111"}
 #  toedri111111 <= toe1ridetaxi::sendalert      {"user":"toedri111111","message":"toedri111111 is assigned with a ride."}
@@ -223,7 +235,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ```
 * Error during re-assign the same ride
 ```console
-$ cleost push action toe1ridetaxi assign '['toedri111111', 'toecom111111', '1596930158']' -p toe1ridetaxi@active
+$ cleost push action toe1ridetaxi assign '['toedri111111', 'ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7', '1596930158']' -p toe1ridetaxi@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
 assertion failure with message: the commuter is already assigned with a driver: toedri111111. So, the ride can't be reassigned
@@ -233,9 +245,9 @@ pending console output:
 #### Action - `reachsrc`
 * `toedri111111` reach the src_loc
 ```console
-$ cleost push action toe1ridetaxi reachsrc '["toedri111111"]' -p toedri111111@active
-executed transaction: 3d316f57c71beda75df8bd04769ba59f9205ffa055327c027438c81f68284413  104 bytes  340 us
-#  toe1ridetaxi <= toe1ridetaxi::reachsrc       {"driver_ac":"toedri111111"}
+$ cleost push action toe1ridetaxi reachsrc '["toedri111111", "ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7"]' -p toedri111111@active
+executed transaction: 4f33baaa9dc65d6ad00b1edbb524a11a8f146e7c4c5162f4330ff4bb7bb5ed9b  136 bytes  219 us
+#  toe1ridetaxi <= toe1ridetaxi::reachsrc       {"driver_ac":"toedri111111","ride_id":"ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b...
 #  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"toedri111111 has reached the pick-up point."}
 #  toe1ridetaxi <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"Hello, toecom111111, your driver: toedri111111 has reached the pic...
 #  toedri111111 <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"toedri111111 has reached the pick-up point."}
@@ -244,7 +256,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ```
 * `toedri111111` retry the same action & gets error:
 ```console
-$ cleost push action toe1ridetaxi reachsrc '["toedri111111"]' -p toedri111111@active
+$ cleost push action toe1ridetaxi reachsrc '["toedri111111", "ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7"]' -p toedri111111@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
 assertion failure with message: Sorry! the ride_status is already marked as 'waiting'. So, you can't modify.
@@ -254,9 +266,9 @@ pending console output:
 #### Action - `start`
 * `toedri111111` start the ride
 ```console
-$ cleost push action toe1ridetaxi start '["toedri111111"]' -p toedri111111@active
-executed transaction: cd57d6ba9aeeccd47f4b9e2faca1c7719087303bc22a42d8df42feeb44503bbc  104 bytes  925 us
-#  toe1ridetaxi <= toe1ridetaxi::start          {"driver_ac":"toedri111111"}
+$ cleost push action toe1ridetaxi start '["toedri111111", "ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7", "n"]' -p toedri111111@active
+executed transaction: cdd7711094d5920115e0d59354db78f485126f32f331b75a4ff1b05bafbc06ed  144 bytes  204 us
+#  toe1ridetaxi <= toe1ridetaxi::start          {"driver_ac":"toedri111111","ride_id":"ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b...
 #  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"toedri111111 starts the ride."}
 #  toe1ridetaxi <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"toedri111111 starts the ride."}
 #  toedri111111 <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"toedri111111 starts the ride."}
@@ -265,7 +277,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ```
 * `toedri111111` retry the action & gets error:
 ```console
-$ cleost push action toe1ridetaxi start '["toedri111111"]' -p toedri111111@active
+$ cleost push action toe1ridetaxi start '["toedri111111", "ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7", "n"]' -p toedri111111@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
 assertion failure with message: Sorry! the trip is already started. So, you can't modify.
@@ -299,16 +311,16 @@ b75f80aa9ac46065fe405df0b84908d8f0c689b9d1f344964efad64409e43a50
 ![](../images/ride_exp_app/change_des.jpg)
 	- Error: low balance in the ride wallet
 ```console
-$ cleost push action toe1ridetaxi changedes '["toecom111111", "7b598dfa7b2c9f051c2f55ef335e61b9911798a88773b27c60430deab84c21b3", "b75f80aa9ac46065fe405df0b84908d8f0c689b9d1f344964efad64409e43a50", "180", "36.0000 TOE", "crypto", "change destination"]' -p toecom111111@active
+$ cleost push action toe1ridetaxi changedes '["toecom111111", "7b598dfa7b2c9f051c2f55ef335e61b9911798a88773b27c60430deab84c21b3", "b75f80aa9ac46065fe405df0b84908d8f0c689b9d1f344964efad64409e43a50", "n", "180", "36.0000 TOE", "crypto", "change destination"]' -p toecom111111@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
-assertion failure with message: Sorry! Low balance in the ride wallet.
+assertion failure with message: Sorry! Low balance in the ride wallet. Please, transfer '18.0000 TOE'.
 pending console output:
 ```
 	- After transferring required TOE tokens to `ridewallet`, successfully changed destination
 ```
-$ cleost push action toe1ridetaxi changedes '["toecom111111", "7b598dfa7b2c9f051c2f55ef335e61b9911798a88773b27c60430deab84c21b3", "b75f80aa9ac46065fe405df0b84908d8f0c689b9d1f344964efad64409e43a50", "180", "36.0000 TOE", "crypto", "change destination"]' -p toecom111111@active
-executed transaction: c5d80a2e44333cbb5159c23398a3007bc16a473f7ca64a6d2b8b7fd3af3b9007  216 bytes  324 us
+$ cleost push action toe1ridetaxi changedes '["toecom111111", "7b598dfa7b2c9f051c2f55ef335e61b9911798a88773b27c60430deab84c21b3", "b75f80aa9ac46065fe405df0b84908d8f0c689b9d1f344964efad64409e43a50", "n", "180", "36.0000 TOE", "crypto", "change destination"]' -p toecom111111@active
+executed transaction: b13b7a930cacb1ba1d30f1b94f2461b365dae7d17f74ce7d3577d41cc1de6739  224 bytes  227 us
 #  toe1ridetaxi <= toe1ridetaxi::changedes      {"commuter_ac":"toecom111111","des_lat_hash":"7b598dfa7b2c9f051c2f55ef335e61b9911798a88773b27c60430d...
 #  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toecom111111","message":"toecom111111 changes the destination location & the fare is update...
 #  toe1ridetaxi <= toe1ridetaxi::sendalert      {"user":"toedri111111","message":"toecom111111 changes the destination location & the fare is update...
@@ -417,6 +429,12 @@ $ cleost push action toe1ridetaxi eraseride '["toecom111111", "erase ride after 
 executed transaction: 350112062f1ff1af78c9015b43f2c55eadcf931762cfc0f730474f99f12d0231  144 bytes  932 us
 #  toe1ridetaxi <= toe1ridetaxi::eraseride      {"commuter_ac":"toecom111111","memo":"erase ride after the fare is transferred"}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+
+#### Action - `cancelbycom`
+* commuter cancels ride
+```console
+cleost push action toe1ridetaxi cancelbycom '["toecom111111", "cancel ride"]' -p toecom111111@active
 ```
 
 ## TODO

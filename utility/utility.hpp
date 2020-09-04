@@ -71,3 +71,30 @@ inline checksum256 get_trxid()
   check( trxsize == trxread, "read_transaction failed");
   return sha256(trxbuf, trxsize);
 }
+
+// NOTE: vector arg can't be const as emplace_back is non-const method
+inline void creatify_vector_pair( vector<pair<string, checksum256>>& v, const string& s, const checksum256& val ) {
+  auto s_it = std::find_if(v.begin(), v.end(), [&](auto& vs){ return vs.first == s; });
+  if(s_it != v.end()) {   // key found
+    s_it->second = val;
+  }
+  else {            // key NOT found
+    v.emplace_back(make_pair(s, val));
+  }
+}
+
+
+inline void read_vector_pair( const vector<pair<string, checksum256>>& v, const string& s ) {
+  auto s_it = std::find_if(v.begin(), v.end(), [&](auto& vs){ return vs.first == s; });
+
+  if(s_it != v.end()) {     // key found
+    print("The value(s): ");
+
+    while(s_it != v.end()) {
+      print(s_it->second, " | ");
+      ++s_it;
+    }
+  } else {            // key NOT found
+    print("No item found with this key");
+  }
+}

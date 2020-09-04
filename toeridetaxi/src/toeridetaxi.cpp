@@ -72,7 +72,7 @@ void toeridetaxi::create(
 	ridewallet_index ridewallet_table(wallet_contract_ac, commuter_ac.value);
 	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
 
-	check( wallet_it != ridewallet_table.end(), "Sorry! There is no amount transferred by " + commuter_ac.to_string() + "in the ride wallet.");
+	check( wallet_it != ridewallet_table.end(), "Sorry! There is no amount transferred by " + commuter_ac.to_string() + " in the ride wallet.");
 
 	// if pay_mode is 'crypto', ensure the fare_amount is present in the faretaxi balance.
 	if(pay_mode == "crypto"_n) {
@@ -119,6 +119,7 @@ void toeridetaxi::create(
 			row.fare_crypto_est = fare_crypto_est;
 			row.finish_timestamp_est = finish_timestamp_est;
 			row.create_timestamp = now();
+			row.action_txnid_vector.emplace_back(make_pair("create"_n, get_trxid()));
 			
 			// set only for __"crypto"__ pay_mode
 			row.crypto_paystatus = "paidbycom"_n;
@@ -151,6 +152,7 @@ void toeridetaxi::create(
 			row.fare_crypto_est = fare_crypto_est;
 			row.finish_timestamp_est = finish_timestamp_est;
 			row.create_timestamp = now();
+			row.action_txnid_vector.emplace_back(make_pair("create"_n, get_trxid()));
 
 			// pay_mode already set during `setfiatpayst` action. So, not needed
 		});
@@ -185,6 +187,7 @@ void toeridetaxi::setfipaymost( const name& commuter_ac,
 		ridetaxi_table.emplace(commuter_ac, [&](auto& row) {
 			row.commuter_ac = commuter_ac;
 			row.pay_mode = pay_mode;		// set "fiatdigi" or "fiatcash"
+			row.action_txnid_vector.emplace_back(make_pair("setfipaymost"_n, get_trxid()));
 
 			if (pay_mode == "fiatdigi"_n) {
 				row.fiat_paystatus = "paidbycom"_n;
@@ -194,6 +197,8 @@ void toeridetaxi::setfipaymost( const name& commuter_ac,
 	else {
 		ridetaxi_table.modify(ride_it, commuter_ac, [&](auto& row) {
 			row.pay_mode = pay_mode;
+			row.action_txnid_vector.emplace_back(make_pair("setfipaymost"_n, get_trxid()));
+
 			if (pay_mode == "fiatdigi"_n) {
 				row.fiat_paystatus = "paidbycom"_n;
 			}
@@ -237,10 +242,11 @@ void toeridetaxi::assign( const name& driver_ac,
 		row.assign_timestamp = now();
 		row.ride_status = "enroute"_n;
 		row.reachsrc_timestamp_est = reachsrc_timestamp_est;
+		row.action_txnid_vector.emplace_back(make_pair("assign"_n, get_trxid()));
 	});
 
 	//instantiate the `dridestatus` table
-	dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
+	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
 	auto dridestatus_it = dridestatus_table.find("driver"_n.value);
 
 	// check the driver's row is present
@@ -281,7 +287,13 @@ void toeridetaxi::cancelbycom( const name& commuter_ac,
 	ridetaxi_table.modify(ride_it, commuter_ac, [&](auto& row){
 		row.ride_status = "cancelledcom"_n;
 		row.cancel_timestamp = now();
+		row.action_txnid_vector.emplace_back(make_pair("cancelbycom"_n, get_trxid()));
 	});
+
+	// if yes, restore rides
+	if((ride_it->ridex_usagestatus_com == "y"_n)) {
+		restore_ride(commuter_ac, "commuter"_n, "commuter"_n, 1);
+	}
 
 	// On successful execution, an alert is sent
 	send_receipt(commuter_ac, commuter_ac.to_string() + " cancels the ride.");
@@ -317,11 +329,12 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 	rideid_idx.modify(ride_it, driver_ac, [&](auto& row){
 		row.ride_status = "cancelleddri"_n;
 		row.cancel_timestamp = now();
+		row.action_txnid_vector.emplace_back(make_pair("cancelbydri"_n, get_trxid()));
 	});
 
 
 	//instantiate the `dridestatus` table
-	dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
+	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
 	auto dridestatus_it = dridestatus_table.find("driver"_n.value);
 
 	// check the driver's row is present
@@ -331,6 +344,11 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 	dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
 		row.status = "online"_n;
 	});
+
+	// if yes, restore rides
+	if((ride_it->ridex_usagestatus_com == "y"_n)) {
+		restore_ride(driver_ac, "driver"_n, "driver"_n, 1);
+	}
 
 	// On successful execution, a receipt is sent
 	send_receipt(driver_ac, driver_ac.to_string() + " cancels the ride.");
@@ -429,6 +447,7 @@ void toeridetaxi::changedes( const name& commuter_ac,
 		}
 
 		row.ridex_usagestatus_com = ridex_usagestatus_com;
+		row.action_txnid_vector.emplace_back(make_pair("changedes"_n, get_trxid()));
 	});
 
 
@@ -459,7 +478,7 @@ void toeridetaxi::reachsrc( const name& driver_ac,
 	rideid_idx.modify(ride_it, driver_ac, [&](auto& row) {
 		row.ride_status = "waiting"_n;
 		row.reachsrc_timestamp_act = now();
-
+		row.action_txnid_vector.emplace_back(make_pair("reachsrc"_n, get_trxid()));
 	});
 
 	// On successful execution a receipt & an alert is sent
@@ -493,7 +512,7 @@ void toeridetaxi::start( const name& driver_ac,
 		row.ride_status = "ontrip"_n;
 		row.start_timestamp = now();
 		row.ridex_usagestatus_dri = ridex_usagestatus_dri;
-
+		row.action_txnid_vector.emplace_back(make_pair("start"_n, get_trxid()));
 	});
 
 	// if yes, consume rides using consume_ride only if pay_mode is "crypto"
@@ -527,6 +546,7 @@ void toeridetaxi::finish( const name& driver_ac,
 	rideid_idx.modify(ride_it, driver_ac, [&](auto& row) {
 		row.ride_status = "complete"_n;
 		row.finish_timestamp_act = now();
+		row.action_txnid_vector.emplace_back(make_pair("finish"_n, get_trxid()));
 	});
 
 	// On successful execution, an alert is sent
@@ -587,18 +607,7 @@ void toeridetaxi::addfareact( const name& driver_ac,
 	rideid_idx.modify(ride_it, driver_ac, [&] (auto& row) {
 		row.fare_act = fare_act;
 		row.fare_crypto_act = fare_crypto_act;
-	});
-
-	//instantiate the `dridestatus` table
-	dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
-	auto dridestatus_it = dridestatus_table.find("driver"_n.value);
-
-	// check the driver's row is present
-	check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present. Please, add using \'addristatus\' action.");
-
-	// change the driver status from "assigned" to "online" back
-	dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
-		row.status = "online"_n;
+		row.action_txnid_vector.emplace_back(make_pair("addfareact"_n, get_trxid()));
 	});
 
 	// On successful execution, an alert is sent
@@ -659,6 +668,7 @@ void toeridetaxi::recvfare( const name& driver_ac,
 	// change the crypto pay status to `paid`
 	rideid_idx.modify( ride_it, driver_ac, [&](auto& row){
 		row.crypto_paystatus = "paidtodri"_n;
+		row.action_txnid_vector.emplace_back(make_pair("recvfare"_n, get_trxid()));
 	});
 
 }
@@ -693,6 +703,7 @@ void toeridetaxi::driaddrating( const name& driver_ac,
 	rideid_idx.modify(ride_it, driver_ac, [&](auto& row) {
 		row.rating_com = rating_com;
 		row.rating_status_dri = "done"_n;
+		row.action_txnid_vector.emplace_back(make_pair("driaddrating"_n, get_trxid()));
 	});
 
 	// On successful execution, a receipt is sent
@@ -710,6 +721,19 @@ void toeridetaxi::driaddrating( const name& driver_ac,
 
 	// increase the rated ride of commuter by 1
 	set_ride_rated(ride_it->commuter_ac, "commuter"_n, user_commuter_it->ride_rated + 1);
+
+	//instantiate the `dridestatus` table
+	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
+	auto dridestatus_it = dridestatus_table.find("driver"_n.value);
+
+	// check the driver's row is present
+	check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present. Please, add using \'addristatus\' action.");
+
+	// change the driver status from "assigned" to "online" back
+	dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
+		row.status = "online"_n;
+	});
+
 
 }
 
@@ -743,6 +767,7 @@ void toeridetaxi::comaddrating( const name& commuter_ac,
 	rideid_idx.modify(ride_it, commuter_ac, [&](auto& row) {
 		row.rating_dri = rating_dri;
 		row.rating_status_com = "done"_n;
+		row.action_txnid_vector.emplace_back(make_pair("comaddrating"_n, get_trxid()));
 	});
 
 	// On successful execution, a receipt is sent
@@ -775,7 +800,7 @@ void toeridetaxi::addristatus( const name& driver_ac,
 	check( (status == "online"_n) || (status == "offline"_n), "status must be either online/offline.");
 
 	// instantiate the `dridestatus` table
-	dridestatus_index dridestatus_table("toe1ridetaxi"_n, driver_ac.value);
+	dridestatus_index dridestatus_table(get_self(), driver_ac.value);
 	auto dridestatus_it = dridestatus_table.find("driver"_n.value);
 
 	if(dridestatus_it == dridestatus_table.end()) {
@@ -888,6 +913,18 @@ void toeridetaxi::erase( const name& commuter_ac,
 	send_alert(driver_ac, "the ride_id \'" + to_hex(&ride_id, sizeof(ride_id)) + "\' is deleted from table record.");
 	send_alert(commuter_ac, "the ride_id \'" + to_hex(&ride_id, sizeof(ride_id)) + "\' is deleted from table record.");
 
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::testerase(const checksum256& ride_id) {
+	require_auth(get_self());
+
+	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
+	auto rideid_idx = ridetaxi_table.get_index<"byrideid"_n>();
+	auto ride_it = rideid_idx.find(ride_id);
+
+	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
+	rideid_idx.erase(ride_it);
 }
 
 // --------------------------------------------------------------------------------------------------------------------

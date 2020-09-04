@@ -4,6 +4,8 @@
 // #include <eosio/print.hpp>
 #include <eosio/system.hpp>
 #include <eosio/crypto.hpp>
+#include <algorithm>
+#include <vector>
 #include <string>
 
 using eosio::contract;
@@ -25,7 +27,8 @@ using eosio::checksum256;
 using eosio::action_wrapper;
 
 using std::string;
-
+using std::vector;
+using std::pair;
 
 CONTRACT toeridewallet : public contract
 {
@@ -182,6 +185,7 @@ private:
 		name pay_mode;            // crypto or fiatdigi or fiatcash
 		name crypto_paystatus;          // paidbycom or paidtodri for "crypto"
 		name fiat_paystatus;          // paidbycom or paidtodri	for "fiatdigi"
+		vector<pair<name, checksum256>> action_txnid_vector;		// vector of pairs (action_name, txn_id)
 		uint32_t create_timestamp;			// at which ride is created
 		uint32_t assign_timestamp;  		// at which ride is assigned
 		uint32_t reachsrc_timestamp_est;    // at which driver is estimated to reach source location to pick-up
