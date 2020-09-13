@@ -98,3 +98,22 @@ inline void read_vector_pair( const vector<pair<string, checksum256>>& v, const 
     print("No item found with this key");
   }
 }
+
+
+  // convert checksum256 to uint64_t
+  inline uint64_t checksum256_to_uint64_t(const checksum256& num) {
+    //cast the num to a smaller number
+      uint64_t max_value = 18'446'744'073'709'551'615;    // 2^64 - 1
+      auto byte_array = num.extract_as_byte_array();
+
+      uint64_t random_int = 0;
+      for (int i = 0; i < 8; i++) {
+          random_int <<= 8;
+          random_int |= (uint64_t)byte_array[i];
+      }
+
+      uint64_t res = random_int % max_value;
+
+      return res;
+  }
+
