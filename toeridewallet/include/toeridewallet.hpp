@@ -133,7 +133,9 @@ public:
 	}
 
 private:
+	// -----------------------------------------------------------------------------------------------------------------------
 	// `ridewallet` table is for keeping the record of fare_est amount transferred by a commuter before the ride starts.
+	// scope - user (commuter) name
 	TABLE ridewallet
 	{
 		asset balance;

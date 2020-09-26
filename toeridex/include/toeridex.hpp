@@ -266,6 +266,7 @@ private:
 
 	// --------------------------------------------------------------------------------
 	// RIDEX
+	// scope - self
 	TABLE ridex {
 		name ride_type;
 		uint64_t ride_quota;
@@ -278,6 +279,7 @@ private:
 	
 	// --------------------------------------------------------------------------------
 	// RIDEX User wallet
+	// scope - user name
 	TABLE rexusrwallet {
 		asset balance;
 
@@ -288,6 +290,7 @@ private:
 
 	// --------------------------------------------------------------------------------
 	// RIDEX User account
+	// scope - user name
 	TABLE rexuseraccnt {
 		name ride_type;
 		uint64_t rides_limit;

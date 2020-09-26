@@ -397,6 +397,7 @@ public:
 
 private:
 // ========TABLES========================================================================================================
+	// scope - self
 	TABLE ridetaxi
 	{
 		name commuter_ac;
@@ -453,6 +454,7 @@ private:
 									>;
 
 // -----------------------------------------------------------------------------------------------------------------------
+	// scope - driver name
 	TABLE dridestatus
 	{
 		name user_type;		// driver
@@ -465,6 +467,7 @@ private:
 
 // -----------------------------------------------------------------------------------------------------------------------
 	// RideTaxiSpecs timestamp 
+	// scope - action name
 	TABLE rtststamp
 	{
 		name action;	// "erase"
@@ -477,6 +480,7 @@ private:
 
 // -----------------------------------------------------------------------------------------------------------------------
 	// RideTaxiSpecs fuel price
+	// scope - fiat currency name
 	TABLE rtsfuelprice
 	{
 		name fiat_currency;				// e.g. "INR"
