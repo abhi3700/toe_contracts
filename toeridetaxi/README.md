@@ -146,7 +146,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 	- if __"crypto"__ pay_mode, then fare_crypto_est should be transferred beforehand
 * <u>Low balance in crypto wallet:</u>
 ```console
-$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "n", "79.00", 5.00", "17.8000 TOE", "1596732638", "2", "request a ride from home to office"]' -p toecom111111@active
+$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "n", "79.00", "5.00", "17.8000 TOE", "1601159711", "2", "request a ride from home to office"]' -p toecom111111@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
 assertion failure with message: Sorry! Low balance in the ride wallet.
@@ -154,9 +154,7 @@ pending console output:
 ```
 * `toecom111111` requesting ride with no RIDEX rides bought, gets error:
 ```console
-$ cleos wallet unlock -n cabeos --password PW5KE5hRLHL4zHwFdokgiEn588GtJGuis4yvVZKsLPZxjXwSDRBJt
-Unlocked: cabeos
-abhi3700@Abhijit:/mnt/f/Coding/github_repos/toe_contracts/toeridetaxi$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "y", "79.00", "5.00", "15.8000 TOE", "1597834838", "2", "request a ride from home to office"]' -p toecom111111@active
+$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "y", "79.00", "5.00", "15.8000 TOE", "1601159891", "2", "request a ride from home to office"]' -p toecom111111@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
 assertion failure with message: Sorry! There is no ride to consume.
@@ -164,12 +162,65 @@ pending console output:
 ```
 * create ride by `toecom111111` in __crypto__ mode with no i.e. __"n"__ ridex usage
 ```console
-$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "n", "79.00", "5.00", "15.8000 TOE", "1597834838", "2", "request a ride from home to office"]' -p toecom111111@active
-executed transaction: e5b67064795f194327aa1a682f9ff412c8816f9e82b1247fac605c0c59a34f63  320 bytes  365 us
+$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "n", "79.00", "5.00", "17.8000 TOE", "1601159711", "2", "request a ride from home to office"]' -p toecom111111@active
+executed transaction: 94b33176d0fa1b3c2c3358cf498b6c02575973b80e8db1f0ef22e9bcb4882abf  320 bytes  511 us
 #  toe1ridetaxi <= toe1ridetaxi::create         {"commuter_ac":"toecom111111","src_lat_hash":"d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f1...
 #  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toecom111111","message":"toecom111111 requested a ride."}
 #  toecom111111 <= toe1ridetaxi::sendreceipt    {"user":"toecom111111","message":"toecom111111 requested a ride."}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+	- view the table `ridestaxi`
+```console
+$ cleost get table toe1ridetaxi toe1ridetaxi ridestaxi --show-payer --lower toecom111111 --limit 1
+{
+  "rows": [{
+      "data": {
+        "commuter_ac": "toecom111111",
+        "ride_status": "requested",
+        "driver_ac": "",
+        "ride_id": "4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9",
+        "src_lat_hash": "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2",
+        "src_lon_hash": "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035",
+        "des_lat_hash": "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8",
+        "des_lon_hash": "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0",
+        "vehicle_type": "toego",
+        "seat_count": 2,
+        "pay_mode": "crypto",
+        "crypto_paystatus": "paidbycom",
+        "fiat_paystatus": "",
+        "action_txnid_vector": [{
+            "first": "create",
+            "second": "94b33176d0fa1b3c2c3358cf498b6c02575973b80e8db1f0ef22e9bcb4882abf"
+          }
+        ],
+        "create_timestamp": 1601158890,
+        "assign_timestamp": 0,
+        "reachsrc_timestamp_est": 0,
+        "reachsrc_timestamp_act": 0,
+        "cancel_timestamp": 0,
+        "start_timestamp": 0,
+        "changedes_timestamp": 0,
+        "finish_timestamp_act": 0,
+        "finish_timestamp_est": 1601159711,
+        "addfareact_timestamp": 0,
+        "ridex_usagestatus_com": "n",
+        "ridex_usagestatus_dri": "",
+        "fare_est": "79.00000000000000000",
+        "fare_act": "0.00000000000000000",
+        "market_price": "5.00000000000000000",
+        "fare_crypto_est": "17.8000 TOE",
+        "fare_crypto_act": "0 ",
+        "rating_status_dri": "",
+        "rating_dri": "0.00000000000000000",
+        "rating_status_com": "",
+        "rating_com": "0.00000000000000000"
+      },
+      "payer": "toecom111111"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
 ```
 	- trip related info: src loc & des loc
 ```md
@@ -190,7 +241,7 @@ d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2
 
 * `toecom111111` requested a ride again (with already previous ride ongoing) & gets error
 ```console
-$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "n", "79.00", "5.00", "15.8000 TOE", "1597834838", "2", "request a ride from home to office"]' -p toecom111111@active
+$ cleost push action toe1ridetaxi create '["toecom111111", "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2", "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035", "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8", "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0", "toego", "crypto", "n", "79.00", "5.00", "17.8000 TOE", "1601159711", "2", "request a ride from home to office"]' -p toecom111111@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
 assertion failure with message: The ride looks like already set by 'toecom111111' using 'crypto'.
@@ -202,17 +253,33 @@ pending console output:
 * Set online status for driver
 ```console
 $ cleost push action toe1ridetaxi addristatus '["toedri111111", "online"]' -p toedri111111@active
-executed transaction: 412359b4b725a6ca5d185a1b8692872dcfb07537c5f7bdda2636fd8769fa2965  112 bytes  213 us
+executed transaction: 76780ff823aea9693aa0f4ed3535f6ca83a5156f315c5e85b505db245f702b87  112 bytes  397 us
 #  toe1ridetaxi <= toe1ridetaxi::addristatus    {"driver_ac":"toedri111111","status":"online"}
 #  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"Your ride_status is updated to: 'online'."}
 #  toedri111111 <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"Your ride_status is updated to: 'online'."}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
+	- view the table `dridestatus`
+```console
+$ cleost get table toe1ridetaxi toedri111111 dridestatus --show-payer
+{
+  "rows": [{
+      "data": {
+        "user_type": "driver",
+        "status": "online"
+      },
+      "payer": "toedri111111"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
 
 #### Action - `assign`
 * assign ride to driver: Facing an error, if the status is not present in the table
 ```console
-$ cleost push action toe1ridetaxi assign '['toedri111111', 'ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7', '1596930158']' -p toe1ridetaxi@active
+$ cleost push action toe1ridetaxi assign '['toedri111111', '4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9', '1601162891']' -p toe1ridetaxi@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
 assertion failure with message: driver's status row is not present. Please, add using 'addristatus' action.
@@ -220,14 +287,70 @@ pending console output:
 ```
 * assign ride to driver if the status is present in the table & the driver is online
 ```console
-$ cleost push action toe1ridetaxi assign '['toedri111111', 'ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7', '1596930158']' -p toe1ridetaxi@active
-executed transaction: 9f2e7dd219b57ef18344450fa8d34509e700c1bca248fa4a878c2e260a038caa  136 bytes  203 us
-#  toe1ridetaxi <= toe1ridetaxi::assign         {"driver_ac":"toedri111111","ride_id":"ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b...
+$ cleost push action toe1ridetaxi assign '['toedri111111', '4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9', '1601162891']' -p toe1ridetaxi@active
+executed transaction: 8d090aff7286f2af1601a0ccced4f58d7ce2042e1d03fa5ccb8b0c99723af6c7  136 bytes  490 us
+#  toe1ridetaxi <= toe1ridetaxi::assign         {"driver_ac":"toedri111111","ride_id":"4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac241...
 #  toe1ridetaxi <= toe1ridetaxi::sendalert      {"user":"toedri111111","message":"toedri111111 is assigned with a ride."}
 #  toe1ridetaxi <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"toecom111111 is assigned with a driver: toedri111111"}
 #  toedri111111 <= toe1ridetaxi::sendalert      {"user":"toedri111111","message":"toedri111111 is assigned with a ride."}
 #  toecom111111 <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"toecom111111 is assigned with a driver: toedri111111"}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+	- view the table `ridestaxi`
+```console
+$ cleost get table toe1ridetaxi toe1ridetaxi ridestaxi --show-payer --lower toecom111111 --limit 1
+{
+  "rows": [{
+      "data": {
+        "commuter_ac": "toecom111111",
+        "ride_status": "enroute",
+        "driver_ac": "toedri111111",
+        "ride_id": "4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9",
+        "src_lat_hash": "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2",
+        "src_lon_hash": "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035",
+        "des_lat_hash": "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8",
+        "des_lon_hash": "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0",
+        "vehicle_type": "toego",
+        "seat_count": 2,
+        "pay_mode": "crypto",
+        "crypto_paystatus": "paidbycom",
+        "fiat_paystatus": "",
+        "action_txnid_vector": [{
+            "first": "create",
+            "second": "94b33176d0fa1b3c2c3358cf498b6c02575973b80e8db1f0ef22e9bcb4882abf"
+          },{
+            "first": "assign",
+            "second": "8d090aff7286f2af1601a0ccced4f58d7ce2042e1d03fa5ccb8b0c99723af6c7"
+          }
+        ],
+        "create_timestamp": 1601158890,
+        "assign_timestamp": 1601162146,
+        "reachsrc_timestamp_est": 1601162891,
+        "reachsrc_timestamp_act": 0,
+        "cancel_timestamp": 0,
+        "start_timestamp": 0,
+        "changedes_timestamp": 0,
+        "finish_timestamp_act": 0,
+        "finish_timestamp_est": 1601159711,
+        "addfareact_timestamp": 0,
+        "ridex_usagestatus_com": "n",
+        "ridex_usagestatus_dri": "",
+        "fare_est": "79.00000000000000000",
+        "fare_act": "0.00000000000000000",
+        "market_price": "5.00000000000000000",
+        "fare_crypto_est": "17.8000 TOE",
+        "fare_crypto_act": "0 ",
+        "rating_status_dri": "",
+        "rating_dri": "0.00000000000000000",
+        "rating_status_com": "",
+        "rating_com": "0.00000000000000000"
+      },
+      "payer": "toe1ridetaxi"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
 ```
 	- trip related info: estimated time taken to reach the src
 ```
@@ -235,7 +358,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 ```
 * Error during re-assign the same ride
 ```console
-$ cleost push action toe1ridetaxi assign '['toedri111111', 'ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7', '1596930158']' -p toe1ridetaxi@active
+$ cleost push action toe1ridetaxi assign '['toedri111111', '4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9', '1601162891']' -p toe1ridetaxi@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
 assertion failure with message: the commuter is already assigned with a driver: toedri111111. So, the ride can't be reassigned
@@ -245,18 +368,77 @@ pending console output:
 #### Action - `reachsrc`
 * `toedri111111` reach the src_loc
 ```console
-$ cleost push action toe1ridetaxi reachsrc '["toedri111111", "ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7"]' -p toedri111111@active
-executed transaction: 4f33baaa9dc65d6ad00b1edbb524a11a8f146e7c4c5162f4330ff4bb7bb5ed9b  136 bytes  219 us
-#  toe1ridetaxi <= toe1ridetaxi::reachsrc       {"driver_ac":"toedri111111","ride_id":"ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b...
+$ cleost push action toe1ridetaxi reachsrc '["toedri111111", "4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9"]' -p toedri111111@active
+executed transaction: ec0139cb809783407c101013456e5a76fb7aacdbf378da5c736c158e23aba3f4  136 bytes  400 us
+#  toe1ridetaxi <= toe1ridetaxi::reachsrc       {"driver_ac":"toedri111111","ride_id":"4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac241...
 #  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"toedri111111 has reached the pick-up point."}
 #  toe1ridetaxi <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"Hello, toecom111111, your driver: toedri111111 has reached the pic...
 #  toedri111111 <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"toedri111111 has reached the pick-up point."}
 #  toecom111111 <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"Hello, toecom111111, your driver: toedri111111 has reached the pic...
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
+	- view the table `ridestaxi`
+```console
+$ cleost get table toe1ridetaxi toe1ridetaxi ridestaxi --show-payer --lower toecom111111 --limit 1
+{
+  "rows": [{
+      "data": {
+        "commuter_ac": "toecom111111",
+        "ride_status": "waiting",
+        "driver_ac": "toedri111111",
+        "ride_id": "4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9",
+        "src_lat_hash": "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2",
+        "src_lon_hash": "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035",
+        "des_lat_hash": "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8",
+        "des_lon_hash": "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0",
+        "vehicle_type": "toego",
+        "seat_count": 2,
+        "pay_mode": "crypto",
+        "crypto_paystatus": "paidbycom",
+        "fiat_paystatus": "",
+        "action_txnid_vector": [{
+            "first": "create",
+            "second": "94b33176d0fa1b3c2c3358cf498b6c02575973b80e8db1f0ef22e9bcb4882abf"
+          },{
+            "first": "assign",
+            "second": "8d090aff7286f2af1601a0ccced4f58d7ce2042e1d03fa5ccb8b0c99723af6c7"
+          },{
+            "first": "reachsrc",
+            "second": "ec0139cb809783407c101013456e5a76fb7aacdbf378da5c736c158e23aba3f4"
+          }
+        ],
+        "create_timestamp": 1601158890,
+        "assign_timestamp": 1601162146,
+        "reachsrc_timestamp_est": 1601162891,
+        "reachsrc_timestamp_act": 1601162459,
+        "cancel_timestamp": 0,
+        "start_timestamp": 0,
+        "changedes_timestamp": 0,
+        "finish_timestamp_act": 0,
+        "finish_timestamp_est": 1601159711,
+        "addfareact_timestamp": 0,
+        "ridex_usagestatus_com": "n",
+        "ridex_usagestatus_dri": "",
+        "fare_est": "79.00000000000000000",
+        "fare_act": "0.00000000000000000",
+        "market_price": "5.00000000000000000",
+        "fare_crypto_est": "17.8000 TOE",
+        "fare_crypto_act": "0 ",
+        "rating_status_dri": "",
+        "rating_dri": "0.00000000000000000",
+        "rating_status_com": "",
+        "rating_com": "0.00000000000000000"
+      },
+      "payer": "toedri111111"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
 * `toedri111111` retry the same action & gets error:
 ```console
-$ cleost push action toe1ridetaxi reachsrc '["toedri111111", "ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7"]' -p toedri111111@active
+$ cleost push action toe1ridetaxi reachsrc '["toedri111111", "4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9"]' -p toedri111111@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
 assertion failure with message: Sorry! the ride_status is already marked as 'waiting'. So, you can't modify.
@@ -266,18 +448,80 @@ pending console output:
 #### Action - `start`
 * `toedri111111` start the ride
 ```console
-$ cleost push action toe1ridetaxi start '["toedri111111", "ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7", "n"]' -p toedri111111@active
-executed transaction: cdd7711094d5920115e0d59354db78f485126f32f331b75a4ff1b05bafbc06ed  144 bytes  204 us
-#  toe1ridetaxi <= toe1ridetaxi::start          {"driver_ac":"toedri111111","ride_id":"ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b...
+$ cleost push action toe1ridetaxi start '["toedri111111", "4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9", "n"]' -p toedri111111@active
+executed transaction: 2bf6c1e168cab886cfd23314b60776e48729df6d51180d213909f6fb26e82354  144 bytes  266 us
+#  toe1ridetaxi <= toe1ridetaxi::start          {"driver_ac":"toedri111111","ride_id":"4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac241...
 #  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"toedri111111 starts the ride."}
 #  toe1ridetaxi <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"toedri111111 starts the ride."}
 #  toedri111111 <= toe1ridetaxi::sendreceipt    {"user":"toedri111111","message":"toedri111111 starts the ride."}
 #  toecom111111 <= toe1ridetaxi::sendalert      {"user":"toecom111111","message":"toedri111111 starts the ride."}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]
 ```
+	- view the table `ridestaxi`
+```console
+$ cleost get table toe1ridetaxi toe1ridetaxi ridestaxi --show-payer --lower toecom111111 --limit 1
+{
+  "rows": [{
+      "data": {
+        "commuter_ac": "toecom111111",
+        "ride_status": "ontrip",
+        "driver_ac": "toedri111111",
+        "ride_id": "4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9",
+        "src_lat_hash": "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2",
+        "src_lon_hash": "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035",
+        "des_lat_hash": "5c513dcebaf81415ff93c17e545889f9807e23d7f5f6ad3819d7482e489a3ae8",
+        "des_lon_hash": "367b6a46f8d4c738ec5090a7828fdee6b441ff157744d907e41e6d26b3cf46b0",
+        "vehicle_type": "toego",
+        "seat_count": 2,
+        "pay_mode": "crypto",
+        "crypto_paystatus": "paidbycom",
+        "fiat_paystatus": "",
+        "action_txnid_vector": [{
+            "first": "create",
+            "second": "94b33176d0fa1b3c2c3358cf498b6c02575973b80e8db1f0ef22e9bcb4882abf"
+          },{
+            "first": "assign",
+            "second": "8d090aff7286f2af1601a0ccced4f58d7ce2042e1d03fa5ccb8b0c99723af6c7"
+          },{
+            "first": "reachsrc",
+            "second": "ec0139cb809783407c101013456e5a76fb7aacdbf378da5c736c158e23aba3f4"
+          },{
+            "first": "start",
+            "second": "2bf6c1e168cab886cfd23314b60776e48729df6d51180d213909f6fb26e82354"
+          }
+        ],
+        "create_timestamp": 1601158890,
+        "assign_timestamp": 1601162146,
+        "reachsrc_timestamp_est": 1601162891,
+        "reachsrc_timestamp_act": 1601162459,
+        "cancel_timestamp": 0,
+        "start_timestamp": 1601163248,
+        "changedes_timestamp": 0,
+        "finish_timestamp_act": 0,
+        "finish_timestamp_est": 1601159711,
+        "addfareact_timestamp": 0,
+        "ridex_usagestatus_com": "n",
+        "ridex_usagestatus_dri": "n",
+        "fare_est": "79.00000000000000000",
+        "fare_act": "0.00000000000000000",
+        "market_price": "5.00000000000000000",
+        "fare_crypto_est": "17.8000 TOE",
+        "fare_crypto_act": "0 ",
+        "rating_status_dri": "",
+        "rating_dri": "0.00000000000000000",
+        "rating_status_com": "",
+        "rating_com": "0.00000000000000000"
+      },
+      "payer": "toedri111111"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
 * `toedri111111` retry the action & gets error:
 ```console
-$ cleost push action toe1ridetaxi start '["toedri111111", "ba63f8030b5ea976565fd509086e8221571cb05088ab8b968c071d9ef7c8b9e7", "n"]' -p toedri111111@active
+$ cleost push action toe1ridetaxi start '["toedri111111", "4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9", "n"]' -p toedri111111@active
 Error 3050003: eosio_assert_message assertion failure
 Error Details:
 assertion failure with message: Sorry! the trip is already started. So, you can't modify.
@@ -442,6 +686,7 @@ cleost push action toe1ridetaxi cancelbycom '["toecom111111", "cancel ride"]' -p
 	- here, the `dristatus` would be changed from "assigned" to "online"
 * [ ] Can `finish`, `addfareact`, `recvfare` be merged into one action by automatically transferring the money after adding the actual fare. 
 * [ ] Implement pool ride. Ensure that the `dridestatus` table is only modified when the ride is not pool type. This is because, when in pool, the "online" to "assigned" is not true for the next commuter to be picked-up. For the next commuter also, the driver's status should be "online", but not "assgined".
+* [ ] In `rides` table, whether only commuter/contract should pay for the entire row for all operations, is to be decided based on the row data consumption at the end of the ride. Basically, note the increment in the last ram_payer's RAM, among all ride operations.
 
 ### NOTES
 * All the actions are ensured to process sequentially based on checking the `ride_status` field of the table, so that an action can't be accessed before using the previous required action. E.g. `cancelbycom` can only be accessed in __"requested"__, __"enroute"__, __"waiting"__ ride status.

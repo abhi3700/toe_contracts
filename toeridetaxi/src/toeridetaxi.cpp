@@ -260,7 +260,7 @@ void toeridetaxi::assign( const name& driver_ac,
 	check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present. Please, add using \'addristatus\' action.");
 
 	// change the driver status as "assigned"
-	dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
+	dridestatus_table.modify(dridestatus_it, same_payer, [&](auto& row){
 		row.status = "assigned"_n;
 	});
 
@@ -376,6 +376,81 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 
 }
 
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::reachsrc( const name& driver_ac,
+							const checksum256& ride_id ) {
+	require_auth(driver_ac);
+
+	// check whether the `driver_ac` is a verified driver by reading the `auth` table
+	check_userauth(driver_ac, "driver"_n);
+
+	// instantiate the `ride` table
+	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
+	auto rideid_idx = ridetaxi_table.get_index<"byrideid"_n>();
+	auto ride_it = rideid_idx.find(ride_id);
+
+	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
+
+	check( ride_it->ride_status != "waiting"_n, "Sorry! the ride_status is already marked as \'waiting\'. So, you can't modify.");
+
+	// modify
+	rideid_idx.modify(ride_it, driver_ac, [&](auto& row) {
+		row.ride_status = "waiting"_n;
+		row.reachsrc_timestamp_act = now();
+		row.action_txnid_vector.emplace_back(make_pair("reachsrc"_n, get_trxid()));
+	});
+
+	// On successful execution a receipt & an alert is sent
+	send_receipt(driver_ac, 
+		driver_ac.to_string() + " has reached the pick-up point.");
+	send_alert(ride_it->commuter_ac, 
+		"Hello, " + (ride_it->commuter_ac).to_string() + ", your driver: " + driver_ac.to_string() + " has reached the pick-up point.");
+
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::start( const name& driver_ac,
+ 						const checksum256& ride_id,
+						const name& ridex_usagestatus_dri ) {
+	require_auth( driver_ac ); 
+
+	// check whether the `driver_ac` is a verified driver by reading the `auth` table
+	check_userauth(driver_ac, "driver"_n);
+
+	// instantiate the `ride` table
+	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
+	auto rideid_idx = ridetaxi_table.get_index<"byrideid"_n>();
+	auto ride_it = rideid_idx.find(ride_id);
+
+	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
+
+	check( ride_it->ride_status != "ontrip"_n, "Sorry! the trip is already started. So, you can't modify.");
+
+	// modify
+	rideid_idx.modify(ride_it, driver_ac, [&](auto& row) {
+		row.ride_status = "ontrip"_n;
+		row.start_timestamp = now();
+		row.ridex_usagestatus_dri = ridex_usagestatus_dri;
+		row.action_txnid_vector.emplace_back(make_pair("start"_n, get_trxid()));
+	});
+
+	// if yes, consume rides using consume_ride only if pay_mode is "crypto"
+	if((ridex_usagestatus_dri == "y"_n) && (ride_it->pay_mode == "crypto"_n)) {
+		// consume_ride(driver_ac, "driver"_n, "driver"_n, 1);
+		action(
+			permission_level{get_self(), "active"_n},
+			ridex_contract_ac,
+			"consumeride"_n,
+			std::make_tuple(driver_ac, "driver"_n, "driver"_n, 1)
+		).send();
+	}
+
+	// On successful execution, an alert is sent
+	send_receipt(driver_ac, driver_ac.to_string() + " starts the ride.");
+	send_alert(ride_it->commuter_ac, driver_ac.to_string() + " starts the ride.");
+}
+
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::changedes( const name& commuter_ac,
 					checksum256 des_lat_hash, 
@@ -487,80 +562,6 @@ void toeridetaxi::changedes( const name& commuter_ac,
 	send_receipt(commuter_ac, commuter_ac.to_string() + " changes the destination location & the fare is updated to " + std::to_string(fare_est) + " INR & \'" + fare_crypto_est.to_string() + "\'.");
 	send_alert(ride_it->driver_ac, commuter_ac.to_string() + " changes the destination location & the fare is updated to " + std::to_string(fare_est) + " INR & \'" + fare_crypto_est.to_string() + "\'.");
 
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::reachsrc( const name& driver_ac,
-							const checksum256& ride_id ) {
-	require_auth(driver_ac);
-
-	// check whether the `driver_ac` is a verified driver by reading the `auth` table
-	check_userauth(driver_ac, "driver"_n);
-
-	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
-	auto rideid_idx = ridetaxi_table.get_index<"byrideid"_n>();
-	auto ride_it = rideid_idx.find(ride_id);
-
-	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
-
-	check( ride_it->ride_status != "waiting"_n, "Sorry! the ride_status is already marked as \'waiting\'. So, you can't modify.");
-
-	// modify
-	rideid_idx.modify(ride_it, driver_ac, [&](auto& row) {
-		row.ride_status = "waiting"_n;
-		row.reachsrc_timestamp_act = now();
-		row.action_txnid_vector.emplace_back(make_pair("reachsrc"_n, get_trxid()));
-	});
-
-	// On successful execution a receipt & an alert is sent
-	send_receipt(driver_ac, 
-		driver_ac.to_string() + " has reached the pick-up point.");
-	send_alert(ride_it->commuter_ac, 
-		"Hello, " + (ride_it->commuter_ac).to_string() + ", your driver: " + driver_ac.to_string() + " has reached the pick-up point.");
-
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::start( const name& driver_ac,
- 						const checksum256& ride_id,
-						const name& ridex_usagestatus_dri ) {
-	require_auth( driver_ac ); 
-
-	// check whether the `driver_ac` is a verified driver by reading the `auth` table
-	check_userauth(driver_ac, "driver"_n);
-
-	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
-	auto rideid_idx = ridetaxi_table.get_index<"byrideid"_n>();
-	auto ride_it = rideid_idx.find(ride_id);
-
-	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
-
-	check( ride_it->ride_status != "ontrip"_n, "Sorry! the trip is already started. So, you can't modify.");
-
-	// modify
-	rideid_idx.modify(ride_it, driver_ac, [&](auto& row) {
-		row.ride_status = "ontrip"_n;
-		row.start_timestamp = now();
-		row.ridex_usagestatus_dri = ridex_usagestatus_dri;
-		row.action_txnid_vector.emplace_back(make_pair("start"_n, get_trxid()));
-	});
-
-	// if yes, consume rides using consume_ride only if pay_mode is "crypto"
-	if((ridex_usagestatus_dri == "y"_n) && (ride_it->pay_mode == "crypto"_n)) {
-		// consume_ride(driver_ac, "driver"_n, "driver"_n, 1);
-		action(
-			permission_level{get_self(), "active"_n},
-			ridex_contract_ac,
-			"consumeride"_n,
-			std::make_tuple(driver_ac, "driver"_n, "driver"_n, 1)
-		).send();
-	}
-
-	// On successful execution, an alert is sent
-	send_receipt(driver_ac, driver_ac.to_string() + " starts the ride.");
-	send_alert(ride_it->commuter_ac, driver_ac.to_string() + " starts the ride.");
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -810,7 +811,7 @@ void toeridetaxi::driaddrating( const name& driver_ac,
 	check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present. Please, add using \'addristatus\' action.");
 
 	// change the driver status from "assigned" to "online" back
-	dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
+	dridestatus_table.modify(dridestatus_it, same_payer, [&](auto& row){
 		row.status = "online"_n;
 	});
 
@@ -901,7 +902,9 @@ void toeridetaxi::addristatus( const name& driver_ac,
 			row.status = status;
 		});
 	} else{
-		dridestatus_table.modify(dridestatus_it, driver_ac, [&](auto& row){
+		check(status != dridestatus_it->status, "the parsed_status matches with the stored one.");
+
+		dridestatus_table.modify(dridestatus_it, same_payer, [&](auto& row){
 			row.status = status;
 		});
 	}
@@ -928,7 +931,7 @@ void toeridetaxi::setrtststamp( const name& action,
 			row.wait_time = wait_time;
 		});
 	} else {
-		rtststamp_table.modify(rtststamp_it, get_self(), [&](auto& row){
+		rtststamp_table.modify(rtststamp_it, same_payer, [&](auto& row){
 			row.wait_time = wait_time;
 		});
 	}
@@ -955,7 +958,7 @@ void toeridetaxi::setrtsfuelpr( const name& fiat_currency,
 			row.fuel_price_diesel = fuel_price_diesel;
 		});
 	} else {
-		rtsfuelprice_table.modify(rtsfuelprice_it, get_self(), [&](auto& row){
+		rtsfuelprice_table.modify(rtsfuelprice_it, same_payer, [&](auto& row){
 			row.fuel_unit = fuel_unit;
 			row.fuel_price_petrol = fuel_price_petrol;
 			row.fuel_price_diesel = fuel_price_diesel;

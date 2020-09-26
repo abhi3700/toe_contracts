@@ -122,7 +122,6 @@ public:
 	 * 
 	 */
 	ACTION assign( const name& driver_ac, 
-					// const name& commuter_ac,
 					const checksum256& ride_id,
 					uint32_t reachsrc_timestamp_est);
 
@@ -164,28 +163,6 @@ public:
 	//  double src_lon 
 	//  );
 
-	/**
-	 * @brief change destination location
-	 * @details 
-	 *      - search by commuter_ac,
-	 *      - change destination's latitude & longitude
-	 * 
-	 * @param commuter_ac - commuter account
-	 * @param des_lat - destination latitude
-	 * @param des_lon - destination longitude
-	 * @param ridex_usagestatus_com - 'y' or 'n' 
-	 * @param fare_est - estimated fare (in fiat curr)
-	 * @param fare_crypto_est - estimated fare (in crypto curr)
-	 * @param memo - the memo string to change destination
-	 */
-	ACTION changedes( const name& commuter_ac,
-						checksum256 des_lat_hash, 
-						checksum256 des_lon_hash,
-						const name& ridex_usagestatus_com,
-						float fare_est,
-						const asset& fare_crypto_est,
-						const name& pay_mode,
-						const string& memo );
 
 	/**
 	 * @brief - action to timestamp pickup point
@@ -210,6 +187,30 @@ public:
 	ACTION start( const name& driver_ac, 
 					const checksum256& ride_id,
 					const name& ridex_usagestatus_dri );
+
+	/**
+	 * @brief change destination location
+	 * @details 
+	 *      - search by commuter_ac,
+	 *      - change destination's latitude & longitude
+	 * 
+	 * @param commuter_ac - commuter account
+	 * @param des_lat - destination latitude
+	 * @param des_lon - destination longitude
+	 * @param ridex_usagestatus_com - 'y' or 'n' 
+	 * @param fare_est - estimated fare (in fiat curr)
+	 * @param fare_crypto_est - estimated fare (in crypto curr)
+	 * @param memo - the memo string to change destination
+	 */
+	ACTION changedes( const name& commuter_ac,
+						checksum256 des_lat_hash, 
+						checksum256 des_lon_hash,
+						const name& ridex_usagestatus_com,
+						float fare_est,
+						const asset& fare_crypto_est,
+						const name& pay_mode,
+						const string& memo );
+
 
 	/**
 	 * @brief - finish ride
