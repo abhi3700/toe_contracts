@@ -128,17 +128,6 @@ public:
 						float rating_avg);
 
 	/**
-	 * @brief - delete user
-	 * @details - delete user from the `user` table
-	 * 
-	 * @param user - driver/commuter
-	 * @param memo - a note (reason) for the corresponding status, visible 
-	 * 					in the user's action via send_receipt() or send_alert() inline actions
-	 */
-	ACTION deluser( const name& user,
-					const string& memo);
-
-	/**
 	 * @brief - send alert
 	 * @details - send alert after the action is successfully done. e.g. a driver is alerted for getting blacklisted
 	 * 
@@ -157,6 +146,27 @@ public:
 	 */
 	ACTION sendreceipt( const name& user,
 						const string& message);
+
+	ACTION testdeluser( const name& user,
+						const name& user_type,
+						const string& memo ) {
+
+		check((user_type == "driver"_n) || (user_type == "commuter"_n) || (user_type == "validator"_n), "invalid user type.");
+
+		// instantiate the `users` table
+		user_index user_table(get_self(), user_type.value);
+		auto user_it = user_table.find(user.value);
+
+		// ensure that the user is found in the table
+		check(user_it != user_table.end(), "this user account is not a user of the DApp.");
+
+		// erase
+		user_table.erase(user_it);
+
+		// either receipt or alert
+		send_alert( user, "The user is deleted due to: " + memo );
+	}
+
 
 	using setridetotal_action  = action_wrapper<"setridetotal"_n, &toeuserauth::setridetotal>;
 	using setriderated_action  = action_wrapper<"setriderated"_n, &toeuserauth::setriderated>;

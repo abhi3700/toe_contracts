@@ -43,7 +43,7 @@ void toeuserauth::signup( const name& user,
 	} else {								// found
 		check((national_id_hash != user_it->national_id_hash) || (profile_hash != user_it->profile_hash), "at least profile or national id hash should be different." );
 		
-		user_table.modify( user_it, user, [&](auto& row) {
+		user_table.modify( user_it, same_payer, [&](auto& row) {
 			row.national_id_hash = national_id_hash;
 			row.profile_hash = profile_hash;
 			row.user_status = "updated"_n;
@@ -227,29 +227,6 @@ void toeuserauth::setratingavg( const name& user,
 	// alert is sent
 	send_alert(user, "the average rating is updated to: " + std::to_string(rating_avg));
 }
-// --------------------------------------------------------------------------------------------------------------------
-void toeuserauth::deluser( const name& user,
-							const string& memo ) {
-	// authority by either user or contract
-	check( has_auth(user) || has_auth(get_self()), "missing required authority of " 
-													+ user.to_string() + " or " + get_self().to_string() );
-
-	check(is_account(user), "invalid user account name");
-
-	// instantiate the `users` table
-	user_index user_table(get_self(), user.value);
-	auto user_it = user_table.find(user.value);
-
-	// ensure that the user is found in the table
-	check(user_it != user_table.end(), "this user account is not a user of the DApp.");
-
-	// erase
-	user_table.erase(user_it);
-
-	// either receipt or alert
-	send_alert( user, "The user is deleted due to: " + memo );
-}
-
 // --------------------------------------------------------------------------------------------------------------------
 void toeuserauth::sendalert(const name& user,
 							const string& message) {

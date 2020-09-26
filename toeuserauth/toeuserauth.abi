@@ -22,20 +22,6 @@
             ]
         },
         {
-            "name": "deluser",
-            "base": "",
-            "fields": [
-                {
-                    "name": "user",
-                    "type": "name"
-                },
-                {
-                    "name": "memo",
-                    "type": "string"
-                }
-            ]
-        },
-        {
             "name": "sendalert",
             "base": "",
             "fields": [
@@ -144,6 +130,24 @@
             ]
         },
         {
+            "name": "testdeluser",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "user_type",
+                    "type": "name"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "user",
             "base": "",
             "fields": [
@@ -235,11 +239,6 @@
             "ricardian_contract": ""
         },
         {
-            "name": "deluser",
-            "type": "deluser",
-            "ricardian_contract": ""
-        },
-        {
             "name": "sendalert",
             "type": "sendalert",
             "ricardian_contract": ""
@@ -267,6 +266,11 @@
         {
             "name": "signup",
             "type": "signup",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "testdeluser",
+            "type": "testdeluser",
             "ricardian_contract": ""
         },
         {
