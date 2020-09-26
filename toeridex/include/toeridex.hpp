@@ -212,7 +212,31 @@ public:
 	 */
 	ACTION sendreceipt( const name& user,
 						const string& message);
+	
+	ACTION testdelridex(const name& ride_type){
+		ridex_index ridex_table(get_self(), get_self().value);
+		auto ridex_it = ridex_table.find(ride_type.value);
 
+		check(ridex_it != ridex_table.end(), "There is no data found in RIDEX for \'" + ride_type.to_string() + "\' ride_type.");
+		ridex_table.erase(ridex_it);
+	}
+
+	ACTION testdelruwal(const name& user)
+	{
+		rexusrwallet_index rexusrwallet_table(get_self(), user.value);
+		auto rexusrwallet_it = rexusrwallet_table.find(ride_token_symbol.raw());	// finding the ("TOE", 4)
+
+		check(rexusrwallet_it != rexusrwallet_table.end(), " no balance.");
+		rexusrwallet_table.erase(rexusrwallet_it);	
+	}
+
+	ACTION testdelruacc(const name& user, const name& ride_type) {
+		rexuseraccnt_index rexuseraccnt_table(get_self(), user.value);
+		auto rexuseraccnt_it = rexuseraccnt_table.find(ride_type.value);
+
+		check(rexuseraccnt_it != rexuseraccnt_table.end(), "RIDEX account for this user with ride_type doesn\'t exist.");
+		rexuseraccnt_table.erase(rexuseraccnt_it);
+	}
 	// --------------------------------------------------------------------------------
 	static void check_buyer_seller( const name& user, const name& user_type, const name& ride_type) {
 		check((user_type == "driver"_n) || 
@@ -253,14 +277,6 @@ public:
 	using restoreride_action  = action_wrapper<"restoreride"_n, &toeridex::restoreride>;
 	using addridequota_action  = action_wrapper<"addridequota"_n, &toeridex::addridequota>;
 
-	// ACTION delruwallet(const name& user)
-	// {
-	// 	rexusrwallet_index rexusrwallet_table(get_self(), user.value);
-	// 	auto rexusrwallet_it = rexusrwallet_table.find(ride_token_symbol.raw());	// finding the ("TOE", 4)
-
-	// 	check(rexusrwallet_it != rexusrwallet_table.end(), " no balance.");
-	// 	rexusrwallet_table.erase(rexusrwallet_it);	
-	// }
 
 private:
 

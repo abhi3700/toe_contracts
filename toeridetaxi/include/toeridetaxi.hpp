@@ -351,7 +351,39 @@ public:
 						const string& message);
 
 	// [OPTIONAL] for testing purpose
-	ACTION testerase(const checksum256& ride_id);
+	ACTION testdelride(const checksum256& ride_id) {
+		ridetaxi_index ridetaxi_table(get_self(), get_self().value);
+		auto rideid_idx = ridetaxi_table.get_index<"byrideid"_n>();
+		auto ride_it = rideid_idx.find(ride_id);
+
+		check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
+		rideid_idx.erase(ride_it);
+	}
+
+	ACTION testdridstat(const name& driver, const name& user_type) {
+		dridestatus_index dridestatus_table(get_self(), driver.value);
+		auto dridestatus_it = dridestatus_table.find(user_type.value);
+
+		// check the driver's row is present
+		check(dridestatus_it != dridestatus_table.end(), "driver's status row is not present. Please, add using \'addristatus\' action.");
+		dridestatus_table.erase(dridestatus_it);
+	}
+
+	ACTION testdelrtst(const name& action) {
+		rtststamp_index rtststamp_table(get_self(), action.value); 
+		auto rtststamp_it = rtststamp_table.find(action.value);
+
+		check(rtststamp_it != rtststamp_table.end(), "the action doesn't exist.");
+		rtststamp_table.erase(rtststamp_it);
+	}
+
+	ACTION testdelrtsfp(const name& fiat_currency) {
+		rtsfuelprice_index rtsfuelprice_table(get_self(), fiat_currency.value); 
+		auto rtsfuelprice_it = rtsfuelprice_table.find(fiat_currency.value);
+
+		check(rtsfuelprice_it != rtsfuelprice_table.end(), "the rtsfuelprice doesn't exist.");
+		rtsfuelprice_table.erase(rtsfuelprice_it);
+	}
 	// --------------------------------------------------------------------------------------------------------------------
 	static void check_userauth( const name& user, const name& type) {
 		if(type == "driver"_n) {
@@ -584,7 +616,7 @@ private:
 	  return sha256(trxbuf, trxsize);
 	}
 
-	// Adding inline action for `disburse` action in the ridewallet contract   
+/*	// Adding inline action for `disburse` action in the ridewallet contract   
 	void disburse_fare(const name& receiver_ac,
 						const name& wallet_holder,
 						const asset& quantity,
@@ -620,6 +652,6 @@ private:
 	void set_rating_avg(const name& user,
 						const name& user_type,
 						float rating_avg);
-
+*/
 
 };

@@ -184,6 +184,40 @@
             ]
         },
         {
+            "name": "testdelridex",
+            "base": "",
+            "fields": [
+                {
+                    "name": "ride_type",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "testdelruacc",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "ride_type",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "testdelruwal",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                }
+            ]
+        },
+        {
             "name": "withdraw",
             "base": "",
             "fields": [
@@ -242,6 +276,21 @@
         {
             "name": "sendreceipt",
             "type": "sendreceipt",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "testdelridex",
+            "type": "testdelridex",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "testdelruacc",
+            "type": "testdelruacc",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "testdelruwal",
+            "type": "testdelruwal",
             "ricardian_contract": ""
         },
         {

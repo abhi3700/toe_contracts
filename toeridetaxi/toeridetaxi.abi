@@ -596,12 +596,46 @@
             ]
         },
         {
-            "name": "testerase",
+            "name": "testdelride",
             "base": "",
             "fields": [
                 {
                     "name": "ride_id",
                     "type": "checksum256"
+                }
+            ]
+        },
+        {
+            "name": "testdelrtsfp",
+            "base": "",
+            "fields": [
+                {
+                    "name": "fiat_currency",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "testdelrtst",
+            "base": "",
+            "fields": [
+                {
+                    "name": "action",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "testdridstat",
+            "base": "",
+            "fields": [
+                {
+                    "name": "driver",
+                    "type": "name"
+                },
+                {
+                    "name": "user_type",
+                    "type": "name"
                 }
             ]
         }
@@ -703,8 +737,23 @@
             "ricardian_contract": ""
         },
         {
-            "name": "testerase",
-            "type": "testerase",
+            "name": "testdelride",
+            "type": "testdelride",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "testdelrtsfp",
+            "type": "testdelrtsfp",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "testdelrtst",
+            "type": "testdelrtst",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "testdridstat",
+            "type": "testdridstat",
             "ricardian_contract": ""
         }
     ],
