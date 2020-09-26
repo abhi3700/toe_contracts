@@ -176,7 +176,7 @@ void toeridewallet::disburse(const name& receiver_ac,
 			permission_level{get_self(), "active"_n},
 			token_contract_ac,
 			"transfer"_n,
-			std::make_tuple(get_self(), receiver_ac, ride_fees, "ridewallet disburses " + ride_fees.to_string() + " to \'" + rides_fees_ac.to_string() + "\'.")
+			std::make_tuple(get_self(), rides_fees_ac, ride_fees, "ridewallet disburses " + ride_fees.to_string() + " to \'" + rides_fees_ac.to_string() + "\'.")
 		).send();
 
 		send_alert( receiver_ac, receiver_ac.to_string() + " recieves " + (quantity-ride_fees).to_string() + " amount for purpose: " + memo );
