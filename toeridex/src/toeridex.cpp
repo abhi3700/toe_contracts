@@ -178,7 +178,7 @@ void toeridex::buyride( const name& buyer,
 		).send();
 
 	// update the ride_table with new `ride_quota` & `toe_balance`
-	ridex_table.modify(ridex_it, get_self(), [&](auto& row){
+	ridex_table.modify(ridex_it, same_payer, [&](auto& row){
 		row.ride_quota -= ride_qty;
 		row.toe_balance += ride_expend_supply;
 	});
@@ -269,7 +269,7 @@ void toeridex::sellride( const name& seller,
 	).send();
 
 	// update the ridex_table with new `ride_quota` & `toe_balance`
-	ridex_table.modify(ridex_it, get_self(), [&](auto& row){
+	ridex_table.modify(ridex_it, same_payer, [&](auto& row){
 		row.ride_quota += ride_qty;
 		row.toe_balance -= ride_expend_supply;
 	});
@@ -433,10 +433,10 @@ void toeridex::addridequota(const name& ride_type,
 	auto ridex_it = ridex_table.find(ride_type.value);
 
 	// check if the row exist for given ride_type
-	check(ridex_it != ridex_table.end(), "There is no data found for this ride_type.");
+	check(ridex_it != ridex_table.end(), "There is no data found for this ride_type: \'" + ride_type.to_string() + "\'");
 
 	// update the ridex_table with additional `ride_qty`
-	ridex_table.modify(ridex_it, get_self(), [&](auto& row){
+	ridex_table.modify(ridex_it, same_payer, [&](auto& row){
 		row.ride_quota += ride_qty;
 	});
 
