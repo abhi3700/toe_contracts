@@ -159,7 +159,7 @@ void toeridewallet::disburse(const name& receiver_ac,
 			std::make_tuple(get_self(), receiver_ac, quantity, "ridewallet disburses " + quantity.to_string() + " to \'" + receiver_ac.to_string() + "\'.")
 		).send();
 
-		send_alert( receiver_ac, receiver_ac.to_string() + " recieves " + (quantity-ride_fees).to_string() + " amount for purpose: " + memo );
+		send_alert( receiver_ac, receiver_ac.to_string() + " recieves " + quantity.to_string() + " amount for purpose: " + memo );
 
 	} else if(ride_it->ridex_usagestatus_dri == "n"_n) {
 		// transfer remaining quantity from contract to the receiver account

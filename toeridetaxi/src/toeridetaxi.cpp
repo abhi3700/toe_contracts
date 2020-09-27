@@ -690,7 +690,7 @@ void toeridetaxi::driaddrating( const name& driver_ac,
 	// Ensure that this action is accessed at ride_status as "actfareadded" i.e. after `addfareact` action
 	check( ride_it->ride_status == "actfareadded"_n, "It must be accessed just after \'addfareact\' action.");
 
-	check(ride_it->rating_status_dri != "done"_n, "The ride is already rated by \'" + ride_it->driver_ac.to_string());
+	check(ride_it->rating_status_dri != "done"_n, "The ride is already rated by driver: \'" + ride_it->driver_ac.to_string() + "\'");
 
 	rideid_idx.modify(ride_it, driver_ac, [&](auto& row) {
 		row.rating_com = rating_com;
@@ -758,7 +758,7 @@ void toeridetaxi::comaddrating( const name& commuter_ac,
 
 	check( (ride_it->ride_status == "complete"_n) || (ride_it->ride_status == "actfareadded"_n), "The ride status must either be \'complete\' or \'actfareadded\'.");
 
-	check(ride_it->rating_status_com != "done"_n, "The ride is already rated by \'" + ride_it->commuter_ac.to_string());
+	check(ride_it->rating_status_com != "done"_n, "The ride is already rated by commuter: \'" + ride_it->commuter_ac.to_string() + "\'");
 
 	rideid_idx.modify(ride_it, commuter_ac, [&](auto& row) {
 		row.rating_dri = rating_dri;
