@@ -241,8 +241,8 @@ void toeridetaxi::assign( const name& driver_ac,
 
 	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
 
-	// Ensure that the ride_status is not marked as "enroute"
-	check( ride_it->ride_status != "enroute"_n, "the commuter is already assigned with a driver: " + ride_it->driver_ac.to_string() + ". So, the ride can't be reassigned");
+	// Ensure that this action is accessed at ride_status as "requested" i.e. after `create` action
+	check( ride_it->ride_status == "requested"_n, "the commuter is already assigned with a driver: " + ride_it->driver_ac.to_string() + ". So, the ride can't be reassigned");
 
 	rideid_idx.modify(ride_it, get_self(), [&](auto& row) {
 		row.driver_ac = driver_ac;
@@ -392,7 +392,8 @@ void toeridetaxi::reachsrc( const name& driver_ac,
 
 	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
 
-	check( ride_it->ride_status != "waiting"_n, "Sorry! the ride_status is already marked as \'waiting\'. So, you can't modify.");
+	// Ensure that this action is accessed at ride_status as "enroute" i.e. after `assign` action
+	check( ride_it->ride_status == "enroute"_n, "Sorry! the ride_status is already marked as \'waiting\'. So, you can't modify.");
 
 	// modify
 	rideid_idx.modify(ride_it, driver_ac, [&](auto& row) {
@@ -425,7 +426,8 @@ void toeridetaxi::start( const name& driver_ac,
 
 	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
 
-	check( ride_it->ride_status != "ontrip"_n, "Sorry! the trip is already started. So, you can't modify.");
+	// Ensure that this action is accessed at ride_status as "waiting" i.e. after `reachsrc` action
+	check( ride_it->ride_status == "waiting"_n, "Sorry! the trip is already started. So, you can\'t restart the ride.");
 
 	// modify
 	rideid_idx.modify(ride_it, driver_ac, [&](auto& row) {
@@ -469,7 +471,7 @@ void toeridetaxi::changedes( const name& commuter_ac,
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto ride_it = ridetaxi_table.find(commuter_ac.value);
 
-	// ensure the action is accessed during __"ontrip"__ ride_status
+	// Ensure that this action is accessed at ride_status as "ontrip" i.e. after `start` or `changedes` (if more than 1) action
 	check(ride_it->ride_status == "ontrip"_n, "The ride status must be \'ontrip\' in order to use this action.");
 
 	// ensure that the new des_lat_hash or des_lon_hash is different than it's stored counterpart 
@@ -579,7 +581,8 @@ void toeridetaxi::finish( const name& driver_ac,
 
 	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
 
-	check( ride_it->ride_status != "complete"_n, "Sorry! the ride by the driver is already marked as complete. So, you can't modify.");
+	// Ensure that this action is accessed at ride_status as "ontrip" i.e. after `start` or `changedes` (if any) action
+	check( ride_it->ride_status == "ontrip"_n, "Sorry! the ride by the driver is already marked as complete. So, you can't modify.");
 
 	// modify
 	rideid_idx.modify(ride_it, driver_ac, [&](auto& row) {
@@ -591,15 +594,15 @@ void toeridetaxi::finish( const name& driver_ac,
 	// On successful execution, an alert is sent
 	send_alert(driver_ac, driver_ac.to_string() + " finishes the ride.");
 
-	// add ride_quota for __"crypto"__ pay_mode with ride status as __"complete"__
-	if((ride_it->pay_mode == "crypto"_n) && (ride_it->ride_status == "complete"_n)) {
+	// add ride_quota for __"crypto"__ pay_mode
+	if((ride_it->pay_mode == "crypto"_n)) {
 		// add '1' ride to ridex ride_quota for "driver" type
 		// add_ridequota("driver"_n, 1);
 		action(
 			permission_level{get_self(), "active"_n},
 			ridex_contract_ac,
 			"addridequota"_n,
-			std::make_tuple("driver"_n, 1)
+			std::make_tuple("driver"_n, (uint64_t)1)
 		).send();
 
 		// add '1' ride to ridex ride_quota for "commuter" type
@@ -608,7 +611,7 @@ void toeridetaxi::finish( const name& driver_ac,
 			permission_level{get_self(), "active"_n},
 			ridex_contract_ac,
 			"addridequota"_n,
-			std::make_tuple("commuter"_n, 1)
+			std::make_tuple("commuter"_n, (uint64_t)1)
 		).send();
 	}
 
@@ -641,6 +644,7 @@ void toeridetaxi::finish( const name& driver_ac,
 		"setridetotal"_n,
 		std::make_tuple(ride_it->commuter_ac, "commuter"_n, user_commuter_it->ride_total + 1)
 	).send();
+
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -664,10 +668,13 @@ void toeridetaxi::addfareact( const name& driver_ac,
 	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
 
 	check( ride_it->fare_act == 0.00, "Sorry! the actual fare is already set. You can't modify");
+	
+	// Ensure that this action is accessed at ride_status as "complete" i.e. after `finish` action
 	check( ride_it->ride_status == "complete"_n, "The ride must be marked as complete. Otherwise, this action can't be used.");
 
 	// modify
 	rideid_idx.modify(ride_it, driver_ac, [&] (auto& row) {
+		row.ride_status = "actfareadded"_n;
 		row.fare_act = fare_act;
 		row.fare_crypto_act = fare_crypto_act;
 		row.action_txnid_vector.emplace_back(make_pair("addfareact"_n, get_trxid()));
@@ -680,66 +687,6 @@ void toeridetaxi::addfareact( const name& driver_ac,
 									std::to_string(fare_act) + " INR or \'" + 
 									fare_crypto_act.to_string() + "\'."
 									);
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::recvfare( const name& driver_ac, 
-							const checksum256& ride_id,
-							const string& memo ) {
-	require_auth( driver_ac );
-
-	// check whether the `driver_ac` is a verified driver by reading the `auth` table
-	check_userauth(driver_ac, "driver"_n);
-
-	check(memo.size() <= 256, "memo has more than 256 bytes");
-
-	// instantiate the `ride` table
-	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
-	auto rideid_idx = ridetaxi_table.get_index<"byrideid"_n>();
-	auto ride_it = rideid_idx.find(ride_id);
-
-	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
-
-	// check if the ride by driver is finished
-	check( ride_it->ride_status == "complete"_n, "Sorry! The ride is not completed yet.");
-
-	// check if the pay_mode is `crypto`
-	check( ride_it->pay_mode == "crypto"_n, "Sorry! the payment mode opted by commuter is not crypto.");
-
-	// check if the fare amount is already delivered
-	check(ride_it->crypto_paystatus != "paidtodri"_n, "Sorry! the crypto fare for completed ride to driver: " + driver_ac.to_string() + " is already transferred.");
-
-/*  check if there is any balance & it is greater than the 'fare_crypto_act'
-	corresponding to the ride
-*/  // instantiate the `ridewallet` table
-	ridewallet_index ridewallet_table(wallet_contract_ac, (ride_it->commuter_ac).value);
-	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
-
-	check( wallet_it != ridewallet_table.end(), "Sorry! There is no amount transferred by " + ride_it->commuter_ac.to_string() + "in the ride wallet.");
-
-	// As the pay_mode is 'crypto' for this action, ensure the fare_amount is present in the faretaxi balance.
-	// ensure that the ride wallet's min. balance has `fare_est` value
-	check( wallet_it->balance >= ride_it->fare_crypto_act, "Sorry! Low balance in the ride wallet.");
-
-	// if ( (wallet_it->balance) < ride_it->fare_crypto_act) {
-	// 	send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
-	// 	return;
-	// }
-
-	// disburse_fare(driver_ac, ride_it->commuter_ac, ride_it->fare_crypto_act, memo);
-	action(
-		permission_level{get_self(), "active"_n},
-		wallet_contract_ac,
-		"disburse"_n,
-		std::make_tuple(driver_ac, ride_it->commuter_ac, ride_it->fare_crypto_act, memo)
-	).send();
-
-	// change the crypto pay status to `paid`
-	rideid_idx.modify( ride_it, driver_ac, [&](auto& row){
-		row.crypto_paystatus = "paidtodri"_n;
-		row.action_txnid_vector.emplace_back(make_pair("recvfare"_n, get_trxid()));
-	});
-
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -759,13 +706,8 @@ void toeridetaxi::driaddrating( const name& driver_ac,
 
 	check( ride_it->driver_ac == driver_ac, ride_it->driver_ac.to_string() + " must rate the ride.");
 
-	check( ride_it->ride_status == "complete"_n, "The ride must be complete.");
-
-	if(ride_it->pay_mode == "crypto"_n) {
-		check(ride_it->crypto_paystatus == "paidtodri"_n, "First, the fare amount (in crypto mode) must be paid to the driver before rating.");
-	} else if (ride_it->pay_mode == "fiatdigi"_n) {
-		check(ride_it->fiat_paystatus == "paidtodri"_n, "First, the fare amount (in fiatdigi mode) must be paid to the driver before rating.");
-	}
+	// Ensure that this action is accessed at ride_status as "actfareadded" i.e. after `addfareact` action
+	check( ride_it->ride_status == "actfareadded"_n, "The ride must be complete.");
 
 	check(ride_it->rating_status_dri != "done"_n, "The ride is already rated by \'" + ride_it->driver_ac.to_string());
 
@@ -835,13 +777,7 @@ void toeridetaxi::comaddrating( const name& commuter_ac,
 
 	check( ride_it->commuter_ac == commuter_ac, ride_it->commuter_ac.to_string() + " must rate the ride.");
 
-	check( ride_it->ride_status == "complete"_n, "The ride must be complete.");
-
-	if(ride_it->pay_mode == "crypto"_n) {
-		check(ride_it->crypto_paystatus == "paidtodri"_n, "First, the fare amount (in crypto mode) must be paid to the driver before rating.");
-	} else if (ride_it->pay_mode == "fiatdigi"_n) {
-		check(ride_it->fiat_paystatus == "paidtodri"_n, "First, the fare amount (in fiatdigi mode) must be paid to the driver before rating.");
-	}
+	check( (ride_it->ride_status == "complete"_n) || (ride_it->ride_status == "actfareadded"_n), "The ride must either be \'complete\' or \'actfareadded\'.");
 
 	check(ride_it->rating_status_com != "done"_n, "The ride is already rated by \'" + ride_it->commuter_ac.to_string());
 
@@ -879,6 +815,68 @@ void toeridetaxi::comaddrating( const name& commuter_ac,
 		std::make_tuple(ride_it->driver_ac, "driver"_n, user_driver_it->ride_rated + 1)
 	).send();
 }
+
+// --------------------------------------------------------------------------------------------------------------------
+void toeridetaxi::recvfare( const name& driver_ac, 
+							const checksum256& ride_id,
+							const string& memo ) {
+	require_auth( driver_ac );
+
+	// check whether the `driver_ac` is a verified driver by reading the `auth` table
+	check_userauth(driver_ac, "driver"_n);
+
+	check(memo.size() <= 256, "memo has more than 256 bytes");
+
+	// instantiate the `ride` table
+	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
+	auto rideid_idx = ridetaxi_table.get_index<"byrideid"_n>();
+	auto ride_it = rideid_idx.find(ride_id);
+
+	check( ride_it != rideid_idx.end(), "there is no such ride with given ride_id");
+
+	// check if the pay_mode is `crypto` as this action is valid only for "crypto" pay_mode as latest
+	check( ride_it->pay_mode == "crypto"_n, "Sorry! the payment mode opted by commuter is not crypto.");
+
+	// Ensure that this action is accessed at ride_status as "actfareadded" i.e. after `addfareact` action
+	check( ride_it->ride_status == "actfareadded"_n, "Sorry! The ride is not completed yet.");
+
+	// check if the driver has done rating i.e. after `driaddrating` action
+	check(ride_it->rating_status_dri == "done"_n, "The rating is not done by driver.");
+
+	// check if there is any balance & it is greater than the 'fare_crypto_act'
+	// corresponding to the ride
+  	// instantiate the `ridewallet` table
+	ridewallet_index ridewallet_table(wallet_contract_ac, (ride_it->commuter_ac).value);
+	auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
+
+	check( wallet_it != ridewallet_table.end(), "Sorry! There is no amount transferred by " + ride_it->commuter_ac.to_string() + "in the ride wallet.");
+
+	// As the pay_mode is 'crypto' for this action, ensure the fare_amount is present in the faretaxi balance.
+	// ensure that the ride wallet's min. balance has `fare_est` value
+	check( wallet_it->balance >= ride_it->fare_crypto_act, 
+		"Sorry! Low balance in the ride wallet. Please add \'" + (ride_it->fare_crypto_act - wallet_it->balance).to_string() + "\'");
+
+	// if ( (wallet_it->balance) < ride_it->fare_crypto_act) {
+	// 	send_alert(commuter_ac, "Sorry! Low balance in the ride wallet.");
+	// 	return;
+	// }
+
+	// disburse_fare(driver_ac, ride_it->commuter_ac, ride_it->fare_crypto_act, memo);
+	action(
+		permission_level{get_self(), "active"_n},
+		wallet_contract_ac,
+		"disburse"_n,
+		std::make_tuple(driver_ac, ride_it->commuter_ac, ride_it->fare_crypto_act, memo)
+	).send();
+
+	// change the crypto pay status to `paid`
+	rideid_idx.modify( ride_it, driver_ac, [&](auto& row){
+		row.crypto_paystatus = "paidtodri"_n;
+		row.action_txnid_vector.emplace_back(make_pair("recvfare"_n, get_trxid()));
+	});
+
+}
+
 
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::addristatus( const name& driver_ac,
@@ -967,11 +965,8 @@ void toeridetaxi::setrtsfuelpr( const name& fiat_currency,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::erase( const name& commuter_ac,
-								const string& memo ) {
+void toeridetaxi::erase( const name& commuter_ac ) {
 	require_auth( get_self() );
-
-	check(memo.size() <= 256, "memo has more than 256 bytes");
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
@@ -980,11 +975,33 @@ void toeridetaxi::erase( const name& commuter_ac,
 	// ensure there is a ride by commuter_ac
 	check( ride_it != ridetaxi_table.end(), "Sorry! there is no ride created by commuter_ac.");
 
+	// check if the ride_status is "actfareadded"
+
+	// check if the ride_status is 
+	if(ride_it->pay_mode == "crypto"_n) {
+		check(ride_it->crypto_paystatus == "paidtodri"_n, "the driver is not yet paid with crypto.");
+
+		// check if the driver has done rating
+		check(ride_it->rating_status_dri == "done"_n, "The rating is not done by driver.");
+	} 
+	else if(ride_it->pay_mode == "fiatdigi"_n) {
+		check(ride_it->fiat_paystatus == "paidtodri"_n, "the driver is not yet paid with fiatdigi.");
+
+		// check if the driver has done rating
+		check(ride_it->rating_status_dri == "done"_n, "The rating is not done by driver.");
+	} 
+	else if(ride_it->pay_mode == "fiatcash"_n) {
+		check(ride_it->ride_status == "actfareadded"_n, "the driver has not added the actual fare.");
+
+		// check if the driver has done rating
+		check(ride_it->rating_status_dri == "done"_n, "The rating is not done by driver.");
+	}
+
 	auto driver_ac = ride_it->driver_ac;		// store the `driver_ac` var to use in `send_alert()` inline action.
 	auto ride_id = ride_it->ride_id;			// store the `ride_id` var to use in `send_alert()` inline action.
 
 	// instantiate the fuelprice table
-	rtststamp_index rtststamp_table(get_self(), "erase"_n.value); 
+	rtststamp_index rtststamp_table(get_self(), get_self().value); 
 	auto rtststamp_it = rtststamp_table.find("erase"_n.value);
 
 	// check wait duration is set in the `rtststamp` table
@@ -998,7 +1015,7 @@ void toeridetaxi::erase( const name& commuter_ac,
 	// else erase only after wait_duration passed
 	else {
 		auto time_elapsed = now() - ride_it->addfareact_timestamp;
-		check( time_elapsed >= rtststamp_it->wait_time, "The time elapsed: \'" + std::to_string(time_elapsed) + " \' is stil less than the set wait_time erase the ride record.");
+		check( time_elapsed >= rtststamp_it->wait_time, "The time elapsed: \'" + std::to_string(time_elapsed) + " \' is stil less than the set wait_time to erase the ride record.");
 		
 		// erase the ride
 		ridetaxi_table.erase( ride_it );

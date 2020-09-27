@@ -80,7 +80,6 @@ void toeridewallet::withdraw( const name& commuter_ac,
 	});
 
 	// check if zero balance, then delete the data
-	// @TODO: test whether 0 or 0.0000
 	if( (wallet_it->balance).amount == 0 ) {
 		ridewallet_table.erase(wallet_it);
 	}
@@ -191,7 +190,6 @@ void toeridewallet::disburse(const name& receiver_ac,
 	});
 
 	// check if zero balance, then delete the data
-	// @TODO: test whether 0 or 0.0000
 	if( wallet_it->balance.amount == 0 ) {
 		ridewallet_table.erase(wallet_it);
 	}

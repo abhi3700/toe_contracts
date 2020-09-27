@@ -240,18 +240,6 @@ public:
 
 
 	/**
-	 * @brief - valid for 'crypto' pay_mode
-	 * @details - a driver receives fare after ride is completed, only when the pay_mode chosen as `crypto`
-	 * 
-	 * @param driver_ac - driver account
-	 * @param ride_id - ride_id
-	 * @memo - note for receiving fare to driver
-	 */
-	ACTION recvfare( const name& driver_ac,
-					const checksum256& ride_id,
-					const string& memo);
-
-	/**
 	 * @brief - driver add rating to commuter
 	 * @details - driver add rating to commuter corresponding to ride_id
 	 * 
@@ -286,6 +274,18 @@ public:
 	ACTION comaddrating( const name& commuter_ac,
 							const checksum256& ride_id,
 							float rating_dri );
+
+	/**
+	 * @brief - valid for 'crypto' pay_mode
+	 * @details - a driver receives fare after ride is completed, only when the pay_mode chosen as `crypto`
+	 * 
+	 * @param driver_ac - driver account
+	 * @param ride_id - ride_id
+	 * @memo - note for receiving fare to driver
+	 */
+	ACTION recvfare( const name& driver_ac,
+					const checksum256& ride_id,
+					const string& memo);
 
 	/**
 	 * @brief - driver add status - online/offline
@@ -327,10 +327,8 @@ public:
 	 * @details - erase after the ride is finished & payment is done. 
 	 * 
 	 * @param commuter_ac erasing by searching commuter_ac
-	 * @param memo - the memo string to erase a ride
 	 */
-	ACTION erase( const name& commuter_ac,
-						const string& memo);
+	ACTION erase( const name& commuter_ac );
 	/**
 	 * @brief - send alert
 	 * @details - send alert after the action is successfully done. e.g. driver alerting commuter that the vehicle has arrived
@@ -371,7 +369,7 @@ public:
 	}
 
 	ACTION testdelrtst(const name& action) {
-		rtststamp_index rtststamp_table(get_self(), action.value); 
+		rtststamp_index rtststamp_table(get_self(), get_self().value); 
 		auto rtststamp_it = rtststamp_table.find(action.value);
 
 		check(rtststamp_it != rtststamp_table.end(), "the action doesn't exist.");
@@ -434,7 +432,7 @@ private:
 	TABLE ridetaxi
 	{
 		name commuter_ac;
-		name ride_status;           // /requested/enroute/waiting/ontrip/complete
+		name ride_status;           // /requested/enroute/waiting/ontrip/complete/actfareadded/
 		name driver_ac;
 		checksum256 ride_id;		// a unique id of the ride. Used for rating in `userauth` table in toeuserauth contract
 		checksum256 src_lat_hash; 
@@ -500,7 +498,7 @@ private:
 
 // -----------------------------------------------------------------------------------------------------------------------
 	// RideTaxiSpecs timestamp 
-	// scope - action name
+	// scope - self
 	TABLE rtststamp
 	{
 		name action;	// "erase"
