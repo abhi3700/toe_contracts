@@ -845,8 +845,102 @@ pending console output:
 ```
 
 #### Action - `driaddrating`
+```console
+cleost push action toe1ridetaxi driaddrating '["toedri111111", "4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9", "4.5"]' -p toedri111111@active
+```
 
 #### Action - `comaddrating`
+```console
+$ cleost push action toe1ridetaxi comaddrating '["toecom111111", "4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9", "4.5"]' -p toecom111111@active
+executed transaction: 0c0f6a9060df888247ae8deb953092d9a752b284642af626844ab314b553b91f  136 bytes  316 us
+#  toe1ridetaxi <= toe1ridetaxi::comaddrating   {"commuter_ac":"toecom111111","ride_id":"4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2...
+#  toe1ridetaxi <= toe1ridetaxi::sendreceipt    {"user":"toecom111111","message":"toecom111111 rates the ride with ride_id '358e437b06af1f2bb6860bb4...
+#  toe1userauth <= toe1userauth::setratingavg   {"user":"toedri111111","user_type":"driver","rating_avg":"4.50000000000000000"}
+#  toe1userauth <= toe1userauth::setriderated   {"user":"toedri111111","user_type":"driver","ride_rated":1}
+#  toecom111111 <= toe1ridetaxi::sendreceipt    {"user":"toecom111111","message":"toecom111111 rates the ride with ride_id '358e437b06af1f2bb6860bb4...
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111111","message":"the average rating is updated to: 4.500000"}
+#  toedri111111 <= toe1userauth::sendalert      {"user":"toedri111111","message":"the average rating is updated to: 4.500000"}
+#  toe1userauth <= toe1userauth::sendalert      {"user":"toedri111111","message":"the ride_rated is updated to: 1"}
+#  toedri111111 <= toe1userauth::sendalert      {"user":"toedri111111","message":"the ride_rated is updated to: 1"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ]
+```
+  - view the table `ridestaxi`
+```console
+$ cleost get table toe1ridetaxi toe1ridetaxi ridestaxi --show-payer --lower toecom111111 --limit 1
+{
+  "rows": [{
+      "data": {
+        "commuter_ac": "toecom111111",
+        "ride_status": "complete",
+        "driver_ac": "toedri111111",
+        "ride_id": "4bdc2764b40b86b62b1faf067b438e3513e677ffad8c2a9ebb9aceedac2413e9",
+        "src_lat_hash": "d362b4ab0413925388f778207c8de2a4af0b9f88204e9e6160c3f10d0a35bda2",
+        "src_lon_hash": "40e6a963269233d76eeadf5b9c373878eb6e70b9a3a07a372a2eee75b7060035",
+        "des_lat_hash": "7b598dfa7b2c9f051c2f55ef335e61b9911798a88773b27c60430deab84c21b3",
+        "des_lon_hash": "b75f80aa9ac46065fe405df0b84908d8f0c689b9d1f344964efad64409e43a50",
+        "vehicle_type": "toego",
+        "seat_count": 2,
+        "pay_mode": "crypto",
+        "crypto_paystatus": "paidtodri",
+        "fiat_paystatus": "",
+        "action_txnid_vector": [{
+            "first": "create",
+            "second": "94b33176d0fa1b3c2c3358cf498b6c02575973b80e8db1f0ef22e9bcb4882abf"
+          },{
+            "first": "assign",
+            "second": "8d090aff7286f2af1601a0ccced4f58d7ce2042e1d03fa5ccb8b0c99723af6c7"
+          },{
+            "first": "reachsrc",
+            "second": "ec0139cb809783407c101013456e5a76fb7aacdbf378da5c736c158e23aba3f4"
+          },{
+            "first": "start",
+            "second": "2bf6c1e168cab886cfd23314b60776e48729df6d51180d213909f6fb26e82354"
+          },{
+            "first": "changedes",
+            "second": "7e0e984673feecfa7138818b1dea66a6e98eaafd8753c78c86ef87eb9c59665e"
+          },{
+            "first": "finish",
+            "second": "d5ed452572a10e6e6d6b421aeaec31083b6e4003db95f09eb5912a769a1277af"
+          },{
+            "first": "addfareact",
+            "second": "8988aeee2d4cf6e50cce3b2405ccf2ac5cb7d1ae4f614d24f6fe610ff545fd3c"
+          },{
+            "first": "recvfare",
+            "second": "16281a44cde13ecdabe3fac1fc2fbe4af5c13e1fcdea53d3eac46bb7bcb52e4b"
+          },{
+            "first": "comaddrating",
+            "second": "0c0f6a9060df888247ae8deb953092d9a752b284642af626844ab314b553b91f"
+          }
+        ],
+        "create_timestamp": 1601158890,
+        "assign_timestamp": 1601162146,
+        "reachsrc_timestamp_est": 1601162891,
+        "reachsrc_timestamp_act": 1601162459,
+        "cancel_timestamp": 0,
+        "start_timestamp": 1601163248,
+        "changedes_timestamp": 0,
+        "finish_timestamp_act": 1601216538,
+        "finish_timestamp_est": 1601159711,
+        "addfareact_timestamp": 0,
+        "ridex_usagestatus_com": "n",
+        "ridex_usagestatus_dri": "n",
+        "fare_est": "180.00000000000000000",
+        "fare_act": "190.00000000000000000",
+        "market_price": "5.00000000000000000",
+        "fare_crypto_est": "36.0000 TOE",
+        "fare_crypto_act": "38.0000 TOE",
+        "rating_status_dri": "",
+        "rating_dri": "4.50000000000000000",
+        "rating_status_com": "done",
+        "rating_com": "0.00000000000000000"
+      },
+      "payer": "toecom111111"
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+```
 
 #### Action - `recvfare`
 * `toedri111111` receives `fare_crypto_act` from the ridewallet contract which has wallet owned by `toecom111111`
@@ -922,8 +1016,16 @@ pending console output:
 
 #### Action - `erase`
 * erase ride of `toecom111111` 
+  - Get an error when the driver's rating is still pending
 ```console
-$ cleost push action toe1ridetaxi eraseride '["toecom111111"]' -p toe1ridetaxi@active
+$ cleost push action toe1ridetaxi erase '["toecom111111"]' -p toe1ridetaxi@active
+Error 3050003: eosio_assert_message assertion failure
+Error Details:
+assertion failure with message: The rating is not yet done by driver.
+pending console output:
+```
+```console
+$ cleost push action toe1ridetaxi erase '["toecom111111"]' -p toe1ridetaxi@active
 executed transaction: 350112062f1ff1af78c9015b43f2c55eadcf931762cfc0f730474f99f12d0231  144 bytes  932 us
 #  toe1ridetaxi <= toe1ridetaxi::eraseride      {"commuter_ac":"toecom111111","memo":"erase ride after the fare is transferred"}
 warning: transaction executed locally, but may not be confirmed by the network yet         ]

@@ -670,7 +670,7 @@ void toeridetaxi::addfareact( const name& driver_ac,
 	check( ride_it->fare_act == 0.00, "Sorry! the actual fare is already set. You can't modify");
 	
 	// Ensure that this action is accessed at ride_status as "complete" i.e. after `finish` action
-	check( ride_it->ride_status == "complete"_n, "The ride must be marked as complete. Otherwise, this action can't be used.");
+	check( ride_it->ride_status == "complete"_n, "It must be accessed just after \'finish\' action.");
 
 	// modify
 	rideid_idx.modify(ride_it, driver_ac, [&] (auto& row) {
@@ -707,7 +707,7 @@ void toeridetaxi::driaddrating( const name& driver_ac,
 	check( ride_it->driver_ac == driver_ac, ride_it->driver_ac.to_string() + " must rate the ride.");
 
 	// Ensure that this action is accessed at ride_status as "actfareadded" i.e. after `addfareact` action
-	check( ride_it->ride_status == "actfareadded"_n, "The ride must be complete.");
+	check( ride_it->ride_status == "actfareadded"_n, "It must be accessed just after \'addfareact\' action.");
 
 	check(ride_it->rating_status_dri != "done"_n, "The ride is already rated by \'" + ride_it->driver_ac.to_string());
 
@@ -777,7 +777,7 @@ void toeridetaxi::comaddrating( const name& commuter_ac,
 
 	check( ride_it->commuter_ac == commuter_ac, ride_it->commuter_ac.to_string() + " must rate the ride.");
 
-	check( (ride_it->ride_status == "complete"_n) || (ride_it->ride_status == "actfareadded"_n), "The ride must either be \'complete\' or \'actfareadded\'.");
+	check( (ride_it->ride_status == "complete"_n) || (ride_it->ride_status == "actfareadded"_n), "The ride status must either be \'complete\' or \'actfareadded\'.");
 
 	check(ride_it->rating_status_com != "done"_n, "The ride is already rated by \'" + ride_it->commuter_ac.to_string());
 
@@ -838,10 +838,10 @@ void toeridetaxi::recvfare( const name& driver_ac,
 	check( ride_it->pay_mode == "crypto"_n, "Sorry! the payment mode opted by commuter is not crypto.");
 
 	// Ensure that this action is accessed at ride_status as "actfareadded" i.e. after `addfareact` action
-	check( ride_it->ride_status == "actfareadded"_n, "Sorry! The ride is not completed yet.");
+	check( ride_it->ride_status == "actfareadded"_n, "It must be accessed after \'addfareact\' action.");
 
 	// check if the driver has done rating i.e. after `driaddrating` action
-	check(ride_it->rating_status_dri == "done"_n, "The rating is not done by driver.");
+	check(ride_it->rating_status_dri == "done"_n, "The driver'\'s rating is still pending.");
 
 	// check if there is any balance & it is greater than the 'fare_crypto_act'
 	// corresponding to the ride
@@ -982,30 +982,23 @@ void toeridetaxi::erase( const name& commuter_ac ) {
 		check(ride_it->crypto_paystatus == "paidtodri"_n, "the driver is not yet paid with crypto.");
 
 		// check if the driver has done rating
-		check(ride_it->rating_status_dri == "done"_n, "The rating is not done by driver.");
+		check(ride_it->rating_status_dri == "done"_n, "The driver'\'s rating is still pending.");
 	} 
 	else if(ride_it->pay_mode == "fiatdigi"_n) {
 		check(ride_it->fiat_paystatus == "paidtodri"_n, "the driver is not yet paid with fiatdigi.");
 
 		// check if the driver has done rating
-		check(ride_it->rating_status_dri == "done"_n, "The rating is not done by driver.");
+		check(ride_it->rating_status_dri == "done"_n, "The driver'\'s rating is still pending.");
 	} 
 	else if(ride_it->pay_mode == "fiatcash"_n) {
 		check(ride_it->ride_status == "actfareadded"_n, "the driver has not added the actual fare.");
 
 		// check if the driver has done rating
-		check(ride_it->rating_status_dri == "done"_n, "The rating is not done by driver.");
+		check(ride_it->rating_status_dri == "done"_n, "The driver'\'s rating is still pending.");
 	}
 
 	auto driver_ac = ride_it->driver_ac;		// store the `driver_ac` var to use in `send_alert()` inline action.
 	auto ride_id = ride_it->ride_id;			// store the `ride_id` var to use in `send_alert()` inline action.
-
-	// instantiate the fuelprice table
-	rtststamp_index rtststamp_table(get_self(), get_self().value); 
-	auto rtststamp_it = rtststamp_table.find("erase"_n.value);
-
-	// check wait duration is set in the `rtststamp` table
-	check(rtststamp_it != rtststamp_table.end(), "There is no wait duration set. Please set using \'setrtststamp\' action.");
 
 	// if the commuter's rating is done, then erase immediately
 	if(ride_it->rating_status_com == "done"_n) {
@@ -1014,6 +1007,13 @@ void toeridetaxi::erase( const name& commuter_ac ) {
 	}
 	// else erase only after wait_duration passed
 	else {
+		// instantiate the timestamp table
+		rtststamp_index rtststamp_table(get_self(), get_self().value); 
+		auto rtststamp_it = rtststamp_table.find("erase"_n.value);
+
+		// check wait duration is set in the `rtststamp` table
+		check(rtststamp_it != rtststamp_table.end(), "There is no wait duration set. Please set using \'setrtststamp\' action.");
+
 		auto time_elapsed = now() - ride_it->addfareact_timestamp;
 		check( time_elapsed >= rtststamp_it->wait_time, "The time elapsed: \'" + std::to_string(time_elapsed) + " \' is stil less than the set wait_time to erase the ride record.");
 		
