@@ -36,7 +36,6 @@ private:
 	const float fees_factor;
 	const name ridetaxi_contract_ac;
 	const name token_contract_ac;
-	const name ridex_supply_ac;
 	const name ridex_fees_ac;
 	const name auth_contract_ac;
 	const uint64_t initial_ride_qty;
@@ -53,7 +52,6 @@ public:
 				fees_factor(0.01),		// 1%
 				ridetaxi_contract_ac("toe1ridetaxi"_n),
 				token_contract_ac("toe1111token"_n),
-				ridex_supply_ac("toeridexsupp"_n),
 				ridex_fees_ac("toeridexfees"_n),
 				auth_contract_ac("toe1userauth"_n),
 				initial_ride_qty(1000000) {}
