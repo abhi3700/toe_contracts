@@ -129,7 +129,7 @@ void toeridetaxi::create(
 				permission_level{get_self(), "active"_n},
 				ridex_contract_ac,
 				"consumeride"_n,
-				std::make_tuple(commuter_ac, "commuter"_n, "commuter"_n, 1)
+				std::make_tuple(commuter_ac, "commuter"_n, "commuter"_n, (uint64_t)1)
 			).send();
 
 		}
@@ -301,7 +301,7 @@ void toeridetaxi::cancelbycom( const name& commuter_ac,
 			permission_level{get_self(), "active"_n},
 			ridex_contract_ac,
 			"restoreride"_n,
-			std::make_tuple(commuter_ac, "commuter"_n, "commuter"_n, 1)
+			std::make_tuple(commuter_ac, "commuter"_n, "commuter"_n, (uint64_t)1)
 		).send();
 	}
 
@@ -362,7 +362,7 @@ void toeridetaxi::cancelbydri( const name& driver_ac,
 			permission_level{get_self(), "active"_n},
 			ridex_contract_ac,
 			"restoreride"_n,
-			std::make_tuple(driver_ac, "driver"_n, "driver"_n, 1)
+			std::make_tuple(driver_ac, "driver"_n, "driver"_n, (uint64_t)1)
 		).send();
 	}
 
@@ -441,7 +441,7 @@ void toeridetaxi::start( const name& driver_ac,
 			permission_level{get_self(), "active"_n},
 			ridex_contract_ac,
 			"consumeride"_n,
-			std::make_tuple(driver_ac, "driver"_n, "driver"_n, 1)
+			std::make_tuple(driver_ac, "driver"_n, "driver"_n, (uint64_t)1)
 		).send();
 	}
 
@@ -523,7 +523,7 @@ void toeridetaxi::changedes( const name& commuter_ac,
 				permission_level{get_self(), "active"_n},
 				ridex_contract_ac,
 				"restoreride"_n,
-				std::make_tuple(commuter_ac, "commuter"_n, "commuter"_n, 1)
+				std::make_tuple(commuter_ac, "commuter"_n, "commuter"_n, (uint64_t)1)
 			).send();
 
 		} else if((ride_it->ridex_usagestatus_com == "n"_n) && (ridex_usagestatus_com == "y"_n)) {		// Case-2: from "n" to "y"
@@ -532,7 +532,7 @@ void toeridetaxi::changedes( const name& commuter_ac,
 				permission_level{get_self(), "active"_n},
 				ridex_contract_ac,
 				"consumeride"_n,
-				std::make_tuple(commuter_ac, "commuter"_n, "commuter"_n, 1)
+				std::make_tuple(commuter_ac, "commuter"_n, "commuter"_n, (uint64_t)1)
 			).send();
 		}
 
@@ -813,6 +813,7 @@ void toeridetaxi::recvfare( const name& driver_ac,
 
 	// check if the pay_mode is `crypto` as this action is valid only for "crypto" pay_mode as latest
 	check( ride_it->pay_mode == "crypto"_n, "Sorry! the payment mode opted by commuter is not crypto.");
+	check( ride_it->crypto_paystatus != "paidtodri"_n, "Sorry! the crypto fare for completed ride to driver: \'" + driver_ac.to_string() + "\' is already transferred.");
 
 	// Ensure that this action is accessed at ride_status as "actfareadded" i.e. after `addfareact` action
 	check( ride_it->ride_status == "actfareadded"_n, "It must be accessed after \'addfareact\' action.");
