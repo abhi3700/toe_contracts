@@ -615,42 +615,4 @@ private:
 	  return sha256(trxbuf, trxsize);
 	}
 
-/*	// Adding inline action for `disburse` action in the ridewallet contract   
-	void disburse_fare(const name& receiver_ac,
-						const name& wallet_holder,
-						const asset& quantity,
-						const string& memo );
-
-	// Adding inline action for `consumeride` action in the ridex contract   
-	void consume_ride( const name& user,
-						const name& user_type,
-						const name& ride_type,
-						uint64_t ride_qty );
-
-	// Adding inline action for `restoreride` action in the ridex contract   
-	void restore_ride( const name& user,
-						const name& user_type,
-						const name& ride_type,
-						uint64_t ride_qty );
-
-	// Adding inline action for `addridequota` action in the ridex contract   
-	void add_ridequota(const name& type, 
-						uint64_t ride_qty );
-
-	// Adding inline action for `setridetotal` action in the user auth contract   
-	void set_ride_total(const name& user,
-						const name& user_type,
-						uint64_t ride_total);
-
-	// Adding inline action for `setriderated` action in the user auth contract   
-	void set_ride_rated(const name& user,
-						const name& user_type,
-						uint64_t ride_rated);
-
-	// Adding inline action for `setratingavg` action in the user auth contract   
-	void set_rating_avg(const name& user,
-						const name& user_type,
-						float rating_avg);
-*/
-
 };
