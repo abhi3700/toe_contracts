@@ -2344,6 +2344,7 @@ warning: transaction executed locally, but may not be confirmed by the network y
 * [ ] Can `finish`, `addfareact`, `recvfare` be merged into one action by automatically transferring the money after adding the actual fare. 
 * [ ] Implement pool ride. Ensure that the `dridestatus` table is only modified when the ride is not pool type. This is because, when in pool, the "online" to "assigned" is not true for the next commuter to be picked-up. For the next commuter also, the driver's status should be "online", but not "assgined".
 * [ ] In `rides` table, whether only commuter/contract should pay for the entire row for all operations, is to be decided based on the row data consumption at the end of the ride. Basically, note the increment in the last ram_payer's RAM, among all ride operations.
+* [ ] Redesign the flow from "finish >> addfareact", because in current scenario, the ride is marked 'finished' & after that the `addfareact` action is done. Rather it should be reversed maybe. Basically, the ride is finished only when the commuter is having balance in the ridewallet.
 
 ### NOTES
 * All the actions are ensured to process sequentially based on checking the `ride_status` field of the table, so that an action can't be accessed before using the previous required action. E.g. `cancelbycom` can only be accessed in __"requested"__, __"enroute"__, __"waiting"__ ride status.
