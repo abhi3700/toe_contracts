@@ -7,13 +7,13 @@ using std::string;
 int main() {
 	hashwrapper *mywrapper = new sha256wrapper();
 
-string name = "Ramesh Chopra";
-string address = "F-24 \nBlock F, Kirti Nagar \nNew Delhi, Delhi 110015";
-string country_id = "434731547311"; 
+string name = "Arun K P";
+string address = "#890, Sector 78, Mohali, Punjab - 160078";
+string country_id = "543254265354"; 
 
 	try {
-		std::string hash1 = mywrapper->getHashFromString(name + address);
-		std::string hash2 = mywrapper->getHashFromString(country_id);
+		std::string hash1 = mywrapper->getHashFromString(country_id);
+		std::string hash2 = mywrapper->getHashFromString(name + address);
 		std::cout << hash1 << "\n";
 		std::cout << hash2 << "\n";
 	}
