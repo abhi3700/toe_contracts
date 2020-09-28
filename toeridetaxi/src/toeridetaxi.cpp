@@ -416,6 +416,8 @@ void toeridetaxi::start( const name& driver_ac,
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
 	check_userauth(driver_ac, "driver"_n);
 
+	check((ridex_usagestatus_dri == "y"_n) || (ridex_usagestatus_dri == "n"_n), "RIDEX usage status can be either \'y\' or \'n\'");
+
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
 	auto rideid_idx = ridetaxi_table.get_index<"byrideid"_n>();
@@ -457,6 +459,7 @@ void toeridetaxi::changedes( const name& commuter_ac,
 					const name& ridex_usagestatus_com,
 					float fare_est,
 					const asset& fare_crypto_est,
+					uint32_t finish_timestamp_est,
 					const name& pay_mode,
 					const string& memo ) {
 	require_auth(commuter_ac);
@@ -547,6 +550,8 @@ void toeridetaxi::changedes( const name& commuter_ac,
 		row.fare_est = fare_est;
 		row.fare_crypto_est = fare_crypto_est;
 		row.pay_mode = pay_mode;
+		row.finish_timestamp_est = finish_timestamp_est;
+		row.changedes_timestamp = now();
 
 		if (pay_mode == "crypto"_n) {
 			row.crypto_paystatus = "paidbycom"_n;

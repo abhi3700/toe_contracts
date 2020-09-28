@@ -118,6 +118,10 @@
                     "type": "asset"
                 },
                 {
+                    "name": "finish_timestamp_est",
+                    "type": "uint32"
+                },
+                {
                     "name": "pay_mode",
                     "type": "name"
                 },

@@ -208,6 +208,7 @@ public:
 						const name& ridex_usagestatus_com,
 						float fare_est,
 						const asset& fare_crypto_est,
+						uint32_t finish_timestamp_est,
 						const name& pay_mode,
 						const string& memo );
 
