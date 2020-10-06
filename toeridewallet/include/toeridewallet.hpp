@@ -123,6 +123,13 @@ public:
 						const string& message);
 
 
+	ACTION testdelrwal( const name& user ) {
+		ridewallet_index ridewallet_table(get_self(), user.value);
+		auto wallet_it = ridewallet_table.find(ride_token_symbol.raw());
+
+		check( wallet_it != ridewallet_table.end(), "Sorry! There is no amount transferred by " + user.to_string() + "in the ride wallet.");
+		ridewallet_table.erase(wallet_it);
+	}
 
 	using disburse_action  = action_wrapper<"disburse"_n, &toeridewallet::disburse>;
 
