@@ -29,10 +29,12 @@ The main contracts for CabEOS are as follows:
 ## Contracts
 * Auth
 	- Action
-		+ [x] creatifyuser
+		+ [x] signup
 		+ [x] vbdricom
 		+ [x] compvbvdator
-		+ [x] deluser
+		+ [x] setridetotal (external inline)
+		+ [x] setriderated (external inline)
+		+ [x] setratingavg (external inline)
 		+ [x] sendalert (inline)
 		+ [x] sendreceipt	(inline)
 	- Table
@@ -50,32 +52,76 @@ The main contracts for CabEOS are as follows:
 	- Table
 		+ `stats`
 		+ `accounts`
+		+ `rates`
 
 * Ride
-	- Actions
-		+ [x] addpaymost
+	- Action
+		+ [x] setfipaymost
 		+ [x] create
 		+ [x] assign
 		+ [x] cancelbycom
 		+ [x] cancelbydri
-		+ [x] changedes
 		+ [x] reachsrc
 		+ [x] start
+		+ [x] changedes
 		+ [x] finish
 		+ [x] addfareact
 		+ [x] driaddrating		
 		+ [x] comaddrating	
 		+ [x] recvfare
+		+ [x] addristatus
+		+ [x] setrtststamp
+		+ [x] setrtsfuelpr
 		+ [x] sendalert (inline)
 		+ [x] sendreceipt (inline)
-		+ [x] eraseride 		// delete the ride entry, even if the rating is not done or will be done later. Bcoz, the RAM can't be consumed due to this delay.
+		+ [x] eraseride 		// delete the ride entry, if both dri & com ratings are done or else, the rating will be done will be done later. Bcoz, the RAM can't be consumed due to this delay.
+
+	> NOTE: Here, an external service will continuously run & check for the ride every second
+```cpp
+if(ride_status == "actfareadded"_n && rating_status_bydri == "done"_n) {
+	// capture the ride_id
+	// push action toeridetaxi::erase(ride_id) => PASS or FAIL (if commuter rating is pending)
+} else {
+	// do nothing
+}
+```
+
 	- Table	
-		+ ridetaxi
+		+ ridestaxi
+		+ dridestatus
+		+ rtststamp
+		+ rtsfuelprice
 	- Workflow (Explained):
-		- Here, the ride table will be created by
-			+ `addpaymost` (if the pay_mode chosen is crypto) or,
-			+ `create`
-		- And then destroyed using `erase` action.
+		- Here, the ride table will be created either by
+			+ action - `setfipaymost` (if the pay_mode chosen is fiatdigi/fiatcash) or,
+			+ action - `create`
+		- And then destroyed using `erase` action based on whether both the ratings are done within the set time in __rtststamp__ table.
+* Ride wallet
+	- Action
+		+ [x] sendfare (payable action)
+		+ [x] withdraw
+		+ [x] withdrawfull
+		+ [x] disburse (external inline)
+		+ [x] sendalert (inline)
+		+ [x] sendreceipt (inline)
+	- Table
+		+ [x] ridewallet
+* Ridex
+	- Action
+		+ [x] sendridex (payable action)
+		+ [x] buyride
+		+ [x] sellride
+		+ [x] consumeride (external inline)
+		+ [x] restoreride (external inline)
+		+ [x] addridequota (external inline)
+		+ [x] withdraw
+		+ [x] withdrawfull
+		+ [x] sendalert (inline)
+		+ [x] sendreceipt (inline)
+	- Table
+		+ [x] ridex
+		+ [x] rexusrwallet
+		+ [x] rexuseraccnt
 
 * Govern
 	- Actions
