@@ -948,15 +948,16 @@ void toeridetaxi::setrtsfuelpr( const name& fiat_currency,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void toeridetaxi::erase( const name& commuter_ac ) {
+void toeridetaxi::erase( const checksum256& ride_id ) {
 	require_auth( get_self() );
 
 	// instantiate the `ride` table
 	ridetaxi_index ridetaxi_table(get_self(), get_self().value);
-	auto ride_it = ridetaxi_table.find(commuter_ac.value);
+	auto rideid_idx = ridetaxi_table.get_index<"byrideid"_n>();
+	auto ride_it = rideid_idx.find(ride_id);
 
 	// ensure there is a ride by commuter_ac
-	check( ride_it != ridetaxi_table.end(), "Sorry! there is no ride created by commuter_ac.");
+	check( ride_it != rideid_idx.end(), "Sorry! there is no ride created by commuter_ac.");
 
 	// check if the ride_status is "actfareadded"
 
@@ -980,13 +981,13 @@ void toeridetaxi::erase( const name& commuter_ac ) {
 		check(ride_it->rating_status_bydri == "done"_n, "The driver'\'s rating is still pending.");
 	}
 
-	auto driver_ac = ride_it->driver_ac;		// store the `driver_ac` var to use in `send_alert()` inline action.
-	auto ride_id = ride_it->ride_id;			// store the `ride_id` var to use in `send_alert()` inline action.
+	auto driver_ac = ride_it->driver_ac;				// store the `driver_ac` var to use in `send_alert()` inline action.
+	auto commuter_ac = ride_it->commuter_ac;			// store the `commuter_ac` var to use in `send_alert()` inline action.
 
 	// if the commuter's rating is done, then erase immediately
 	if(ride_it->rating_status_bycom == "done"_n) {
 		// erase the ride
-		ridetaxi_table.erase( ride_it );
+		rideid_idx.erase( ride_it );
 	}
 	// else erase only after wait_duration passed
 	else {
@@ -1001,7 +1002,7 @@ void toeridetaxi::erase( const name& commuter_ac ) {
 		check( time_elapsed >= rtststamp_it->wait_time, "The time elapsed: \'" + std::to_string(time_elapsed) + " \' is stil less than the set wait_time to erase the ride record.");
 		
 		// erase the ride
-		ridetaxi_table.erase( ride_it );
+		rideid_idx.erase( ride_it );
 	}
 
 	// On successful execution above, this inline actions will be triggered.

@@ -323,13 +323,15 @@ public:
 						const name& fuel_unit, 
 						float fuel_price_petrol,
 						float fuel_price_diesel );
+	
 	/**
-	 * @brief - An external methods to erase ride
-	 * @details - erase after the ride is finished & payment is done. 
+	 * @brief - An action to erase ride to be requested by the external service after every sec.
+	 * @details - erase after the ride is finished & payment is done & ensure that the ratings are done. 
 	 * 
-	 * @param commuter_ac erasing by searching commuter_ac
+	 * @param ride_id - erasing by searching ride_id
 	 */
-	ACTION erase( const name& commuter_ac );
+	ACTION erase( const checksum256& ride_id );
+
 	/**
 	 * @brief - send alert
 	 * @details - send alert after the action is successfully done. e.g. driver alerting commuter that the vehicle has arrived

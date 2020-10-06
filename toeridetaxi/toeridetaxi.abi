@@ -248,8 +248,8 @@
             "base": "",
             "fields": [
                 {
-                    "name": "commuter_ac",
-                    "type": "name"
+                    "name": "ride_id",
+                    "type": "checksum256"
                 }
             ]
         },
