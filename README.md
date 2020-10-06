@@ -63,6 +63,8 @@ The main contracts for CabEOS are as follows:
 		+ [x] start
 		+ [x] finish
 		+ [x] addfareact
+		+ [x] driaddrating		
+		+ [x] comaddrating	
 		+ [x] recvfare
 		+ [x] sendalert (inline)
 		+ [x] sendreceipt (inline)
@@ -328,10 +330,10 @@ n = no. of Rides needed (in no.)
 * The ride status of drivers are listed in the `dridestatus` table.
 * The accepted status: __"online"__, __"offline"__, __"assigned"__.
 * During the ride, the status is changed at this action steps:
-	- `addristatus`: after successful login, the status is could be changed to __"online"__/__"offline"__.
+	- `addristatus`: after successful login/logout, the status is could be changed to __"online"__/__"offline"__ respectively.
 	- `assign`: status changed from __"online"__ to __"assigned"__.
 	- `cancelbydri`: status changed from __"assigned"__ to __"online"__.
-	- `addratebydri`: status changed from __"assigned"__ to __"online"__.
+	- `driaddrating`: status changed from __"assigned"__ to __"online"__.
 
 ### Rating
 * Rating is important to view a party's (driver/commuter/validator) performance in the platform.
@@ -375,12 +377,15 @@ n = no. of Rides needed (in no.)
 
 
 ### Ride
-* A driver can have multiple rides (present in eosio table) in 2 cases:
+* A driver can have multiple rides (present in `toeridetaxi` contract table) in 2 cases:
 	- pool ride
 	- ride waiting for commuter to rate. Max. wait_time: 'x' hrs set in `rtststamp` table of `toeridetaxi` contract.
-* A commuter shall always have only 1 ride (present in eosio table).
-* The status of ride is continuously maintained by `ride_status` param in eosio table.
+* A commuter shall always have only 1 ride (present in `toeridetaxi` contract table).
+* The status of ride is continuously maintained by `ride_status` param in `toeridetaxi::rides` table.
 * A driver requires more (than commuter) EOSIO resources - RAM, CPU, NET in order to make a min. no. of ride for livelihood.
+* Each ride is assigned with a ride_id.
+
+> NOTE: The ride_id is unique & doesn't follow any series as it is a checksum.
 
 ### Driver
 * Consumes RAM in user auth table.
@@ -392,6 +397,7 @@ n = no. of Rides needed (in no.)
 ### Commuter
 * Consumes RAM in user auth table.
 * Consumes RAM, CPU, NET in a ride.
+* Consumes some RIDEX ride if opted.
 
 ### User Auth
 * People will face camera & get their photo uploaded into server.

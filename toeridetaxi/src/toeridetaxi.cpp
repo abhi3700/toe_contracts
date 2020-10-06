@@ -678,7 +678,7 @@ void toeridetaxi::addfareact( const name& driver_ac,
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::driaddrating( const name& driver_ac,
 								const checksum256& ride_id,
-								float rating_com ) {
+								float rating_ofcom ) {
 	require_auth(driver_ac);
 
 	// check whether the `driver_ac` is a verified driver by reading the `auth` table
@@ -695,17 +695,17 @@ void toeridetaxi::driaddrating( const name& driver_ac,
 	// Ensure that this action is accessed at ride_status as "actfareadded" i.e. after `addfareact` action
 	check( ride_it->ride_status == "actfareadded"_n, "It must be accessed just after \'addfareact\' action.");
 
-	check(ride_it->rating_status_dri != "done"_n, "The ride is already rated by driver: \'" + ride_it->driver_ac.to_string() + "\'");
+	check(ride_it->rating_status_bydri != "done"_n, "The ride is already rated by driver: \'" + ride_it->driver_ac.to_string() + "\'");
 
 	rideid_idx.modify(ride_it, driver_ac, [&](auto& row) {
-		row.rating_com = rating_com;
-		row.rating_status_dri = "done"_n;
+		row.rating_ofcom = rating_ofcom;
+		row.rating_status_bydri = "done"_n;
 		row.action_txnid_vector.emplace_back(make_pair("driaddrating"_n, get_trxid()));
 	});
 
 	// On successful execution, a receipt is sent
 	send_receipt(driver_ac, driver_ac.to_string() + " rates the ride with ride_id \'" 
-								+ to_hex(&ride_id, sizeof(ride_id)) + "\' as \'" + std::to_string(rating_com) + "\'.");
+								+ to_hex(&ride_id, sizeof(ride_id)) + "\' as \'" + std::to_string(rating_ofcom) + "\'.");
 
 	// set the current rating_avg for commuter in `userauth` table
 	// Instantiate the user commuter table
@@ -718,7 +718,7 @@ void toeridetaxi::driaddrating( const name& driver_ac,
 		permission_level{get_self(), "active"_n},
 		auth_contract_ac,
 		"setratingavg"_n,
-		std::make_tuple(ride_it->commuter_ac, "commuter"_n, current_rating_avg(user_commuter_it->rating_avg, rating_com, user_commuter_it->ride_rated))
+		std::make_tuple(ride_it->commuter_ac, "commuter"_n, current_rating_avg(user_commuter_it->rating_avg, rating_ofcom, user_commuter_it->ride_rated))
 	).send();
 
 	// increase the rated ride of commuter by 1
@@ -747,7 +747,7 @@ void toeridetaxi::driaddrating( const name& driver_ac,
 // --------------------------------------------------------------------------------------------------------------------
 void toeridetaxi::comaddrating( const name& commuter_ac,
 								const checksum256& ride_id,
-								float rating_dri ) {
+								float rating_ofdri ) {
 	require_auth(commuter_ac);
 
 	// check whether the `commuter_ac` is a verified driver by reading the `auth` table
@@ -763,17 +763,17 @@ void toeridetaxi::comaddrating( const name& commuter_ac,
 
 	check( (ride_it->ride_status == "complete"_n) || (ride_it->ride_status == "actfareadded"_n), "The ride status must either be \'complete\' or \'actfareadded\'.");
 
-	check(ride_it->rating_status_com != "done"_n, "The ride is already rated by commuter: \'" + ride_it->commuter_ac.to_string() + "\'");
+	check(ride_it->rating_status_bycom != "done"_n, "The ride is already rated by commuter: \'" + ride_it->commuter_ac.to_string() + "\'");
 
 	rideid_idx.modify(ride_it, commuter_ac, [&](auto& row) {
-		row.rating_dri = rating_dri;
-		row.rating_status_com = "done"_n;
+		row.rating_ofdri = rating_ofdri;
+		row.rating_status_bycom = "done"_n;
 		row.action_txnid_vector.emplace_back(make_pair("comaddrating"_n, get_trxid()));
 	});
 
 	// On successful execution, a receipt is sent
 	send_receipt(commuter_ac, commuter_ac.to_string() + " rates the ride with ride_id \'" 
-								+ to_hex(&ride_id, sizeof(ride_id)) + "\' as \'" + std::to_string(rating_dri) + "\'.");
+								+ to_hex(&ride_id, sizeof(ride_id)) + "\' as \'" + std::to_string(rating_ofdri) + "\'.");
 
 	// set the current rating_avg for driver in `userauth` table
 	// Instantiate the user driver table
@@ -786,7 +786,7 @@ void toeridetaxi::comaddrating( const name& commuter_ac,
 		permission_level{get_self(), "active"_n},
 		auth_contract_ac,
 		"setratingavg"_n,
-		std::make_tuple(ride_it->driver_ac, "driver"_n, current_rating_avg(user_driver_it->rating_avg, rating_dri, user_driver_it->ride_rated))
+		std::make_tuple(ride_it->driver_ac, "driver"_n, current_rating_avg(user_driver_it->rating_avg, rating_ofdri, user_driver_it->ride_rated))
 	).send();
 
 	// increase the rated ride of commuter by 1
@@ -824,7 +824,7 @@ void toeridetaxi::recvfare( const name& driver_ac,
 	check( ride_it->ride_status == "actfareadded"_n, "It must be accessed after \'addfareact\' action.");
 
 	// check if the driver has done rating i.e. after `driaddrating` action
-	check(ride_it->rating_status_dri == "done"_n, "The driver'\'s rating is still pending.");
+	check(ride_it->rating_status_bydri == "done"_n, "The driver'\'s rating is still pending.");
 
 	// check if there is any balance & it is greater than the 'fare_crypto_act'
 	// corresponding to the ride
@@ -965,26 +965,26 @@ void toeridetaxi::erase( const name& commuter_ac ) {
 		check(ride_it->crypto_paystatus == "paidtodri"_n, "the driver is not yet paid with crypto.");
 
 		// check if the driver has done rating
-		check(ride_it->rating_status_dri == "done"_n, "The driver'\'s rating is still pending.");
+		check(ride_it->rating_status_bydri == "done"_n, "The driver'\'s rating is still pending.");
 	} 
 	else if(ride_it->pay_mode == "fiatdigi"_n) {
 		check(ride_it->fiat_paystatus == "paidtodri"_n, "the driver is not yet paid with fiatdigi.");
 
 		// check if the driver has done rating
-		check(ride_it->rating_status_dri == "done"_n, "The driver'\'s rating is still pending.");
+		check(ride_it->rating_status_bydri == "done"_n, "The driver'\'s rating is still pending.");
 	} 
 	else if(ride_it->pay_mode == "fiatcash"_n) {
 		check(ride_it->ride_status == "actfareadded"_n, "the driver has not added the actual fare.");
 
 		// check if the driver has done rating
-		check(ride_it->rating_status_dri == "done"_n, "The driver'\'s rating is still pending.");
+		check(ride_it->rating_status_bydri == "done"_n, "The driver'\'s rating is still pending.");
 	}
 
 	auto driver_ac = ride_it->driver_ac;		// store the `driver_ac` var to use in `send_alert()` inline action.
 	auto ride_id = ride_it->ride_id;			// store the `ride_id` var to use in `send_alert()` inline action.
 
 	// if the commuter's rating is done, then erase immediately
-	if(ride_it->rating_status_com == "done"_n) {
+	if(ride_it->rating_status_bycom == "done"_n) {
 		// erase the ride
 		ridetaxi_table.erase( ride_it );
 	}

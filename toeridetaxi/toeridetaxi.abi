@@ -144,7 +144,7 @@
                     "type": "checksum256"
                 },
                 {
-                    "name": "rating_dri",
+                    "name": "rating_ofdri",
                     "type": "float32"
                 }
             ]
@@ -224,7 +224,7 @@
                     "type": "checksum256"
                 },
                 {
-                    "name": "rating_com",
+                    "name": "rating_ofcom",
                     "type": "float32"
                 }
             ]
@@ -442,19 +442,19 @@
                     "type": "asset"
                 },
                 {
-                    "name": "rating_status_dri",
+                    "name": "rating_status_bydri",
                     "type": "name"
                 },
                 {
-                    "name": "rating_dri",
+                    "name": "rating_ofdri",
                     "type": "float32"
                 },
                 {
-                    "name": "rating_status_com",
+                    "name": "rating_status_bycom",
                     "type": "name"
                 },
                 {
-                    "name": "rating_com",
+                    "name": "rating_ofcom",
                     "type": "float32"
                 }
             ]

@@ -212,10 +212,10 @@ private:
 		float market_price;		// market price during ride request
 		asset fare_crypto_est;			// estimated fare (in national curr) converted (outside blockchain interaction) to fare (in crypto) based on the market rate.
 		asset fare_crypto_act;			// actual fare (in national curr) converted (outside blockchain interaction) to fare (in crypto) based on the market rate.
-		name rating_status_dri;			// rating status of doer - driver | "done"
-		float rating_dri;				// rating of driver set by commuter | < 5.0
-		name rating_status_com;			// rating status of doer - commuter | "done"
-		float rating_com;				// rating of commuter set by driver | < 5.0
+		name rating_status_bydri;			// rating status of doer - driver | "done"
+		float rating_ofdri;				// rating of driver set by commuter | < 5.0
+		name rating_status_bycom;			// rating status of doer - commuter | "done"
+		float rating_ofcom;				// rating of commuter set by driver | < 5.0
 
 		auto primary_key() const { return commuter_ac.value; }
 		uint64_t get_secondary_1() const { return driver_ac.value; }
