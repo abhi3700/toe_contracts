@@ -484,10 +484,11 @@ n = no. of Rides needed (in no.)
 - Tokenomics
    + distribution (in pie chart)
    + earnings
-- Platform Workflow
-  + Users sign-up
-  + Company accounts creation (only if national_id is not available in DB) or else create on your own & supply
-  + 
+- DApp Workflow
+  + Users sign-up/login
+  + Pick-up point entry
+  + Assign Driver
+
 - MVP Demo
 - Future
 - References
