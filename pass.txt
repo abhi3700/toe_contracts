@@ -1,8 +1,8 @@
 Wallet (locally)
 ================
 name: cabeos
-password: "PW5JxH3QTucTuBE5uCBziGhT94XS8yLBKHEnK5MditxWdpet5vHKe"
-command: `cleos wallet unlock -n cabeos --password PW5JxH3QTucTuBE5uCBziGhT94XS8yLBKHEnK5MditxWdpet5vHKe`
+password: "PW5Jhg53py3oN3xA1nfwfNn9F4RiL6EcbdNeD4bsdsLWFHMeWPXGe"
+command: `cleos wallet unlock -n cabeos --password PW5Jhg53py3oN3xA1nfwfNn9F4RiL6EcbdNeD4bsdsLWFHMeWPXGe`
 ########################################################################
 Jungle Testnet
 *********************************************************************************************************
