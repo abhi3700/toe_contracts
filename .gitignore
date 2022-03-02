@@ -7,3 +7,4 @@ test*
 
 # ignore folders
 build
+.DS_Store
